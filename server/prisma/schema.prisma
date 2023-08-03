@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id          String      @id @default(cuid())
+  name        String
+  email       String      @unique
+  phoneNumber String
+  dateCreated DateTime    @default(now())
+  users       Users[]
+  fleet       Fleet[]
+  equipment   Equipment[]
+}
+
+model Users {
+  id        String  @id @default(cuid())
+  name      String
+  email     String  @unique
+  Company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyId String  @default("End User")
+  Role      Role?   @relation(fields: [roleName], references: [name])
+  roleName  String?
+}
+
+model Role {
+  name  String  @id
+  users Users[]
+}
+
+model Fleet {
+  id        String   @id @default(cuid())
+  name      String
+  trucks    Truck[]
+  Company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyId String?
+}
+
+model Truck {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  vin         String?
+  license     String?
+  year        Int?
+  urlPath     String        @default(cuid())
+  Fleet       Fleet?        @relation(fields: [fleetId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  fleetId     String?       @default("null")
+  maintenance Maintenance[]
+  inventory   Inventory[]
+  photoAreas  PhotoAreas[]
+}
+
+model Maintenance {
+  id                  String   @id @default(cuid())
+  date                DateTime @default(now())
+  mileage             Int
+  oil                 String
+  coolant             String
+  frontDriverTread    String
+  frontPassengerTread String
+  rearDriverTread     String
+  rearPassengerTread  String
+  notes               String
+  Truck               Truck?   @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  truckId             String?
+}
+
+model Inventory {
+  id        String      @id @default(cuid())
+  date      DateTime    @default(now())
+  Truck     Truck?      @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  truckId   String?
+  equipment Equipment[]
+}
+
+model Equipment {
+  id        String      @id @default(cuid())
+  name      String
+  inventory Inventory[]
+  Company   Company?    @relation(fields: [companyId], references: [id])
+  companyId String?
+}
+
+model PhotoAreas {
+  id      String   @id @default(cuid())
+  name    String
+  Truck   Truck?   @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  truckId String?
+  Photos  Photos[]
+}
+
+model Photos {
+  id           String     @id @default(cuid())
+  date         DateTime   @default(now())
+  photoArea    PhotoAreas @relation(fields: [photoAreasId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  photoAreasId String
+}
