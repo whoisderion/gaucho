@@ -419,6 +419,7 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
     return res.status(201).json(newInventory)
 })
 
+// TODO: add picture upload functionality
 app.post("/upload/pictures", async (req: Request, res: Response) => {
     // req: maintenance{...Photos{front:IMG_1653.jpg, back:IMG_1654.jpg, ...n:IMG_16nn}}
 
