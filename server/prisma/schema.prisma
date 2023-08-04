@@ -19,6 +19,7 @@ model Company {
   users       Users[]
   fleet       Fleet[]
   equipment   Equipment[]
+  role        Role[]
 }
 
 model Users {
@@ -32,8 +33,10 @@ model Users {
 }
 
 model Role {
-  name  String  @id
-  users Users[]
+  name      String   @id
+  users     Users[]
+  Company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
 }
 
 model Fleet {
