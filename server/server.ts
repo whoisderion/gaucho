@@ -300,6 +300,7 @@ app.post("/upload/maintenance", async (req: Request, res: Response) => {
     return res.status(201).json(maintenanceUpdate)
 })
 
+//works
 app.post("/upload/inventory", async (req: Request, res: Response) => {
     // req: maintenace{...{equipment 1, equipment 2, ...equipment n}}, truckID
 
@@ -307,12 +308,119 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
 
     // res: 200 and maintenance{} || 4xx
 
-    const truckID = req.body.truckID
-
-    const inventoryUpdate = await prisma.inventory.create({
-        data: {
-            truckId: truckID,
+    const companyID = req.body.companyID
+    const truckID = req.body.inventory.truckID
+    const inventory: {
+        truckName: string,
+        truckID: string
+        inventory: {
+            [key: string]: any
         }
+    } = req.body.inventory
+
+    // get the current truck that matches the current truck in the inventory
+    const truck = await prisma.truck.findFirst({
+        where: {
+            id: truckID
+        }
+    })
+
+    let equipment = await prisma.equipment.findMany({
+        include: {
+            Company: {
+                where: {
+                    id: companyID
+                }
+            }
+        }
+    })
+
+    // create an array of equipment names in the equipment table and in the given inventory
+    const equipmentNames = equipment.map(equipment => equipment.name)
+
+    // create an array of equipment names from inventory object
+    let inventoryNames: string[] = []
+    for (let equipment in inventory.inventory) {
+        inventoryNames.push(equipment)
+    }
+
+    console.log(truck!.name + "\n")
+    console.log("Inventory Names: " + inventoryNames)
+    console.log("Equipment Names: " + equipmentNames)
+
+    // if the equipment in the inventory is not in the database create a new equipment entry
+    const itemsAreInTable = inventoryNames.every(item => equipmentNames.includes(item))
+    // console.log("items are in table: " + itemsAreInTable)
+    if (itemsAreInTable == false) {
+        let newEquipment: string[]
+
+        newEquipment = inventoryNames.filter(item => !equipmentNames.includes(item))
+        console.log("\nNew Items: " + newEquipment)
+
+        // console.log("\n")
+        for (const item of newEquipment) {
+            const newEquipment = await prisma.equipment.create({
+                data: {
+                    name: item,
+                    companyId: companyID
+                }
+            })
+            // console.log(newEquipment)
+        }
+
+        // reassign the value for the equipment in the DB to get new items
+        equipment = await prisma.equipment.findMany({
+            include: {
+                Company: {
+                    where: {
+                        id: companyID
+                    }
+                }
+            }
+        })
+    }
+
+    // add the database ID for all of the equipment in the given truck's inventory
+    for (const [key, value] of Object.entries(inventory.inventory)) {
+
+        const equipmentObj = equipment.find(obj => obj.name === key)
+
+        inventory.inventory[key].dbID = equipmentObj!.id
+    }
+
+    // create an array of objects for the relation of each new inventory record to the existing equipment in the DB
+    let inventoryUploadObj: any = []
+    for (const [key, value] of Object.entries(inventory.inventory)) {
+        // console.log("upload " + key)
+        // console.log(currTruck.inventory)
+        // console.log('\n')
+        const equipmentID = inventory.inventory[key].dbID
+        // console.log(equipmentID)
+        inventoryUploadObj.push({
+            quantity: value.quantity,
+            equipment: {
+                connectOrCreate: {
+                    where: {
+                        id: equipmentID
+                    },
+                    create: {
+                        name: key,
+                        companyId: companyID
+                    }
+                }
+            }
+        })
+    }
+    // console.log(JSON.stringify(inventoryUploadObj[0]))
+
+    // create the inventory record for currTruck in the DB with Equipment[]
+    const newInventory = await prisma.inventory.create({
+        data: {
+            truckId: truck!.id,
+            equipmentItems: {
+                create: inventoryUploadObj,
+            },
+        },
     })
 
     return res.sendStatus(201)
