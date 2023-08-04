@@ -19,7 +19,6 @@ type Group = {
     trucks: Truck[]
 }
 
-// works
 app.post("/create-account", async (req: Request, res: Response) => {
     // req: company name, phone number, email, and password
 
@@ -48,7 +47,6 @@ app.post("/create-account", async (req: Request, res: Response) => {
     }
 })
 
-// works
 app.post("/setup/fleet", async (req: Request, res: Response) => {
     // req: Fleet[Trucks[{Truck Name, Liscense Plate, VIN#}, ...], Trucks[...]] and company id
     /* Fleet[{name: name, trucks: [Truck{...}, Truck{...}]},
@@ -94,7 +92,6 @@ app.post("/setup/fleet", async (req: Request, res: Response) => {
 
 })
 
-// works :)
 app.post("/setup/inventory", async (req: Request, res: Response) => {
     // req: Trucks[{Truck Name, Equipment[Equipment 1, Equipment 2, ...Equipment n]}, ...]
 
@@ -224,7 +221,6 @@ app.post("/setup/inventory", async (req: Request, res: Response) => {
     return res.sendStatus(201)
 })
 
-// works :)
 app.get("/print-qr-codes", async (req: Request, res: Response) => {
     // req: companyID
 
@@ -257,7 +253,6 @@ app.get("/print-qr-codes", async (req: Request, res: Response) => {
     res.status(201).json(urlArr)
 })
 
-// works
 app.get("/trucks/qr/:truckID", async (req: Request, res: Response) => {
     const truckID = req.params.truckID
     const generateQR = async () => {
@@ -273,7 +268,6 @@ app.get("/trucks/qr/:truckID", async (req: Request, res: Response) => {
     return generateQR()
 })
 
-// works
 app.post("/upload/maintenance", async (req: Request, res: Response) => {
     // req: Truck{milage, oil level, coolant level, tire tread level{}, notes}, truckID
 
@@ -300,7 +294,6 @@ app.post("/upload/maintenance", async (req: Request, res: Response) => {
     return res.status(201).json(maintenanceUpdate)
 })
 
-//works
 app.post("/upload/inventory", async (req: Request, res: Response) => {
     // req: maintenace{...{equipment 1, equipment 2, ...equipment n}}, truckID
 
@@ -423,7 +416,7 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
         },
     })
 
-    return res.sendStatus(201)
+    return res.status(201).json(newInventory)
 })
 
 app.post("/upload/pictures", async (req: Request, res: Response) => {
@@ -478,18 +471,14 @@ app.post("/account/company", async (req: Request, res: Response) => {
 
     // res: 201 and company{updatedInfo} || 4xx
 
-    // map the given req.body.data to an object
-
     const company = await prisma.company.update({
         where: {
             id: req.body.companyID,
         },
-        data: {
-            //req.body.data
-        }
+        data: req.body.data
     })
 
-    return res.status(200)
+    return res.status(200).json(company)
 })
 
 app.get("/account/users", async (req: Request, res: Response) => {
@@ -513,17 +502,22 @@ app.post("/account/users", async (req: Request, res: Response) => {
 
     // res: 201 and users[user{updatedInfo}] || 4xx
 
-    const users = await prisma.users.update({
-        where: {
-            id: req.body.userID
-        },
-        data: {
-            // newUserInfo
-        }
-    })
+    let users: Users[] = []
 
-    return res.sendStatus(201)
+    for (const user of req.body.users) {
+        const updatedUser = await prisma.users.update({
+            where: {
+                id: user.id
+            },
+            data: user
+        })
+        users.push(updatedUser)
+    }
+
+    return res.status(201).json(users)
 })
+
+// TODO: delete user
 
 app.get("/account/roles", async (req: Request, res: Response) => {
     // >>>  get all roles in company's role table
@@ -532,9 +526,11 @@ app.get("/account/roles", async (req: Request, res: Response) => {
 
     const roles = await prisma.role.findMany({
         where: {
-            // companyId: req.body.companyID
+            companyId: req.body.companyID
         }
     })
+
+    res.status(200).json(roles)
 })
 
 app.post("/account/roles", async (req: Request, res: Response) => {
@@ -544,31 +540,81 @@ app.post("/account/roles", async (req: Request, res: Response) => {
 
     // res: 201 and roles[role{newParams}] || 4xx
 
-    const updatedRole = await prisma.role.update({
-        where: {
-            name: req.body.role
-        },
-        data: {
-            // req.body.newRoleParameters
-        }
-    })
+    const roles: Role[] = req.body.roles
+    let updatedRoles: Role[] = []
+    for (const role of roles) {
+        const updatedRole = await prisma.role.upsert({
+            where: {
+                name: role.name
+            },
+            update: {
+                name: role.name
+            },
+            create: {
+                name: role.name,
+                companyId: req.body.companyID
+            }
+        })
+        updatedRoles.push(updatedRole)
+    }
 
-    return res.sendStatus(200)
+    return res.status(201).json(updatedRoles)
 })
 
-app.get("/account/equipment", (req: Request, res: Response): void => {
+// TODO: delete role
+
+app.get("/account/equipment", async (req: Request, res: Response) => {
     // >>>  get all equipment types in company's equipment table
 
     //res: 200 and inventory[] || 4xx
+
+    const equipment = await prisma.equipment.findMany({
+        where: {
+            companyId: req.body.companyID
+        }
+    })
+
+    // TODO: get most recent inventory data from each truck for each equipment group
+    // const equipmentInInventory = await prisma.equipmentInInventory.findMany({
+    //     where: {
+    //         equipmentId: 
+    //     }
+    // })
+
+    res.status(200).json(equipment)
 })
 
-app.post("/account/equipment", (req: Request, res: Response): void => {
+app.post("/account/equipment", async (req: Request, res: Response) => {
     // req: changes[...newEquipmentInfo{equipment{name, description}}]
 
     // >>>  updates the equipment info in DB
 
     // res: 201 and allEquipment[] || 4xx
+
+    const equipment = req.body.equipment
+
+    let updatedEquipment: Equipment[] = []
+
+    for (const item of equipment) {
+        const upsertedItem = await prisma.equipment.upsert({
+            where: {
+                id: item.id || ""
+            },
+            update: {
+                name: item.name
+            },
+            create: {
+                name: item.name,
+                companyId: req.body.companyID
+            }
+        })
+        updatedEquipment.push(upsertedItem)
+    }
+
+    res.status(201).json(updatedEquipment)
 })
+
+// TODO: delete equipment
 
 app.get("/account/fleet", async (req: Request, res: Response) => {
     // >>>  get all vehicles in company's fleet table
@@ -584,14 +630,39 @@ app.get("/account/fleet", async (req: Request, res: Response) => {
     return res.status(200).json(fleet)
 })
 
-app.post("/account/fleet", (req: Request, res: Response): void => {
+app.post("/account/fleet", async (req: Request, res: Response) => {
     // req: changes[...newVehicleInfo{vehicle{uuid, truckName,}}]
 
     // >>>  updates the fleet/truck info in DB
 
     // res: 201 and Fleet[] || 4xx
+
+    const fleet = req.body.fleet
+
+    let updatedFleet: Fleet[] = []
+
+    for (const group of fleet) {
+        const upsertedVehicle = await prisma.fleet.upsert({
+            where: {
+                id: group.id || ""
+            },
+            update: {
+                name: group.name
+            },
+            create: {
+                name: group.name,
+                companyId: req.body.companyID
+            }
+        })
+        updatedFleet.push(upsertedVehicle)
+    }
+
+    res.status(201).json(updatedFleet)
 })
 
+// TODO: delete fleet
+
+// TODO: figure out what to put in dashboard
 app.get("/dashboard", async (req: Request, res: Response) => {
     // >>>  gets all the relavant data to populate the dashboard
 
