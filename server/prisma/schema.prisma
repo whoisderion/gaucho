@@ -74,19 +74,30 @@ model Maintenance {
 }
 
 model Inventory {
-  id        String      @id @default(cuid())
-  date      DateTime    @default(now())
-  Truck     Truck?      @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  truckId   String?
-  equipment Equipment[]
+  id             String                 @id @default(cuid())
+  date           DateTime               @default(now())
+  Truck          Truck?                 @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  truckId        String?
+  equipmentItems EquipmentInInventory[]
+}
+
+model EquipmentInInventory {
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id])
+
+  equipmentId String
+  quantity    Int
+
+  @@id([inventoryId, equipmentId])
 }
 
 model Equipment {
-  id        String      @id @default(cuid())
-  name      String
-  inventory Inventory[]
-  Company   Company?    @relation(fields: [companyId], references: [id])
-  companyId String?
+  id          String                 @id @default(cuid())
+  name        String
+  Company     Company?               @relation(fields: [companyId], references: [id])
+  companyId   String?
+  inventories EquipmentInInventory[]
 }
 
 model PhotoAreas {
