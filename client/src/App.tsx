@@ -3,6 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import * as ROUTES from 'data/routes.ts'
 
 import Landing from 'pages/Landing'
+import Home from 'pages/Home'
+import SignUp from 'pages/SignUp/SignUp'
+import Account from 'pages/Account'
+import CreateFleet from 'pages/SignUp/CreateFleet'
+import CreateInventory from 'pages/SignUp/CreateInventory'
+import QRCodes from 'pages/SignUp/QRCodes'
 
 function App() {
 
@@ -13,6 +19,24 @@ function App() {
           <Route
             path={ROUTES.LANDING}
             element={<Landing />} />
+          <Route
+            path={ROUTES.HOME}
+            element={<Home />} />
+          <Route
+            path={ROUTES.SIGN_UP}
+            element={<SignUp />} />
+          <Route
+            path={ROUTES.CREATE_FLEET}
+            element={<CreateFleet />} />
+          <Route
+            path={ROUTES.CREATE_INVENTORY}
+            element={<CreateInventory />} />
+          <Route
+            path={ROUTES.PRINT_QR_CODES}
+            element={<QRCodes />} />
+          <Route
+            path={ROUTES.ACCOUNT}
+            element={<Account />} />
         </Routes>
       </div>
     </Router>
