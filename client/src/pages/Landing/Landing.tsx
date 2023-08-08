@@ -1,7 +1,16 @@
+import { Link } from "react-router-dom"
+import * as ROUTES from 'data/routes'
+
 function Landing() {
-    console.log(import.meta.env.VITE_TEST)
     return (
-        <div className="text-emerald-700">Welcome to Gaucho</div>
+        <div>
+            <div className="text-emerald-700">Welcome to Gaucho</div>
+            <div>
+                <Link to={ROUTES.SIGN_UP}><button>Create a Company</button></Link>
+
+                <Link to={ROUTES.ACCOUNT}><button>View Company Details</button></Link>
+            </div>
+        </div>
     )
 }
 
