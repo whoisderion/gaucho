@@ -14,7 +14,7 @@ function App() {
 
   return (
     <Router>
-      <div className="App max-w-full flex-auto">
+      <div className="App max-w-full w-[100vw] flex-auto">
         <Routes>
           <Route
             path={ROUTES.LANDING}
