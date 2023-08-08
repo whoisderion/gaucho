@@ -1,13 +1,22 @@
 require('dotenv').config();
 import express, { Request, Response, Application } from 'express';
 import { PrismaClient, Users, Role, Fleet, Truck, Equipment } from '@prisma/client';
-import QRCode from "qrcode"
+import cors from 'cors';
+import QRCode from "qrcode";
 
 const app: Application = express();
 const PORT = process.env.PORT;
 const prisma = new PrismaClient();
 
+const corsOptions = {
+    origin: ['http://localhost:5173'],
+    methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    // credentials: true,
+}
+
 app.set('json spaces', 4)
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.get("/", (req: Request, res: Response): void => {
