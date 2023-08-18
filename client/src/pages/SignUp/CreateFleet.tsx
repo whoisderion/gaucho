@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import * as ROUTES from 'data/routes'
 
 function CreateFleet() {
 
@@ -17,7 +19,7 @@ function CreateFleet() {
 
     type FleetsProps = {
         fleets: Fleet[]
-    };
+    }
 
     type FleetProps = {
         fleet: Fleet
@@ -46,49 +48,99 @@ function CreateFleet() {
     ])
     const [currFleet, setCurrFleet] = useState<Fleet>({ name: "", vehicles: [] })
     const [newFleet, setNewFleet] = useState<Fleet>({ name: "New Fleet", vehicles: [] })
+    const [newFleetIsActive, setNewFleetIsActice] = useState(false)
+    const [newFleetIsSelected, setNewFleetIsSelected] = useState(false)
+
+    const navigate = useNavigate()
+
+    if (newFleetIsSelected && (currFleet != newFleet)) {
+        setCurrFleet(newFleet)
+    }
 
     const changeFleet = (fleet: Fleet) => {
         setCurrFleet(fleet)
+        if (fleet == newFleet) {
+            console.log('now selecting the new fleet')
+            setNewFleetIsSelected(true)
+        } else {
+            setNewFleetIsSelected(false)
+        }
     }
-
-    // function createNewTruck() {
-    //     return (
-    //         <>
-    //             <div>
-    //                 <form action="">
-    //                     <div>
-    //                         <p>Truck Name</p>
-    //                         <input type="text" name="truck-name" id="" />
-    //                     </div>
-    //                     <div>
-    //                         <p>Liscense Plate</p>
-    //                         <input type="text" name="liscense-plate" id="" />
-    //                     </div>
-    //                     <div>
-    //                         <p>VIN Number</p>
-    //                         <input type="text" name="vin-number" id="" />
-    //                     </div>
-    //                 </form>
-    //             </div>
-    //             <div id="other-vehicles">
-
-    //             </div>
-    //             <div id="add-another-vehicle">
-
-    //             </div>
-    //         </>
-    //     )
-    // }
-
 
     // create a new blank fleet object, setCurrFleet to this object and when saved add it to fleets[]
     function createNewFleet() {
-        if (JSON.stringify(fleets.slice(-1)[0]) != JSON.stringify({ name: "New Fleet", vehicles: [] })) {
-            console.log(typeof (fleets.slice(-1)[0]))
-            console.log(typeof ({ name: "New Fleet", vehicles: [] }))
-            setFleets([...fleets, newFleet])
+        //if (JSON.stringify(fleets.slice(-1)[0]) != JSON.stringify({ name: "New Fleet", vehicles: [] })) {
+        if (newFleetIsActive == false) {
+            setCurrFleet(newFleet)
+            setNewFleetIsActice(true)
+            setNewFleetIsSelected(true)
         }
-        setCurrFleet(newFleet)
+    }
+
+    const isFleet = (obj: Fleet | Truck): obj is Fleet => {
+        return (obj as Fleet).vehicles !== undefined
+    }
+
+    const changeName = (currObj: Fleet | Truck, newName: string) => {
+        if (isFleet(currObj)) {
+            if (currFleet == newFleet) {
+                //
+                // I need to chang the value of the current fleet but react state is immutable meaning that I am copying the data
+                // how do I do this and keep the current fleet value as the new fleet
+                const updatedFleet = { ...currObj, name: newName }
+                setNewFleet(updatedFleet)
+                console.log('changing the name for the new fleet: ' + newName)
+            } else {
+                // const updatedFleets = fleets.map(fleet =>
+                //     fleet === currObj ? { ...fleet, name: newName } : fleet
+                // );
+                // setFleets(updatedFleets);
+
+                // or???
+
+                // setCurrFleet({ ...currObj, name: newName })
+                console.log('changing the name for an existing fleet')
+            }
+        } else {
+            console.log('trying to change truck name')
+        }
+    }
+
+    const addNewTruck = (fleet: Fleet) => {
+        console.log(fleet)
+    }
+
+    function createNewTruck() {
+        return (
+            <>
+                <div>
+                    <form action="">
+                        <div>
+                            <p>Truck Name</p>
+                            <input type="text" name="truck-name" id="" />
+                        </div>
+                        <div>
+                            <p>Liscense Plate</p>
+                            <input type="text" name="liscense-plate" id="" />
+                        </div>
+                        <div>
+                            <p>VIN Number</p>
+                            <input type="text" name="vin-number" id="" />
+                        </div>
+                    </form>
+                </div>
+                <div id="other-vehicles">
+
+                </div>
+                <div id="add-another-vehicle">
+
+                </div>
+            </>
+        )
+    }
+
+    function continueSignup() {
+        navigate(ROUTES.PRINT_QR_CODES)
     }
 
     const Fleets: React.FC<FleetsProps> = ({ fleets }) => {
@@ -110,27 +162,38 @@ function CreateFleet() {
                             </ul>
                         </li>
                     ))}
+                    { //if new fleet is an active component show the new fleet
+                        <li onClick={() => { changeFleet(newFleet) }}>
+                            {newFleetIsActive == true ? <p>{newFleet.name}</p> : <></>}
+                        </li>
+                    }
                 </ul>
             </div>
         )
     }
 
     const Fleet: React.FC<FleetProps> = ({ fleet }) => {
-        if (currFleet == newFleet) {
+        if (newFleetIsSelected == true) {
             return (
                 <>
-                    <form action="">
-                        <h4>
-                            <input type="text" name="fleet-name" id="" defaultValue="Fleet Name" />
+                    <form action="" className="pl-12">
+                        <h4 className=" text-4xl text-left pb-6 pl-8" >
+                            <input type="text" name="name" value={newFleet.name} onChange={(e) => { changeName(fleet, e.target.value) }} />
                         </h4>
+                        <p>{newFleet.name}</p>
                         <hr />
                         <div>
-                            <div>
-                                <h5>Trucks</h5>
-                            </div>
-                            <div>
-
-                            </div>
+                            <h4 className="text-left text-xl my-4">Trucks</h4>
+                            <ul>
+                                {newFleet.vehicles.map((vehicle, vehicleIndex) => (
+                                    <li key={vehicleIndex} className="border-solid border-[1px] mb-4 py-2 flex">
+                                        {vehicle.name}
+                                    </li>
+                                ))}
+                                <li>
+                                    <div onClick={() => { addNewTruck(newFleet) }} className="border-solid border-[1px] mb-4 py-2 flex justify-center">+ Add Truck</div>
+                                </li>
+                            </ul>
                         </div>
                     </form>
                 </>
@@ -148,7 +211,7 @@ function CreateFleet() {
                                     <h5 className="text-xl">{vehicle.name}</h5>
                                 </div>
                                 <div className="text-left flex-grow grid grid-rows-2 grid-cols-2">
-                                    <p >Liscense Plate: </p><p>{vehicle.licensePlate}</p>
+                                    <p>Liscense Plate: </p><p>{vehicle.licensePlate}</p>
                                     <p>VIN Number: </p><p>{vehicle.VinNumber}</p>
                                 </div>
                             </li>
@@ -160,7 +223,7 @@ function CreateFleet() {
     }
 
     return (
-        <div className="flex">
+        <div className="flex flex-wrap">
             <div id="fleet-menu" className="w-[20%]">
                 <h1>Fleets</h1>
                 <button onClick={createNewFleet}>+ Create Fleet</button>
@@ -168,7 +231,10 @@ function CreateFleet() {
                 <Fleets fleets={fleets} />
             </div>
             <div id="current-fleet" className="flex-auto">
-                <Fleet fleet={currFleet} />
+                {newFleetIsActive && newFleetIsSelected ? <Fleet fleet={newFleet} /> : <Fleet fleet={currFleet} />}
+            </div>
+            <div className=" basis-full grow w-full">
+                <button onClick={continueSignup}>Print QR Codes</button>
             </div>
         </div>
     )
