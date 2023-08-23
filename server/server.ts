@@ -673,7 +673,6 @@ app.post("/account/fleet", async (req: Request, res: Response) => {
 
 // TODO: delete fleet
 
-// TODO: figure out what to put in dashboard
 app.get("/dashboard", async (req: Request, res: Response) => {
     // >>>  gets all the relavant data to populate the dashboard
 
@@ -715,7 +714,50 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         }
     })
 
-    return res.status(201).json({ fleet, vehicles, inventoryList, maintenaceList })
+    let dashboardData: any = fleet
+
+    // add each vehicle to their respective fleet
+    for (const vehicle of vehicles) {
+        const currFleetIndex = dashboardData.findIndex((currentFleet: Fleet) => currentFleet.id === vehicle.fleetId)
+        if (!dashboardData[currFleetIndex].vehicles) {
+            dashboardData[currFleetIndex].vehicles = []
+        }
+        dashboardData[currFleetIndex].vehicles.push(vehicle)
+    }
+
+    // add each inventory to its respective truck 
+    // (the location will be similar to a 2D array [Fleet][Vehicle])
+    for (const inventory of inventoryList) {
+        const currInventory = inventory.inventory[0]
+        if (currInventory) {
+            for (let fleetIndex = 0; fleetIndex < dashboardData.length; fleetIndex++) {
+                if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currInventory.truckId) != -1) {
+                    const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currInventory.truckId)
+                    dashboardData[fleetIndex].vehicles[vehicleIndex].inventory = currInventory
+                }
+            }
+        }
+    }
+
+    // add each maintenance update to its respectice truck
+    // this will also be a 2D array similar to adding the inventory
+    for (const maintenace of maintenaceList) {
+        const currMaintenance = maintenace.maintenance[0]
+        if (currMaintenance) {
+            for (let fleetIndex = 0; fleetIndex < dashboardData.length; fleetIndex++) {
+                if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId) != -1) {
+                    const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId)
+                    dashboardData[fleetIndex].vehicles[vehicleIndex].maintenace = currMaintenance
+                }
+            }
+        }
+    }
+
+    // console.log("Completed Dashboard Data...")
+    // console.log(util.inspect(dashboardData, false, null, true))
+    // console.log("\n")
+
+    return res.status(201).json({ "fleets": dashboardData })
 })
 
 app.listen(PORT, (): void => {
