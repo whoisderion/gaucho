@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom"
+import * as ROUTES from "data/routes"
+
 function QRCodes() {
 
     // make a request for the qr codes for every truck
@@ -9,7 +12,10 @@ function QRCodes() {
     return (
         // display the truck name, QR code, and a print button for every truck created
 
-        <div>QRCodes</div>
+        <div>
+            <div>QR Codes</div>
+            <Link to={ROUTES.HOME}><button>View your compnay dashboard</button></Link>
+        </div>
     )
 }
 
