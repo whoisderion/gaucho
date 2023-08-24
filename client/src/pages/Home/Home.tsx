@@ -65,6 +65,7 @@ function Home() {
         fetchData()
     }, [])
 
+    const listFleets = dashboardData && dashboardData.fleets.map((fleet: Fleet, fleetKey) =>
     function makeFleets() {
         if (dashboardData) {
             console.log('data for making fleets...')
@@ -72,7 +73,7 @@ function Home() {
             const dashboard = dashboardData.fleets.map((fleet: Fleet, fleetKey) =>
                 <ul key={fleetKey} className=" list-disc">
             <li >{fleet.name}</li>
-                    <ul className=" list-[circle]">
+            <ul>
                 {fleet.vehicles ?
                     fleet.vehicles.map((vehicle, vehicleKey) =>
                                 <li key={vehicleKey}>{vehicle.name}</li>) :
@@ -99,11 +100,16 @@ function Home() {
 
     if (dashboardData) {
         return (
+            <div className="Contents">
                 <Sidebar />
             <div>
                 <div>Dashboard</div>
                 <div className="Dashboard">
                     {makeFleets()}
+                    <div className="fleetList">
+                        <ul>{dashboardData && listFleets}</ul>
+                    </div>
+
                 </div>
             </div>
         )
