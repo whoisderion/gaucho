@@ -710,7 +710,18 @@ app.get("/dashboard", async (req: Request, res: Response) => {
                 orderBy: {
                     date: 'desc'
                 },
-                take: 1
+                take: 1,
+                include: {
+                    equipmentItems: {
+                        include: {
+                            equipment: {
+                                select: {
+                                    name: true
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     })
