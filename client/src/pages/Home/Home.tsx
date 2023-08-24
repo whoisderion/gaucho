@@ -37,24 +37,16 @@ function Home() {
         liscense: string,
         year: number,
         fleetId: string,
-        urlPath: string
+        urlPath: string,
+        inventory: Inventory,
+        maintenance: Maintenance
     }
 
     type DashboardData = {
-        fleet: Fleet[],
-        inventory: Inventory[],
-        maintenance: Maintenance[]
-        vehicles: Vehicle[]
+        fleets: Fleet[]
     }
 
-    const [dashboardData, setDashboardData] = useState<DashboardData>({
-        fleet: [],
-        inventory: [],
-        maintenance: [],
-        vehicles: []
-    })
-
-    const [fleets, setFleets] = useState<Fleet[]>([])
+    const [dashboardData, setDashboardData] = useState<DashboardData>()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,51 +66,27 @@ function Home() {
     }, [])
 
     function makeFleets() {
-        // create an object for each fleet
-        let fetchedFleets: Fleet[] = []
-        dashboardData.fleet.map((fleet) => {
-            fetchedFleets.push(fleet)
-        })
-        setFleets([...fleets, ...fetchedFleets])
-        console.log("Stage 1:")
-        console.log(fleets)
-
-        // attribute a truck to each fleet
-        dashboardData.vehicles.map((vehicle) => {
-            const fleet = fleets.find(fleet => fleet.id === vehicle.fleetId)
-
-            if (fleet) {
-                if (!fleet.vehicles) {
-                    fleet.vehicles = []
-                }
-                fleet.vehicles.push(vehicle);
-            } else {
-                console.error(`No fleet found for vehicle with fleetId ${vehicle.fleetId}`);
-            }
-
-        })
-        console.log("Stage 2:")
-        console.log(fleets)
-        // get the most recent inventory & maintenance for each truck
-
-        // add everything to an element
-
-        const dashboard = fleets.map((fleet) =>
-            <ul>
-                <li>{fleet.name}</li>
-                <ul>
-                    {fleet.vehicles.map((vehicle) =>
-                        <li>
-                            {vehicle.name}
-                        </li>
-                    )}
+        if (dashboardData) {
+            console.log('data for making fleets...')
+            console.log(dashboardData)
+            const dashboard = dashboardData.fleets.map((fleet: Fleet, fleetKey) =>
+                <ul key={fleetKey} className=" list-disc">
+                    <li >{fleet.name}</li>
+                    <ul className=" list-[circle]">
+                        {fleet.vehicles ?
+                            fleet.vehicles.map((vehicle, vehicleKey) =>
+                                <li key={vehicleKey}>{vehicle.name}</li>) :
+                            <></>}
+                    </ul>
                 </ul>
-            </ul>
-        )
-        return (dashboard)
+            )
+            return dashboard
+        } else {
+            return null
+        }
     }
 
-    if (dashboardData.fleet.length != 0) {
+    if (dashboardData) {
         return (
             <div>
                 <div>Dashboard</div>
