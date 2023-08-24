@@ -71,23 +71,35 @@ function Home() {
             console.log(dashboardData)
             const dashboard = dashboardData.fleets.map((fleet: Fleet, fleetKey) =>
                 <ul key={fleetKey} className=" list-disc">
-                    <li >{fleet.name}</li>
+            <li >{fleet.name}</li>
                     <ul className=" list-[circle]">
-                        {fleet.vehicles ?
-                            fleet.vehicles.map((vehicle, vehicleKey) =>
+                {fleet.vehicles ?
+                    fleet.vehicles.map((vehicle, vehicleKey) =>
                                 <li key={vehicleKey}>{vehicle.name}</li>) :
-                            <></>}
-                    </ul>
+                    <></>}
+            </ul>
+        </ul>
+    )
+
+    function Sidebar() {
+        return (
+            <div className="Sidebar inline-flex flex-col w-64 border-r-1 border-cyan-50">
+                <h2 className=" text-3xl">Gaucho</h2>
+                <ul className="pl-4 mt-8">
+                    <h4 className="mb-2">Dashboards</h4>
+                    {/* the following should be links to their respectice components */}
+                    <li className="pl-8 mb-2">Fleet Overview</li>
+                    <li className="pl-8 mb-2">Maintenance</li>
+                    <li className="pl-8 mb-2">Equipment</li>
+                    <li className="pl-8 mb-2">User Activity</li>
                 </ul>
-            )
-            return dashboard
-        } else {
-            return null
-        }
+            </div>
+        )
     }
 
     if (dashboardData) {
         return (
+                <Sidebar />
             <div>
                 <div>Dashboard</div>
                 <div className="Dashboard">
