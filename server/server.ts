@@ -692,6 +692,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         maintenance: {}
     }
 
+    // returns an array of fleets that the company have created
     const fleet = await prisma.fleet.findMany({
         where: {
             companyId: req.body.companyID
