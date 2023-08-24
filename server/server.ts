@@ -678,6 +678,18 @@ app.get("/dashboard", async (req: Request, res: Response) => {
 
     // res: dashboard{fleet{}}
 
+    type DashboardVehicle = {
+        id: string,
+        name: string,
+        vin: string,
+        license: string,
+        year: number,
+        urlPath: string,
+        fleetId: string,
+        inventory: {},
+        maintenance: {}
+    }
+
     const fleet = await prisma.fleet.findMany({
         where: {
             companyId: req.body.companyID
@@ -717,11 +729,14 @@ app.get("/dashboard", async (req: Request, res: Response) => {
     let dashboardData: any = fleet
 
     // add each vehicle to their respective fleet
-    for (const vehicle of vehicles) {
+    for (const vehicle of vehicles as DashboardVehicle[]) {
         const currFleetIndex = dashboardData.findIndex((currentFleet: Fleet) => currentFleet.id === vehicle.fleetId)
         if (!dashboardData[currFleetIndex].vehicles) {
             dashboardData[currFleetIndex].vehicles = []
         }
+
+        vehicle.inventory = {}
+        vehicle.maintenance = {}
         dashboardData[currFleetIndex].vehicles.push(vehicle)
     }
 
@@ -747,7 +762,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
             for (let fleetIndex = 0; fleetIndex < dashboardData.length; fleetIndex++) {
                 if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId) != -1) {
                     const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId)
-                    dashboardData[fleetIndex].vehicles[vehicleIndex].maintenace = currMaintenance
+                    dashboardData[fleetIndex].vehicles[vehicleIndex].maintenance = currMaintenance
                 }
             }
         }
