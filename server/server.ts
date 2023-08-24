@@ -677,6 +677,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
     // >>>  gets all the relavant data to populate the dashboard
 
     // res: dashboard{fleet{}}
+    // note: redundant IDs will be kept for sanity checks/easier debugging
 
     type DashboardVehicle = {
         id: string,
@@ -687,6 +688,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         urlPath: string,
         fleetId: string,
         inventory: {},
+        lastInventory: {}
         maintenance: {}
     }
 
@@ -696,6 +698,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         }
     })
 
+    // returns an array of vehicles belonging to the company
     const vehicles = await prisma.truck.findMany({
         where: {
             Fleet: {
@@ -704,13 +707,14 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         }
     })
 
+    // returns an object each truck's most recent inventory update
     const inventoryList = await prisma.truck.findMany({
         select: {
             inventory: {
                 orderBy: {
                     date: 'desc'
                 },
-                take: 1,
+                take: 4,
                 include: {
                     equipmentItems: {
                         include: {
@@ -726,6 +730,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         }
     })
 
+    // returns an object for each truck's most recent maintenace update
     const maintenaceList = await prisma.truck.findMany({
         select: {
             maintenance: {
@@ -748,18 +753,31 @@ app.get("/dashboard", async (req: Request, res: Response) => {
 
         vehicle.inventory = {}
         vehicle.maintenance = {}
+        vehicle.lastInventory = {}
         dashboardData[currFleetIndex].vehicles.push(vehicle)
     }
 
     // add each inventory to its respective truck 
     // (the location will be similar to a 2D array [Fleet][Vehicle])
+
+    // both this and the equipment array can be optimized but this is unecessary due the... 
+    // largest expected company having less than 30 vehicles but would need to be optimized
+    // for enterprise companies
     for (const inventory of inventoryList) {
         const currInventory = inventory.inventory[0]
         if (currInventory) {
             for (let fleetIndex = 0; fleetIndex < dashboardData.length; fleetIndex++) {
+                // checks if the current fleet has a vehicle array AND that the current inventory's vehicle is in the current fleet
+                // then adds the the inventory to the curernt vehicle
                 if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currInventory.truckId) != -1) {
                     const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currInventory.truckId)
                     dashboardData[fleetIndex].vehicles[vehicleIndex].inventory = currInventory
+                    // checks to see if there is a last inventory that is not empty
+                    // then adds it to the vehicles last inventory property
+                    // TODO: add a function that checks for older inventories if there is an empty lastInventory
+                    if (inventory.inventory[1] && inventory.inventory[1].equipmentItems.length != 0) {
+                        dashboardData[fleetIndex].vehicles[vehicleIndex].lastInventory = inventory.inventory[1]
+                    }
                 }
             }
         }
@@ -771,6 +789,8 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         const currMaintenance = maintenace.maintenance[0]
         if (currMaintenance) {
             for (let fleetIndex = 0; fleetIndex < dashboardData.length; fleetIndex++) {
+                // checks if the current fleet has a vehicle array AND that the current maintenance's vehicle is in the fleet
+                // then it add the current maintenance to the vehicles maintenance property
                 if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId) != -1) {
                     const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId)
                     dashboardData[fleetIndex].vehicles[vehicleIndex].maintenance = currMaintenance
