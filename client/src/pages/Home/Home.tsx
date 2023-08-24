@@ -58,7 +58,7 @@ function Home() {
                 setDashboardData(res.data)
                 console.log(res.data)
             }).catch((err) => {
-                console.log(err)
+                console.error(err)
             })
         }
 
