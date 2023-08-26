@@ -464,7 +464,7 @@ app.get("/account/company", async (req: Request, res: Response) => {
 
     // res: 200 and company{} || 4xx
 
-    const companyID = req.body.companyID
+    const companyID = req.query.companyID as string
 
     const company = await prisma.company.findUnique({
         where: {
