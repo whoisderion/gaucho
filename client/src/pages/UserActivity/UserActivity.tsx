@@ -1,6 +1,11 @@
+import Sidebar from "components/Sidebar"
+
 function UserActivity() {
   return (
-    <div>UserActivity</div>
+    <div className="Contents">
+      <Sidebar />
+      <div className="Dashboard inline-flex flex-col">User Activity</div>
+    </div>
   )
 }
 
