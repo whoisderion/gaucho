@@ -9,6 +9,8 @@ function Landing() {
                 <Link to={ROUTES.SIGN_UP}><button>Create a Company</button></Link>
 
                 <Link to={ROUTES.ACCOUNT}><button>View Company Details</button></Link>
+
+                <Link to={ROUTES.FLEET_OVERVIEW}><button>View Company Dashboards</button></Link>
             </div>
         </div>
     )
