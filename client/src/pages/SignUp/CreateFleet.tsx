@@ -19,28 +19,28 @@ type fleet = {
 function CreateFleet() {
 
     // https://www.google.com/imgres?imgurl=https%3A%2F%2Fcentral.toasttab.com%2Fservlet%2FrtaImage%3Feid%3Dka24W0000004RQE%26feoid%3D00N3c000006fwBw%26refid%3D0EM4W000006548q&tbnid=fZ3mNf2Yfd8a7M&vet=12ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ..i&imgrefurl=https%3A%2F%2Fcentral.toasttab.com%2Fs%2Farticle%2FCreating-Menus-Groups-and-Items-in-the-Menu-Builder&docid=dB-Pvq9SzciYOM&w=863&h=352&q=create%20items%20groups%20and%20subgroups&ved=2ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ
-    // https://react.dev/learn/keeping-components-pure
-    // https://react.dev/learn/choosing-the-state-structure#avoid-duplication-in-state
 
     const [fleets, setFleets] = useState<fleet[]>([
+        // dummy data
         {
             name: 'Fleet 1',
             vehicles: [
-                { name: 'Vehicle 1', licensePlate: 'ABC123', VinNumber: '123456', id: 1 },
-                { name: 'Vehicle 2', licensePlate: 'DEF456', VinNumber: '789012', id: 2 }
+                { name: 'Vehicle 1', licensePlate: 'ABC123', vinNumber: '123456', id: 1 },
+                { name: 'Vehicle 2', licensePlate: 'DEF456', vinNumber: '789012', id: 2 }
             ],
             id: 1
         },
-        // {
-        //     name: 'Fleet 2',
-        //     vehicles: [
-        //         { name: 'Vehicle 3', licensePlate: 'GHI789', VinNumber: '345678' },
-        //         { name: 'Vehicle 4', licensePlate: 'JKL012', VinNumber: '901234' }
-        //     ],
-        //     id: 2
-        // }
+        {
+            name: 'Fleet 2',
+            vehicles: [
+                { name: 'Vehicle 3', licensePlate: 'GHI789', vinNumber: '345678', id: 1 },
+                { name: 'Vehicle 4', licensePlate: 'JKL012', vinNumber: '901234', id: 2 }
+            ],
+            id: 2
+        }
     ])
     const [currFleet, setCurrFleet] = useState<number>(1)
+    // returns the most recently created fleet for the company
     const lastFleet = fleets.reduce(function (prev, curr) {
         return (prev.id > curr.id) ? prev : curr
     })
@@ -60,6 +60,7 @@ function CreateFleet() {
     }
 
     function handleFleetNameChange(id: number, e: React.ChangeEvent<HTMLInputElement>) {
+        // changes the name of a fleet if its ID matches the ID of the element with the change event
         setFleets(fleets.map(fleet => {
             if (fleet.id == id) {
                 return {
@@ -80,11 +81,9 @@ function CreateFleet() {
         }
     }
 
-    // https://react.dev/learn/choosing-the-state-structure#avoid-deeply-nested-state
-    // I may have to change how data is structured in state
-
     function createNewVehicle(fleetId: number) {
         const oldFleet = fleets.find(fleet => fleet.id === fleetId)
+        // if there are no vehicles in the current fleet there will not be a check for an existing vehicle with a default name
         if (oldFleet?.vehicles.length === 0) {
             const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", VinNumber: "", id: 1 }]
             if (oldFleet) {
@@ -101,6 +100,8 @@ function CreateFleet() {
             }
         } else {
             const lastVehicle = oldFleet!.vehicles[oldFleet!.vehicles.length - 1]
+
+            // check if the previous vehicle has the default name
             // TODO: gray out the add vehicle button if the last vehicle has default values
             if (lastVehicle.name != "New Vehicle") {
                 const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", VinNumber: "", id: (lastVehicle.id + 1) }]
@@ -139,6 +140,7 @@ function CreateFleet() {
         }
     }
 
+    // 'type' must be a property in type Vehicle (name, licensePlate, vinNumber)
     function handleVehicleChange(vehicleId: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>, type: string) {
         setFleets(fleets.map(fleet => {
             if (fleet.id === fleetId) {
