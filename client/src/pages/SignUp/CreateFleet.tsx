@@ -1,6 +1,19 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import * as ROUTES from 'data/routes'
+import { Fleet, Fleets } from 'components/FleetObjects'
+
+type Truck = {
+    name: string,
+    licensePlate: string,
+    VinNumber: string
+}
+
+type Fleet = {
+    name: string,
+    vehicles: Truck[]
+    id: number
+}
 
 function CreateFleet() {
 
@@ -8,41 +21,20 @@ function CreateFleet() {
     // https://react.dev/learn/keeping-components-pure
     // https://react.dev/learn/choosing-the-state-structure#avoid-duplication-in-state
 
-    type Truck = {
-        name: string,
-        licensePlate: string,
-        VinNumber: string
-    }
-
-    type Fleet = {
-        name: string,
-        vehicles: Truck[]
-        id: number
-    }
-
-    type FleetsProps = {
-        fleets: Fleet[]
-    }
-
-    type FleetProps = {
-        fleet: Fleet
-    }
-
-    // const [showCreateFleet, setShowCreateFleet] = useState(false)
     const [fleets, setFleets] = useState<Fleet[]>([
         {
             name: 'Fleet 1',
             vehicles: [
-                // { name: 'Truck 1', licensePlate: 'ABC123', VinNumber: '123456' },
-                // { name: 'Truck 2', licensePlate: 'DEF456', VinNumber: '789012' }
+                { name: 'Vehicle 1', licensePlate: 'ABC123', VinNumber: '123456' },
+                { name: 'Vehicle 2', licensePlate: 'DEF456', VinNumber: '789012' }
             ],
             id: 1
         },
         // {
         //     name: 'Fleet 2',
         //     vehicles: [
-        //         { name: 'Truck 3', licensePlate: 'GHI789', VinNumber: '345678' },
-        //         { name: 'Truck 4', licensePlate: 'JKL012', VinNumber: '901234' }
+        //         { name: 'Vehicle 3', licensePlate: 'GHI789', VinNumber: '345678' },
+        //         { name: 'Vehicle 4', licensePlate: 'JKL012', VinNumber: '901234' }
         //     ],
         //     id: 2
         // }
@@ -88,65 +80,19 @@ function CreateFleet() {
         }
     }
 
+    // https://react.dev/learn/choosing-the-state-structure#avoid-deeply-nested-state
+    // I may have to change how data is structured in state
+
+    function createNewVehicle() {
+
+    }
+
+    function deleteVehicle(vehicleId: number, fleetId: number) {
+
+    }
+
     function continueSignup() {
         navigate(ROUTES.PRINT_QR_CODES)
-    }
-
-    const Fleets: React.FC<FleetsProps> = ({ fleets }) => {
-        return (
-            <div className="fleets-list text-left">
-                <ul >
-                    {fleets.map((fleet) => (
-                        <li key={fleet.id} onClick={() => { selectFleet(fleet) }} className="fleet mb-4">
-                            <h3 className="fleet-name">{fleet.name}</h3>
-                            <ul className="pl-6">
-                                {fleet.vehicles.map((vehicle, vehicleIndex) => (
-                                    <li key={vehicleIndex}>
-                                        <p>- {vehicle.name}</p>
-                                    </li>
-                                    // add a list item for adding a new truck
-                                    // when clicked, set the selected fleet as the currFleet
-                                    // and open the new truck modal
-                                ))}
-                            </ul>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        )
-    }
-
-    const Fleet: React.FC<FleetProps> = ({ fleet }) => {
-        return (
-            <div className="pl-12">
-                <h3 className="text-left mb-8 text-3xl">
-                    {/* TODO: find an alternative solution to autoFocus */}
-                    <input
-                        type="text"
-                        name="name"
-                        value={fleet.name}
-                        key={fleet.id}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { handleNameChange(fleet.id, e) }}
-                        autoFocus />
-                </h3>
-                <button onClick={e => { deleteFleet(currFleet) }}>Delete {fleet.name}</button>
-                <hr />
-                <h4 className="text-left text-xl my-4">Trucks</h4>
-                <ul>
-                    {fleet.vehicles.map((vehicle, vehicleIndex) => (
-                        <li key={vehicleIndex} className="border-solid border-[1px] mb-4 py-2 flex">
-                            <div className=" flex-auto flex-grow-[5]">
-                                <h5 className="text-xl">{vehicle.name}</h5>
-                            </div>
-                            <div className="text-left flex-grow grid grid-rows-2 grid-cols-2">
-                                <p>Liscense Plate: </p><p>{vehicle.licensePlate}</p>
-                                <p>VIN Number: </p><p>{vehicle.VinNumber}</p>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        )
     }
 
     return (
@@ -155,12 +101,20 @@ function CreateFleet() {
                 <h1>Fleets</h1>
                 <button onClick={createNewFleet}>+ Create Fleet</button>
                 <hr className="my-2" />
-                <Fleets fleets={fleets} />
+                <Fleets fleets={fleets} selectFleet={selectFleet} />
             </div>
             <div id="current-fleet" className="flex-auto">
-                {selectedFleet ? <Fleet fleet={selectedFleet} key={currFleet} /> : <></>}
+                {selectedFleet ?
+                    <Fleet fleet={selectedFleet}
+                        key={currFleet}
+                        currFleet={currFleet}
+                        handleNameChange={handleNameChange}
+                        deleteFleet={deleteFleet}
+                        deleteVehicle={deleteVehicle}
+                        createNewVehicle={createNewVehicle} /> :
+                    <></>}
             </div>
-            <div className=" basis-full grow w-full text-center">
+            <div className=" basis-full grow w-full text-center mt-12">
                 <button onClick={continueSignup}>Print QR Codes</button>
             </div>
         </div>
