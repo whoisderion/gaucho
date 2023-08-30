@@ -2,6 +2,7 @@ type Truck = {
     name: string,
     licensePlate: string,
     VinNumber: string
+    id: number
 }
 
 type fleet = {
@@ -16,7 +17,7 @@ type FleetProps = {
     handleNameChange: (id: number, e: React.ChangeEvent<HTMLInputElement>) => void;
     deleteFleet: (id: number) => void;
     deleteVehicle: (vehicleId: number, fleetId: number) => void;
-    createNewVehicle: () => void;
+    createNewVehicle: (fleetId: number) => void;
 }
 
 
@@ -37,8 +38,8 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleNameChange, delet
             <hr />
             <h4 className="text-left text-xl my-4">Vehicles</h4>
             <ul>
-                {fleet.vehicles.map((vehicle, vehicleIndex) => (
-                    <li key={vehicleIndex} className="border-solid border-[1px] mb-4 py-2 flex">
+                {fleet.vehicles.map((vehicle) => (
+                    <li key={vehicle.id} className="border-solid border-[1px] mb-4 py-2 flex">
                         <div className=" flex-auto flex-grow-[5]">
                             <h5 className="text-xl">{vehicle.name}</h5>
                         </div>
@@ -47,11 +48,11 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleNameChange, delet
                             <p>VIN Number: </p><p>{vehicle.VinNumber}</p>
                         </div>
                         <div>
-                            <button onClick={e => { deleteVehicle(vehicleIndex, fleet.id) }}>Delete</button>
+                            <button onClick={e => { deleteVehicle(vehicle.id, fleet.id) }}>Delete</button>
                         </div>
                     </li>
                 ))}
-                <button onClick={e => { createNewVehicle() }}>Add Vehicle</button>
+                <button onClick={e => { createNewVehicle(fleet.id) }}>Add Vehicle</button>
             </ul>
         </div>
     )

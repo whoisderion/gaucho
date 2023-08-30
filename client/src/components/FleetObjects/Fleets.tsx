@@ -1,7 +1,8 @@
 type Truck = {
     name: string,
     licensePlate: string,
-    VinNumber: string
+    VinNumber: string,
+    id: number
 }
 
 type Fleet = {
