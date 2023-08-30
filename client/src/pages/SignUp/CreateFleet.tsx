@@ -104,15 +104,14 @@ function CreateFleet() {
                 <Fleets fleets={fleets} selectFleet={selectFleet} />
             </div>
             <div id="current-fleet" className="flex-auto">
-                {selectedFleet ?
+                {selectedFleet &&
                     <Fleet fleet={selectedFleet}
                         key={currFleet}
                         currFleet={currFleet}
                         handleNameChange={handleNameChange}
                         deleteFleet={deleteFleet}
                         deleteVehicle={deleteVehicle}
-                        createNewVehicle={createNewVehicle} /> :
-                    <></>}
+                        createNewVehicle={createNewVehicle} />}
             </div>
             <div className=" basis-full grow w-full text-center mt-12">
                 <button onClick={continueSignup}>Print QR Codes</button>
