@@ -18,13 +18,11 @@ type FleetProps = {
     deleteFleet: (id: number) => void;
     deleteVehicle: (vehicleId: number, fleetId: number) => void;
     createNewVehicle: (fleetId: number) => void;
-    handleVehicleNameChange: (id: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleVehicleLicenseChange: (id: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleVehicleVinChange: (id: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleVehicleChange: (id: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>, type: string) => void;
 }
 
 
-const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, deleteFleet, deleteVehicle, createNewVehicle, handleVehicleNameChange, handleVehicleLicenseChange, handleVehicleVinChange }) => {
+const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, deleteFleet, deleteVehicle, createNewVehicle, handleVehicleChange }) => {
     return (
         <div className="pl-12">
             <h3 className="text-left mb-8 text-3xl">
@@ -49,7 +47,7 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, 
                                 name="vehicleName"
                                 value={vehicle.name}
                                 key={vehicle.id + "Name"}
-                                onChange={e => handleVehicleNameChange(vehicle.id, fleet.id, e)}
+                                onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "name")}
                                 autoFocus />
                         </div>
                         <div className="text-left flex-grow grid grid-rows-2 grid-cols-2">
@@ -59,14 +57,14 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, 
                                 name="vehicleLicense"
                                 value={vehicle.licensePlate}
                                 key={vehicle.id + "License"}
-                                onChange={e => handleVehicleLicenseChange(vehicle.id, fleet.id, e)}
+                                onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "licensePlate")}
                                 autoFocus />
                             <p>VIN Number: </p>
                             <input type="text"
                                 name="vinNumber"
                                 value={vehicle.VinNumber}
                                 key={vehicle.id + "VIN"}
-                                onChange={e => handleVehicleVinChange(vehicle.id, fleet.id, e)}
+                                onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "VinNumber")}
                                 autoFocus />
                         </div>
                         <div>

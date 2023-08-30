@@ -139,12 +139,12 @@ function CreateFleet() {
         }
     }
 
-    function handleVehicleNameChange(vehicleId: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>) {
+    function handleVehicleChange(vehicleId: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>, type: string) {
         setFleets(fleets.map(fleet => {
             if (fleet.id === fleetId) {
                 const newFleet = fleet.vehicles.map(vehicle => {
                     if (vehicle.id === vehicleId) {
-                        return { ...vehicle, name: e.target.value }
+                        return { ...vehicle, [type]: e.target.value }
                     } else {
                         return vehicle
                     }
@@ -155,41 +155,6 @@ function CreateFleet() {
             }
         }))
     }
-
-    function handleVehicleLicenseChange(vehicleId: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>) {
-        setFleets(fleets.map(fleet => {
-            if (fleet.id === fleetId) {
-                const newFleet = fleet.vehicles.map(vehicle => {
-                    if (vehicle.id === vehicleId) {
-                        return { ...vehicle, licensePlate: e.target.value }
-                    } else {
-                        return vehicle
-                    }
-                })
-                return { ...fleet, vehicles: newFleet }
-            } else {
-                return fleet
-            }
-        }))
-    }
-
-    function handleVehicleVinChange(vehicleId: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>) {
-        setFleets(fleets.map(fleet => {
-            if (fleet.id === fleetId) {
-                const newFleet = fleet.vehicles.map(vehicle => {
-                    if (vehicle.id === vehicleId) {
-                        return { ...vehicle, VinNumber: e.target.value }
-                    } else {
-                        return vehicle
-                    }
-                })
-                return { ...fleet, vehicles: newFleet }
-            } else {
-                return fleet
-            }
-        }))
-    }
-
 
     function continueSignup() {
         navigate(ROUTES.PRINT_QR_CODES)
@@ -212,9 +177,7 @@ function CreateFleet() {
                         deleteFleet={deleteFleet}
                         deleteVehicle={deleteVehicle}
                         createNewVehicle={createNewVehicle}
-                        handleVehicleNameChange={handleVehicleNameChange}
-                        handleVehicleLicenseChange={handleVehicleLicenseChange}
-                        handleVehicleVinChange={handleVehicleVinChange} />}
+                        handleVehicleChange={handleVehicleChange} />}
             </div>
             <div className=" basis-full grow w-full text-center mt-12">
                 <button onClick={continueSignup}>Print QR Codes</button>
