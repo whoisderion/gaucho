@@ -26,8 +26,8 @@ function CreateFleet() {
         {
             name: 'Fleet 1',
             vehicles: [
-                { name: 'Vehicle 1', licensePlate: 'ABC123', VinNumber: '123456' },
-                { name: 'Vehicle 2', licensePlate: 'DEF456', VinNumber: '789012' }
+                { name: 'Vehicle 1', licensePlate: 'ABC123', VinNumber: '123456', id: 1 },
+                { name: 'Vehicle 2', licensePlate: 'DEF456', VinNumber: '789012', id: 2 }
             ],
             id: 1
         },
@@ -44,7 +44,6 @@ function CreateFleet() {
     const lastFleet = fleets.reduce(function (prev, curr) {
         return (prev.id > curr.id) ? prev : curr
     })
-
     const navigate = useNavigate()
 
     const selectFleet = (fleet: fleet) => {
@@ -84,12 +83,60 @@ function CreateFleet() {
     // https://react.dev/learn/choosing-the-state-structure#avoid-deeply-nested-state
     // I may have to change how data is structured in state
 
-    function createNewVehicle() {
-
+    function createNewVehicle(fleetId: number) {
+        const oldFleet = fleets.find(fleet => fleet.id === fleetId)
+        if (oldFleet?.vehicles.length === 0) {
+            const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", VinNumber: "", id: 1 }]
+            if (oldFleet) {
+                setFleets(fleets.map((fleet) => {
+                    if (fleet.id === fleetId) {
+                        return {
+                            ...oldFleet,
+                            vehicles: newFleet
+                        }
+                    } else {
+                        return fleet
+                    }
+                }))
+            }
+        } else {
+            const lastVehicle = oldFleet!.vehicles[oldFleet!.vehicles.length - 1]
+            // TODO: gray out the add vehicle button if the last vehicle has default values
+            if (lastVehicle.name != "New Vehicle") {
+                const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", VinNumber: "", id: (lastVehicle.id + 1) }]
+                if (oldFleet) {
+                    setFleets(fleets.map((fleet) => {
+                        if (fleet.id === fleetId) {
+                            return {
+                                ...oldFleet,
+                                vehicles: newFleet
+                            }
+                        } else {
+                            return fleet
+                        }
+                    }))
+                }
+            }
+        }
     }
 
     function deleteVehicle(vehicleId: number, fleetId: number) {
-
+        const oldFleet = fleets.find(fleet => fleet.id === fleetId)
+        const newFleet = oldFleet!.vehicles.filter((vehicle) => {
+            return vehicle.id != vehicleId
+        })
+        if (newFleet) {
+            setFleets(fleets.map((fleet) => {
+                if (fleet.id === fleetId) {
+                    return {
+                        ...fleet,
+                        vehicles: newFleet
+                    }
+                } else {
+                    return fleet
+                }
+            }))
+        }
     }
 
     function continueSignup() {
