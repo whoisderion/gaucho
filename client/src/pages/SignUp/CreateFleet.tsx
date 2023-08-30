@@ -59,7 +59,7 @@ function CreateFleet() {
         setFleets([...fleets, { name: `Fleet ${lastFleet.id + 1}`, vehicles: [], id: (lastFleet.id + 1) }])
     }
 
-    function handleNameChange(id: number, e: React.ChangeEvent<HTMLInputElement>) {
+    function handleFleetNameChange(id: number, e: React.ChangeEvent<HTMLInputElement>) {
         setFleets(fleets.map(fleet => {
             if (fleet.id == id) {
                 return {
@@ -156,7 +156,7 @@ function CreateFleet() {
                     <Fleet fleet={selectedFleet}
                         key={currFleet}
                         currFleet={currFleet}
-                        handleNameChange={handleNameChange}
+                        handleFleetNameChange={handleFleetNameChange}
                         deleteFleet={deleteFleet}
                         deleteVehicle={deleteVehicle}
                         createNewVehicle={createNewVehicle} />}

@@ -14,14 +14,14 @@ type fleet = {
 type FleetProps = {
     fleet: fleet,
     currFleet: number
-    handleNameChange: (id: number, e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleFleetNameChange: (id: number, e: React.ChangeEvent<HTMLInputElement>) => void;
     deleteFleet: (id: number) => void;
     deleteVehicle: (vehicleId: number, fleetId: number) => void;
     createNewVehicle: (fleetId: number) => void;
 }
 
 
-const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleNameChange, deleteFleet, deleteVehicle, createNewVehicle }) => {
+const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, deleteFleet, deleteVehicle, createNewVehicle }) => {
     return (
         <div className="pl-12">
             <h3 className="text-left mb-8 text-3xl">
@@ -31,7 +31,7 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleNameChange, delet
                     name="name"
                     value={fleet.name}
                     key={fleet.id}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => { handleNameChange(fleet.id, e) }}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => { handleFleetNameChange(fleet.id, e) }}
                     autoFocus />
             </h3>
             <button onClick={e => { deleteFleet(currFleet) }}>Delete {fleet.name}</button>
