@@ -14,7 +14,7 @@ function QRCodes() {
 
         <div>
             <div>QR Codes</div>
-            <Link to={ROUTES.HOME}><button>View your compnay dashboard</button></Link>
+            <Link to={ROUTES.FLEET_OVERVIEW}><button>View your compnay dashboard</button></Link>
         </div>
     )
 }
