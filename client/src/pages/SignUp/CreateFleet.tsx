@@ -9,7 +9,7 @@ type Truck = {
     VinNumber: string
 }
 
-type Fleet = {
+type fleet = {
     name: string,
     vehicles: Truck[]
     id: number
@@ -21,7 +21,7 @@ function CreateFleet() {
     // https://react.dev/learn/keeping-components-pure
     // https://react.dev/learn/choosing-the-state-structure#avoid-duplication-in-state
 
-    const [fleets, setFleets] = useState<Fleet[]>([
+    const [fleets, setFleets] = useState<fleet[]>([
         {
             name: 'Fleet 1',
             vehicles: [
@@ -46,7 +46,7 @@ function CreateFleet() {
 
     const navigate = useNavigate()
 
-    const selectFleet = (fleet: Fleet) => {
+    const selectFleet = (fleet: fleet) => {
         setCurrFleet(fleet.id)
     }
 
