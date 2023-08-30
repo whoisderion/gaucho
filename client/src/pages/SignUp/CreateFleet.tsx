@@ -164,9 +164,9 @@ function CreateFleet() {
         <div className="flex flex-wrap">
             <div id="fleet-menu" className="w-[20%]">
                 <h1>Fleets</h1>
-                <button onClick={createNewFleet}>+ Create Fleet</button>
                 <hr className="my-2" />
                 <Fleets fleets={fleets} selectFleet={selectFleet} />
+                <button onClick={createNewFleet}>+ Create Fleet</button>
             </div>
             <div id="current-fleet" className="flex-auto">
                 {selectedFleet &&
