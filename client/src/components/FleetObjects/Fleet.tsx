@@ -1,13 +1,13 @@
-type Truck = {
+type Vehicle = {
     name: string,
     licensePlate: string,
-    VinNumber: string
+    vinNumber: string
     id: number
 }
 
 type fleet = {
     name: string,
-    vehicles: Truck[]
+    vehicles: Vehicle[]
     id: number
 }
 
@@ -62,9 +62,9 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, 
                             <p>VIN Number: </p>
                             <input type="text"
                                 name="vinNumber"
-                                value={vehicle.VinNumber}
+                                value={vehicle.vinNumber}
                                 key={vehicle.id + "VIN"}
-                                onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "VinNumber")}
+                                onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "vinNumber")}
                                 autoFocus />
                         </div>
                         <div>

@@ -3,16 +3,16 @@ import { useNavigate } from "react-router-dom"
 import * as ROUTES from 'data/routes'
 import { Fleet, Fleets } from 'components/FleetObjects'
 
-type Truck = {
+type Vehicle = {
     name: string,
     licensePlate: string,
-    VinNumber: string,
+    vinNumber: string,
     id: number
 }
 
 type fleet = {
     name: string,
-    vehicles: Truck[]
+    vehicles: Vehicle[]
     id: number
 }
 
@@ -85,7 +85,7 @@ function CreateFleet() {
         const oldFleet = fleets.find(fleet => fleet.id === fleetId)
         // if there are no vehicles in the current fleet there will not be a check for an existing vehicle with a default name
         if (oldFleet?.vehicles.length === 0) {
-            const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", VinNumber: "", id: 1 }]
+            const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", vinNumber: "", id: 1 }]
             if (oldFleet) {
                 setFleets(fleets.map((fleet) => {
                     if (fleet.id === fleetId) {
@@ -104,7 +104,7 @@ function CreateFleet() {
             // check if the previous vehicle has the default name
             // TODO: gray out the add vehicle button if the last vehicle has default values
             if (lastVehicle.name != "New Vehicle") {
-                const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", VinNumber: "", id: (lastVehicle.id + 1) }]
+                const newFleet = [...oldFleet!.vehicles, { name: "New Vehicle", licensePlate: "", vinNumber: "", id: (lastVehicle.id + 1) }]
                 if (oldFleet) {
                     setFleets(fleets.map((fleet) => {
                         if (fleet.id === fleetId) {

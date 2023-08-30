@@ -1,13 +1,13 @@
-type Truck = {
+type Vehicle = {
     name: string,
     licensePlate: string,
-    VinNumber: string,
+    vinNumber: string,
     id: number
 }
 
 type Fleet = {
     name: string,
-    vehicles: Truck[]
+    vehicles: Vehicle[]
     id: number
 }
 
