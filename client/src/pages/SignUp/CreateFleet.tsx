@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import * as ROUTES from 'data/routes'
 import { Fleet, Fleets } from 'components/FleetObjects'
@@ -17,6 +17,14 @@ type fleet = {
 }
 
 function CreateFleet() {
+
+    useEffect(() => {
+        const oldFleetData = sessionStorage.getItem("fleets")
+        if (oldFleetData && (oldFleetData != JSON.stringify(fleets))) {
+            setFleets(JSON.parse(oldFleetData))
+        }
+    }, [])
+
 
     // https://www.google.com/imgres?imgurl=https%3A%2F%2Fcentral.toasttab.com%2Fservlet%2FrtaImage%3Feid%3Dka24W0000004RQE%26feoid%3D00N3c000006fwBw%26refid%3D0EM4W000006548q&tbnid=fZ3mNf2Yfd8a7M&vet=12ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ..i&imgrefurl=https%3A%2F%2Fcentral.toasttab.com%2Fs%2Farticle%2FCreating-Menus-Groups-and-Items-in-the-Menu-Builder&docid=dB-Pvq9SzciYOM&w=863&h=352&q=create%20items%20groups%20and%20subgroups&ved=2ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ
 
@@ -159,6 +167,7 @@ function CreateFleet() {
     }
 
     function continueSignup() {
+        sessionStorage.setItem("fleetsData", JSON.stringify({ "fleets": fleets, "date": Date.now() }))
         navigate(ROUTES.PRINT_QR_CODES)
     }
 
