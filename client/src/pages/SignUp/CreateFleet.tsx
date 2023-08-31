@@ -168,7 +168,7 @@ function CreateFleet() {
 
     function continueSignup() {
         sessionStorage.setItem("fleetsData", JSON.stringify({ "fleets": fleets, "date": Date.now() }))
-        navigate(ROUTES.PRINT_QR_CODES)
+        navigate(ROUTES.CREATE_INVENTORY)
     }
 
     return (
@@ -191,7 +191,7 @@ function CreateFleet() {
                         handleVehicleChange={handleVehicleChange} />}
             </div>
             <div className=" basis-full grow w-full text-center mt-12">
-                <button onClick={continueSignup}>Print QR Codes</button>
+                <button onClick={continueSignup}>Continue</button>
             </div>
         </div>
     )
