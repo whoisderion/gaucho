@@ -11,7 +11,7 @@ import QRCodes from 'pages/SignUp/QRCodes'
 import FleetOverview from 'pages/FleetOverview'
 import Maintenance from 'pages/Maintenance'
 import UserActivity from 'pages/UserActivity'
-import Equipment from 'pages/Equipment'
+import EquipmentDashboard from 'pages/EquipmentDashboard'
 
 function App() {
 
@@ -51,7 +51,7 @@ function App() {
             element={<UserActivity />} />
           <Route
             path={ROUTES.EQUIPMENT}
-            element={<Equipment />} />
+            element={<EquipmentDashboard />} />
         </Routes>
       </div>
     </Router>

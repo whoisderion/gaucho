@@ -1,6 +1,6 @@
 import Sidebar from "components/Sidebar"
 
-function Equipment() {
+function EquipmentDashboard() {
     return (
         <div className="Contents">
             <Sidebar />
@@ -9,4 +9,4 @@ function Equipment() {
     )
 }
 
-export default Equipment
+export default EquipmentDashboard
