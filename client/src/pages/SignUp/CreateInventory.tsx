@@ -45,6 +45,8 @@ function CreateInventory() {
         }
     ])
     const [currFleet, setCurrFleet] = useState(1)
+    const [equipmentTypes, setEquipmentTypes] = useState<Equipment[]>([{ name: "2 Wheeler", id: 1 }, { name: "Blankets", id: 2 }])
+    const [isEditingEquipment, setIsEditingEquipment] = useState(false)
     const navigate = useNavigate()
 
     const selectFleet = (fleet: fleet) => {
@@ -54,6 +56,31 @@ function CreateInventory() {
     const selectedFleet = fleets.find((fleet) =>
         fleet.id === currFleet
     )
+
+    const lastEqupment = equipmentTypes.reduce((prev, curr) => (prev.id > curr.id) ? prev : curr)
+
+    function addEquipmentType() {
+        setEquipmentTypes([...equipmentTypes, { name: `New Equipment ${lastEqupment.id + 1}`, id: (lastEqupment.id + 1) }])
+    }
+
+    function deleteEquipmentType(equipmentID: number) {
+        setEquipmentTypes(equipmentTypes.filter((equipment) => equipment.id != equipmentID))
+        // add a confirmation for deleting equipment types
+    }
+
+    function editEquipmentTypes() {
+        setIsEditingEquipment(!isEditingEquipment)
+    }
+
+    function handleEquipmentEdit(id: number, e: React.ChangeEvent<HTMLInputElement>) {
+        setEquipmentTypes(equipmentTypes.map((equipment) => {
+            if (equipment.id === id) {
+                return { ...equipment, name: e.target.value }
+            } else {
+                return equipment
+            }
+        }))
+    }
 
     function continueSignup() {
         navigate(ROUTES.PRINT_QR_CODES)
@@ -67,7 +94,13 @@ function CreateInventory() {
                     <div className=" flex">
                         <div className="flex">
                             <Fleets fleets={fleets} selectFleet={selectFleet} />
-                            <Equipment />
+                            <Equipment
+                                equipmentTypes={equipmentTypes}
+                                addEquipmentType={addEquipmentType}
+                                deleteEquipmentType={deleteEquipmentType}
+                                editEquipmentTypes={editEquipmentTypes}
+                                isEditingEquipment={isEditingEquipment}
+                                handleEquipmentEdit={handleEquipmentEdit} />
                         </div>
                         <Fleet fleet={selectedFleet} currFleet={currFleet} />
                     </div>
