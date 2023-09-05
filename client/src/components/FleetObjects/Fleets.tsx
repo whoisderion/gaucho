@@ -2,7 +2,8 @@ type Vehicle = {
     name: string,
     licensePlate: string,
     vinNumber: string,
-    id: number
+    id: number,
+    equipment: { equipmentTypeID: number, quantity: number }[]
 }
 
 type Fleet = {
