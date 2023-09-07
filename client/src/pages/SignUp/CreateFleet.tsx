@@ -231,7 +231,7 @@ function CreateFleet() {
 
     function continueSignup() {
         sessionStorage.setItem("fleetsData", JSON.stringify({ "fleets": fleets, "equipmentTypes": equipmentTypes, "date": Date.now() }))
-        navigate(ROUTES.CREATE_INVENTORY)
+        navigate(ROUTES.PRINT_QR_CODES)
     }
 
     return (
