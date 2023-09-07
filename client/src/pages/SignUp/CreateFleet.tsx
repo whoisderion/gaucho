@@ -212,7 +212,7 @@ function CreateFleet() {
 
     function deleteEquipmentType(equipmentID: number) {
         setEquipmentTypes(equipmentTypes.filter((equipment) => equipment.id != equipmentID))
-        // add a confirmation for deleting equipment types
+        // TODO: add a confirmation for deleting equipment types
     }
 
     function editEquipmentTypes() {
@@ -230,7 +230,7 @@ function CreateFleet() {
     }
 
     function continueSignup() {
-        sessionStorage.setItem("fleetsData", JSON.stringify({ "fleets": fleets, "date": Date.now() }))
+        sessionStorage.setItem("fleetsData", JSON.stringify({ "fleets": fleets, "equipmentTypes": equipmentTypes, "date": Date.now() }))
         navigate(ROUTES.CREATE_INVENTORY)
     }
 
