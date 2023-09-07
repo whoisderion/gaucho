@@ -24,7 +24,7 @@ type FleetProps = {
     deleteFleet?: (id: number) => void;
     deleteVehicle?: (vehicleId: number, fleetId: number) => void;
     createNewVehicle?: (fleetId: number) => void;
-    handleVehicleChange?: (id: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>, type: string, currEquipmentTypeID?: number, equipmentQuantity?: number) => void;
+    handleVehicleChange?: (id: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>, type: string, currEquipmentTypeID?: number, equipmentQuantity?: number) => void;
     equipmentTypes: Equipment[]
 }
 
@@ -98,6 +98,7 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, 
                                                             value={equipment.quantity === 0 ? "0" : equipment.quantity}
                                                             onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "changeEquipmentQuantity", equipment.equipmentTypeID, Number(e.target.value))}
                                                             autoFocus />
+                                                        <button type="button" onClick={(e) => handleVehicleChange(vehicle.id, fleet.id, e, "removeEquipmentType", equipment.equipmentTypeID)}>X</button>
                                                     </div>
                                                 )
                                             }

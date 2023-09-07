@@ -154,7 +154,13 @@ function CreateFleet() {
     }
 
     // 'type' must be a property in type Vehicle (name, licensePlate, vinNumber)
-    function handleVehicleChange(vehicleId: number, fleetId: number, e: React.ChangeEvent<HTMLInputElement>, type: string, currEquipmentTypeID: number | undefined, equipmentQuantity: number | undefined) {
+    function handleVehicleChange(
+        vehicleId: number,
+        fleetId: number,
+        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        type: string,
+        currEquipmentTypeID: number | undefined,
+        equipmentQuantity: number | undefined) {
         setFleets(fleets.map(fleet => {
             if (fleet.id === fleetId) {
                 const newFleet = fleet.vehicles.map(vehicle => {
@@ -177,8 +183,12 @@ function CreateFleet() {
                         } else if (type === "addEquipmentType" && currEquipmentTypeID) {
                             const newVehicleEquipment = [...vehicle.equipment, { equipmentTypeID: currEquipmentTypeID, quantity: Number(0) }]
                             return { ...vehicle, equipment: newVehicleEquipment }
+                        } else if (type === "removeEquipmentType" && currEquipmentTypeID) {
+                            const newVehicleEquipment = vehicle.equipment.filter((equipment) => equipment.equipmentTypeID != currEquipmentTypeID)
+                            return { ...vehicle, equipment: newVehicleEquipment }
+                        } else {
+                            return { ...vehicle, [type]: (e as unknown as HTMLInputElement | HTMLSelectElement).value }
                         }
-                        return { ...vehicle, [type]: e.target.value }
                     } else {
                         return vehicle
                     }
