@@ -103,6 +103,29 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, 
                                             }
                                         }
                                     })}
+                                    <select onChange={(e) => {
+                                        if (e.target.value === "Add Equipment") {
+                                            e.preventDefault()
+                                        } else {
+                                            const equipment = equipmentTypes.filter((equipment) => {
+                                                if (equipment.name === e.target.value) {
+                                                    return equipment
+                                                }
+                                            })
+                                            const equipemntID = equipment[0].id
+                                            handleVehicleChange(vehicle.id, fleet.id, e, "addEquipmentType", equipemntID)
+                                        }
+                                    }}>
+                                        <option value={"Add Equipment"}>Add Equipment</option>
+                                        {equipmentTypes.map((equipment) => {
+                                            const inVehicleArr = vehicle.equipment.some(item => item.equipmentTypeID === equipment.id)
+                                            if (!inVehicleArr) {
+                                                return (
+                                                    <option value={equipment.name} id={`${vehicle.id + equipment.id}`} key={`${vehicle.id + equipment.id}`}>{equipment.name}</option>
+                                                )
+                                            }
+                                        })}
+                                    </select>
                                 </div>
                             </li>
 

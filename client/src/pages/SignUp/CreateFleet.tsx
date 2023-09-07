@@ -174,6 +174,9 @@ function CreateFleet() {
                                 }
                             })
                             return { ...vehicle, equipment: newVehicleEquipment }
+                        } else if (type === "addEquipmentType" && currEquipmentTypeID) {
+                            const newVehicleEquipment = [...vehicle.equipment, { equipmentTypeID: currEquipmentTypeID, quantity: Number(0) }]
+                            return { ...vehicle, equipment: newVehicleEquipment }
                         }
                         return { ...vehicle, [type]: e.target.value }
                     } else {
