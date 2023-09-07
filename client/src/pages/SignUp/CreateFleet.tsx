@@ -19,18 +19,7 @@ type fleet = {
 
 function CreateFleet() {
 
-    useEffect(() => {
-        const oldFleetData = sessionStorage.getItem("fleets")
-        if (oldFleetData && (oldFleetData != JSON.stringify(fleets))) {
-            setFleets(JSON.parse(oldFleetData))
-        }
-    }, [])
-
-
-    // https://www.google.com/imgres?imgurl=https%3A%2F%2Fcentral.toasttab.com%2Fservlet%2FrtaImage%3Feid%3Dka24W0000004RQE%26feoid%3D00N3c000006fwBw%26refid%3D0EM4W000006548q&tbnid=fZ3mNf2Yfd8a7M&vet=12ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ..i&imgrefurl=https%3A%2F%2Fcentral.toasttab.com%2Fs%2Farticle%2FCreating-Menus-Groups-and-Items-in-the-Menu-Builder&docid=dB-Pvq9SzciYOM&w=863&h=352&q=create%20items%20groups%20and%20subgroups&ved=2ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ
-
-    const [fleets, setFleets] = useState<fleet[]>([
-        // dummy data
+    const dummyFleet = [
         {
             name: 'Fleet 1',
             vehicles: [
@@ -46,15 +35,30 @@ function CreateFleet() {
                 { name: 'Vehicle 4', licensePlate: 'JKL012', vinNumber: '901234', id: 2, equipment: [] }
             ],
             id: 2
+        }]
+
+    const dummyEquipment = [{ name: "2 Wheeler", id: 1 }, { name: "Blankets", id: 2 }]
+
+    useEffect(() => {
+        const oldFleetData = sessionStorage.getItem("fleetsData")
+        if (oldFleetData && (oldFleetData != JSON.stringify(fleets))) {
+            const parsedData = JSON.parse(oldFleetData)
+            console.log(parsedData)
+            setFleets(parsedData["fleets"])
+            setEquipmentTypes(parsedData["equipmentTypes"])
         }
-    ])
+    }, [])
+
+
+    // https://www.google.com/imgres?imgurl=https%3A%2F%2Fcentral.toasttab.com%2Fservlet%2FrtaImage%3Feid%3Dka24W0000004RQE%26feoid%3D00N3c000006fwBw%26refid%3D0EM4W000006548q&tbnid=fZ3mNf2Yfd8a7M&vet=12ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ..i&imgrefurl=https%3A%2F%2Fcentral.toasttab.com%2Fs%2Farticle%2FCreating-Menus-Groups-and-Items-in-the-Menu-Builder&docid=dB-Pvq9SzciYOM&w=863&h=352&q=create%20items%20groups%20and%20subgroups&ved=2ahUKEwji_4eA28uAAxULJN4AHRDkBysQMygBegUIARDQAQ
+
+    const [fleets, setFleets] = useState<fleet[]>(dummyFleet)
     const [currFleet, setCurrFleet] = useState<number>(1)
     // returns the most recently created fleet for the company
     const lastFleet = fleets.reduce(function (prev, curr) {
         return (prev.id > curr.id) ? prev : curr
     })
-
-    const [equipmentTypes, setEquipmentTypes] = useState<Equipment[]>([{ name: "2 Wheeler", id: 1 }, { name: "Blankets", id: 2 }])
+    const [equipmentTypes, setEquipmentTypes] = useState<Equipment[]>(dummyEquipment)
     const [isEditingEquipment, setIsEditingEquipment] = useState(false)
 
     const navigate = useNavigate()
