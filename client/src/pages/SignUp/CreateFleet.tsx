@@ -159,16 +159,21 @@ function CreateFleet() {
             if (fleet.id === fleetId) {
                 const newFleet = fleet.vehicles.map(vehicle => {
                     if (vehicle.id === vehicleId) {
-                        if (type === "equipment" && vehicle.equipment && currEquipmentTypeID && equipmentQuantity) {
-                            console.log(e.target.value)
+                        if (equipmentQuantity === Number(0)) {
+                            const index = vehicle.equipment.findIndex(equipment => equipment.equipmentTypeID === currEquipmentTypeID)
+                            const newEquipmentArr = vehicle.equipment
+                            newEquipmentArr[index]["quantity"] = 0
+                            return { ...vehicle, equipment: newEquipmentArr }
+                        }
+                        if (type === "changeEquipmentQuantity" && equipmentQuantity) {
                             const newVehicleEquipment = vehicle.equipment.map(equipment => {
                                 if (equipment.equipmentTypeID === currEquipmentTypeID) {
-                                    return { ...equipment, quantity: e.target.value }
+                                    return { ...equipment, quantity: equipmentQuantity }
                                 } else {
                                     return equipment
                                 }
                             })
-                            return { ...vehicle, equipment[newVehicleEquipment].quantity: e.target.value }
+                            return { ...vehicle, equipment: newVehicleEquipment }
                         }
                         return { ...vehicle, [type]: e.target.value }
                     } else {

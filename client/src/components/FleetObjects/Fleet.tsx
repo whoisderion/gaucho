@@ -92,10 +92,11 @@ const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, 
                                                 return (
                                                     <div key={equipment.equipmentTypeID}>
                                                         <div>{currEquipment.name}</div>
-                                                        <input type="text"
+                                                        <input type="number"
                                                             name={`equipmentName${equipment.equipmentTypeID}`}
-                                                            value={equipment.quantity}
-                                                            onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "equipment", equipment.equipmentTypeID, equipment.quantity)}
+                                                            min={0}
+                                                            value={equipment.quantity === 0 ? "0" : equipment.quantity}
+                                                            onChange={e => handleVehicleChange(vehicle.id, fleet.id, e, "changeEquipmentQuantity", equipment.equipmentTypeID, Number(e.target.value))}
                                                             autoFocus />
                                                     </div>
                                                 )
