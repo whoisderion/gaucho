@@ -33,8 +33,8 @@ function findEquipmentByID(equipmentID: number, equipmentArr: Equipment[]) {
     if (selectedEquipment) {
         return (selectedEquipment)
     }
+    return null
 }
-
 
 const Fleet: React.FC<FleetProps> = ({ fleet, currFleet, handleFleetNameChange, deleteFleet, deleteVehicle, createNewVehicle, handleVehicleChange, equipmentTypes }) => {
     if (handleFleetNameChange && deleteFleet && deleteVehicle && createNewVehicle && handleVehicleChange) {
