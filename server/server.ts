@@ -231,7 +231,7 @@ app.post("/setup/inventory", async (req: Request, res: Response) => {
     return res.sendStatus(201)
 })
 
-app.get("/print-qr-codes", async (req: Request, res: Response) => {
+app.get("/print-qr-codes/:companyID", async (req: Request, res: Response) => {
     // req: companyID
 
     // >>>  find all truck urls on the truck table and save to TruckURLs[{TruckName, TruckURL}]
@@ -239,7 +239,7 @@ app.get("/print-qr-codes", async (req: Request, res: Response) => {
 
     // res: 200 and TruckURLs[] || 4xx
 
-    const companyID = req.body.companyID
+    const companyID = req.params.companyID
 
     const dbTrucks = await prisma.truck.findMany({
         where: {
