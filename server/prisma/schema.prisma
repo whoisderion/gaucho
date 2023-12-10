@@ -20,6 +20,7 @@ model Company {
   fleet       Fleet[]
   equipment   Equipment[]
   role        Role[]
+  Truck       Truck[]
 }
 
 model Users {
@@ -49,16 +50,21 @@ model Fleet {
 
 model Truck {
   id          String        @id @default(cuid())
-  name        String        @unique
+  name        String
   vin         String?
   license     String?
   year        Int?
   urlPath     String        @default(cuid())
-  Fleet       Fleet?        @relation(fields: [fleetId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  Fleet       Fleet?        @relation(fields: [fleetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   fleetId     String?       @default("null")
   maintenance Maintenance[]
   inventory   Inventory[]
   photoAreas  PhotoAreas[]
+  Company     Company       @relation(fields: [companyId], references: [id])
+  companyId   String
+
+  // Add a composite unique constraint
+  @@unique([companyId, name])
 }
 
 model Maintenance {
@@ -88,7 +94,6 @@ model EquipmentInInventory {
   inventory   Inventory @relation(fields: [inventoryId], references: [id])
   inventoryId String
   equipment   Equipment @relation(fields: [equipmentId], references: [id])
-
   equipmentId String
   quantity    Int
 
@@ -101,6 +106,8 @@ model Equipment {
   Company     Company?               @relation(fields: [companyId], references: [id])
   companyId   String?
   inventories EquipmentInInventory[]
+
+  @@unique([name, companyId])
 }
 
 model PhotoAreas {
