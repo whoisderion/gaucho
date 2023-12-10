@@ -26,7 +26,17 @@ app.get("/", (req: Request, res: Response): void => {
 
 type Group = {
     name: string,
-    trucks: Truck[]
+    vehicles: Vehicle[]
+    id: number
+}
+
+type Vehicle = {
+    name: string,
+    licensePlate: string,
+    vinNumber: string,
+    id: number,
+    year?: number,
+    equipment: { equipmentTypeID: number, quantity: number }[]
 }
 
 app.post("/create-account", async (req: Request, res: Response) => {
