@@ -57,7 +57,7 @@ app.post("/create-account", async (req: Request, res: Response) => {
     }
 })
 
-app.post("/setup/fleet", async (req: Request, res: Response) => {
+app.post("/setup/fleets", async (req: Request, res: Response) => {
     // req: Fleet[Trucks[{Truck Name, Liscense Plate, VIN#}, ...], Trucks[...]] and company id
     /* Fleet[{name: name, trucks: [Truck{...}, Truck{...}]},
             {name: name, trucks: [Truck{...}, Truck{...}]}] */
@@ -71,30 +71,93 @@ app.post("/setup/fleet", async (req: Request, res: Response) => {
 
     try {
         const companyID = req.body.companyID
-        const fleet: Group[] = req.body.fleet;
+        const fleets: Group[] = req.body.fleets;
 
-        fleet.forEach(async group => {
-            const flotilla = await prisma.fleet.create({
+        type TruckData = {
+            name: string,
+            vin: string,
+            license: string,
+            year: number | null,
+            fleetId: string,
+            companyId: string
+        }
+
+        async function clearDB() {
+
+            const clearEI = await prisma.equipmentInInventory.deleteMany({
+                where: {
+                    equipment: {
+                        companyId: companyID
+                    }
+                }
+            })
+
+            const clearEquipment = await prisma.equipment.deleteMany({
+                where: {
+                    companyId: companyID
+                }
+            })
+
+            const clearInventory = await prisma.inventory.deleteMany({
+                where: {
+                    Truck: {
+                        companyId: companyID
+                    }
+                }
+            })
+
+            const clearVehicles = await prisma.truck.deleteMany({
+                where: {
+                    Fleet: {
+                        companyId: companyID
+                    }
+                }
+            })
+
+            const clearFleets = await prisma.fleet.deleteMany({
+                where: {
+                    companyId: companyID
+                }
+            })
+
+            console.log("fleet setup: fleets:", clearFleets.count + " vehicles:", clearVehicles.count + ", inventory:", clearInventory.count + ", equipment:", clearEquipment.count, "equipmentInventory:", clearEI.count)
+        }
+
+        await clearDB()
+
+        const results: any[] = [];
+
+        await Promise.all(fleets.map(async group => {
+
+            let vehiclesToAdd: TruckData[] = []
+
+            const fleet = await prisma.fleet.create({
                 data: {
                     name: group.name,
                     companyId: companyID
                 }
             })
 
-            group.trucks.forEach(async truck => {
-                const vehicle = await prisma.truck.create({
-                    data: {
-                        name: truck.name,
-                        vin: truck.vin,
-                        license: truck.license,
-                        year: truck.year,
-                        fleetId: flotilla.id
-                    }
+            group.vehicles.forEach(vehicle => {
+                vehiclesToAdd.push({
+                    name: vehicle.name,
+                    vin: vehicle.vinNumber,
+                    license: vehicle.licensePlate,
+                    year: (vehicle.year ? vehicle.year : null),
+                    fleetId: fleet.id,
+                    companyId: String(companyID)
                 })
             })
-        });
 
-        return res.sendStatus(201)
+            const data = await prisma.truck.createMany({
+                data: vehiclesToAdd
+            })
+
+            results.push(data);
+
+        }));
+
+        return res.status(201).json(results)
     } catch (err) {
         console.log(err)
         return res.sendStatus(400)
@@ -111,109 +174,58 @@ app.post("/setup/inventory", async (req: Request, res: Response) => {
 
     const companyID: string = req.body.companyID
 
-    const inventory: {
+    const fleets: Group[] = req.body.fleets
+
+    const equipmentTypes = req.body.equipmentTypes
+
+    let inventory: {
         truckName: string,
         inventory: {
             [key: string]: any
         }
-    }[] = req.body.inventory
+    }[] = []
 
-    for (const currTruck of inventory) {
-        // get the current truck that matches the current truck in the inventory
+    // add every truck's name and inventory to its respective fleet
+    for (const fleet of fleets) {
+        for (const vehicle of fleet.vehicles) {
+            inventory.push({ "truckName": vehicle.name, inventory: vehicle.equipment })
+        }
+    }
+
+    for await (const currTruck of inventory) {
+        // get the truck that matches the current truck in the inventory
         const truck = await prisma.truck.findFirst({
             where: {
                 name: currTruck.truckName
             }
         })
 
-        // get all the equipment for the company
-        let equipment = await prisma.equipment.findMany({
-            include: {
-                Company: {
+        async function createInventoryRecord() {
+            // create an array of objects for the relation of each new inventory record to the existing equipment in the DB
+            let inventoryUploadObj: any = []
+            for (const [key, value] of Object.entries(currTruck.inventory)) {
+                const currItemName = equipmentTypes.find((obj: { name: string, id: any; }) => obj.id === value.equipmentTypeID).name
+                const currEquipment = await prisma.equipment.findFirst({
                     where: {
-                        id: companyID
-                    }
-                }
-            }
-        })
-
-        // create an array of equipment names in the equipment table and in the given inventory
-        const equipmentNames = equipment.map(equipment => equipment.name)
-
-        // create an array of equipment names from inventory object
-        let inventoryNames: string[] = []
-        for (let equipment in currTruck.inventory) {
-            inventoryNames.push(equipment)
-        }
-
-        console.log(currTruck.truckName + "\n")
-        console.log("Inventory Names: " + inventoryNames)
-        console.log("Equipment Names: " + equipmentNames)
-
-        // if the equipment in the inventory is not in the database create a new equipment entry
-        const itemsAreInTable = inventoryNames.every(item => equipmentNames.includes(item))
-        // console.log("items are in table: " + itemsAreInTable)
-        if (itemsAreInTable == false) {
-            let newEquipment: string[]
-
-            newEquipment = inventoryNames.filter(item => !equipmentNames.includes(item))
-            console.log("\nNew Items: " + newEquipment)
-
-            // console.log("\n")
-            for (const item of newEquipment) {
-                const newEquipment = await prisma.equipment.create({
-                    data: {
-                        name: item,
-                        companyId: companyID
+                        name: currItemName
                     }
                 })
-                // console.log(newEquipment)
-            }
 
-            // reassign the value for the equipment in the DB to get new items
-            equipment = await prisma.equipment.findMany({
-                include: {
-                    Company: {
-                        where: {
-                            id: companyID
-                        }
-                    }
-                }
-            })
-        }
-
-        // add the database ID for all of the equipment in the given truck's inventory
-        for (const [key, value] of Object.entries(currTruck.inventory)) {
-
-            const equipmentObj = equipment.find(obj => obj.name === key)
-
-            currTruck.inventory[key].dbID = equipmentObj!.id
-        }
-
-        // create an array of objects for the relation of each new inventory record to the existing equipment in the DB
-        let inventoryUploadObj: any = []
-        for (const [key, value] of Object.entries(currTruck.inventory)) {
-            // console.log("upload " + key)
-            // console.log(currTruck.inventory)
-            // console.log('\n')
-            const equipmentID = currTruck.inventory[key].dbID
-            // console.log(equipmentID)
             inventoryUploadObj.push({
                 quantity: value.quantity,
                 equipment: {
                     connectOrCreate: {
                         where: {
-                            id: equipmentID
+                                id: currEquipment ? currEquipment.id : ""
                         },
                         create: {
-                            name: key,
+                                name: currItemName,
                             companyId: companyID
                         }
                     }
                 }
             })
         }
-        // console.log(inventoryUploadObj[0])
 
         // create the inventory record for currTruck in the DB with Equipment[]
         const newInventory = await prisma.inventory.create({
@@ -224,8 +236,9 @@ app.post("/setup/inventory", async (req: Request, res: Response) => {
                 },
             },
         })
+        }
+        await createInventoryRecord()
 
-        console.log("\n------------------\n")
     };
 
     return res.sendStatus(201)
