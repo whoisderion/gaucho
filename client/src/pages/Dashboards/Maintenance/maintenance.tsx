@@ -60,7 +60,7 @@ function Maintenance() {
         const fetchData = async () => {
             await axios.get("http://127.0.0.1:4474/dashboard", {
                 params: {
-                    "companyID": "clk7h1bi10000ztnbzju9lf02"
+                    "companyID": "clpw9jgxd0000ztvheigeqjgf"
                 }
             }).then((res) => {
                 setDashboardData(res.data)
@@ -76,13 +76,13 @@ function Maintenance() {
     // TODO: make an abstraction for reuse in other dashboards
     const listFleets = dashboardData && dashboardData.fleets.map((fleet: Fleet, fleetKey) =>
         <ul key={fleetKey} className="mb-4">
-            <li className=" text-5xl" >{fleet.name}</li>
-            <ul>
+            <li className=" text-3xl" >{fleet.name}</li>
+            <ul className="flex">
                 {fleet.vehicles ?
                     fleet.vehicles.map((vehicle, vehicleKey) =>
                         <li key={vehicleKey} className=" p-8 mb-8 ml-12 border">
                             <div className=" flex mb-2">
-                                <h5 className=" text-4xl pr-12 w-[40%]">{vehicle.name}</h5>
+                                <h5 className=" text-4xl pr-12 w-[50%]">{vehicle.name}</h5>
                                 <div>
                                     <p className="">VIN: {vehicle.vin}</p>
                                     <p className="">License: {vehicle.license}</p>
@@ -124,7 +124,7 @@ function Maintenance() {
             <div className="Contents">
                 <Sidebar />
                 <div className="Dashboard inline-flex flex-col">
-                    <h3 className="text-2xl mb-8">Dashboard</h3>
+                    <h2 className=" mb-8">Maintenance Dashboard</h2>
                     <div className="fleetList">
                         <ul>{dashboardData && listFleets}</ul>
                     </div>
@@ -134,7 +134,12 @@ function Maintenance() {
         )
     } else {
         return (
-            <div>Loading Dashboard Data</div>
+            <div>
+                <Sidebar />
+                <div className="Dashboard inline-flex flex-col">
+                    Loading Dashboard Data
+                </div>
+            </div>
         )
     }
 }

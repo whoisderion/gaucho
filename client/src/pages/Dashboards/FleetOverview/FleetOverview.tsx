@@ -7,6 +7,12 @@ function FleetOverview() {
             <Sidebar />
             <div className="Dashboard inline-flex flex-col">
                 Fleet Overview
+                {/* Things to show
+                    - Trucks
+                        - inventory changes
+                        - current mileage
+                        - upcoming maintenance
+                     */}
             </div>
         </div>
     )
