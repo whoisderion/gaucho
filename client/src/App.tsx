@@ -8,6 +8,10 @@ import Account from 'pages/Account'
 import CreateFleet from 'pages/SignUp/CreateFleet'
 import CreateInventory from 'pages/SignUp/CreateInventory'
 import QRCodes from 'pages/SignUp/QRCodes'
+import FleetOverview from 'pages/Dashboards/FleetOverview'
+import Maintenance from 'pages/Dashboards/Maintenance'
+import UserActivity from 'pages/Dashboards/UserActivity'
+import EquipmentDashboard from 'pages/Dashboards/EquipmentDashboard'
 import FleetManagement from 'pages/FleetManagement'
 
 function App() {
