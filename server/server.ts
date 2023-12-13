@@ -597,28 +597,74 @@ app.post("/account/roles", async (req: Request, res: Response) => {
 
 // TODO: delete role
 
-app.get("/account/equipment", async (req: Request, res: Response) => {
+app.post("/account/equipment-complete", async (req: Request, res: Response) => {
     // >>>  get all equipment types in company's equipment table
 
     //res: 200 and inventory[] || 4xx
 
-    const equipment = await prisma.equipment.findMany({
+    const companyID = req.body.companyID
+
+    let inventoryTimeframes: any[] = []
+
+    const currentDate = new Date();
+    const oneDayAgo = new Date(Number(currentDate) - 1 * 24 * 60 * 60 * 1000);
+    const threeDaysAgo = new Date(Number(currentDate) - 3 * 24 * 60 * 60 * 1000);
+    const oneWeekAgo = new Date(Number(currentDate) - 7 * 24 * 60 * 60 * 1000);
+    const twoWeekAgo = new Date(Number(currentDate) - 14 * 24 * 60 * 60 * 1000);
+    const oneMonthAgo = new Date(Number(currentDate) - 30 * 24 * 60 * 60 * 1000);
+
+    let timeframes = [
+        { label: "oneDayAgo", value: oneDayAgo },
+        { label: "threeDaysAgo", value: threeDaysAgo },
+        { label: "oneWeekAgo", value: oneWeekAgo },
+        { label: "twoWeeksAgo", value: twoWeekAgo },
+        { label: "oneMonthAgo", value: oneMonthAgo }
+    ]
+
+    let equipmentData = []
+
+    for (const date of timeframes) {
+        const recentTruckInventories = await prisma.truck.findMany({
         where: {
-            companyId: req.body.companyID
-        }
-    })
+                companyId: companyID,
+            },
+            select: {
+                // id: true,
+                name: true,
+                inventory: {
+                    where: {
+                        date: {
+                            gte: date.value
+                        },
+                    },
+                    select: {
+                        equipmentItems: {
+                            select: {
+                                equipment: {
+                                    select: {
+                                        name: true
+                                    }
+                                },
+                                quantity: true,
+                            },
+                        },
+                        date: true,
+                    },
+                },
+            },
+        });
 
-    // TODO: get most recent inventory data from each truck for each equipment group
-    // const equipmentInInventory = await prisma.equipmentInInventory.findMany({
-    //     where: {
-    //         equipmentId: 
-    //     }
-    // })
+        equipmentData.push({
+            label: date.label,
+            inventoryRecord: recentTruckInventories
+        })
+    }
 
-    res.status(200).json(equipment)
+    res.status(200).json(equipmentData)
 })
 
-app.post("/account/equipment", async (req: Request, res: Response) => {
+// OLD POST VERB
+app.get("/account/equipment", async (req: Request, res: Response) => {
     // req: changes[...newEquipmentInfo{equipment{name, description}}]
 
     // >>>  updates the equipment info in DB
