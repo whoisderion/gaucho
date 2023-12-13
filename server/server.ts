@@ -752,10 +752,17 @@ app.get("/dashboard", async (req: Request, res: Response) => {
         year: number,
         urlPath: string,
         fleetId: string,
-        inventory: {},
-        lastInventory: {}
-        maintenance: {}
+        inventory?: {},
+        lastInventory?: {}
+        maintenance?: {},
     }
+
+    type DashboardFleet = {
+        id: string,
+        name: string,
+        companyId: string,
+        vehicles: DashboardVehicle[]
+    }[]
 
     // returns an array of fleets that the company have created
     const fleet = await prisma.fleet.findMany({
