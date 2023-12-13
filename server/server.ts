@@ -381,9 +381,8 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
         let newEquipment: string[]
 
         newEquipment = inventoryNames.filter(item => !equipmentNames.includes(item))
-        console.log("\nNew Items: " + newEquipment)
+        // console.log("\nNew Items: " + newEquipment)
 
-        // console.log("\n")
         for (const item of newEquipment) {
             const newEquipment = await prisma.equipment.create({
                 data: {
@@ -391,6 +390,7 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
                     companyId: companyID
                 }
             })
+            // console.log("New Equipment")
             // console.log(newEquipment)
         }
 
@@ -417,15 +417,11 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
     // create an array of objects for the relation of each new inventory record to the existing equipment in the DB
     let inventoryUploadObj: any = []
     for (const [key, value] of Object.entries(inventory.inventory)) {
-        // console.log("upload " + key)
-        // console.log(currTruck.inventory)
-        // console.log('\n')
         const equipmentID = inventory.inventory[key].dbID
-        // console.log(equipmentID)
         inventoryUploadObj.push({
             quantity: value.quantity,
             equipment: {
-                connectOrCreate: {
+                connect: {
                     where: {
                         id: equipmentID
                     },
@@ -437,7 +433,6 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
             }
         })
     }
-    // console.log(JSON.stringify(inventoryUploadObj[0]))
 
     // create the inventory record for currTruck in the DB with Equipment[]
     const newInventory = await prisma.inventory.create({
@@ -448,7 +443,8 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
             },
         },
     })
-
+    console.log("new inventory")
+    console.log(newInventory)
     return res.status(201).json(newInventory)
 })
 
