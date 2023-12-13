@@ -8,10 +8,7 @@ import Account from 'pages/Account'
 import CreateFleet from 'pages/SignUp/CreateFleet'
 import CreateInventory from 'pages/SignUp/CreateInventory'
 import QRCodes from 'pages/SignUp/QRCodes'
-import FleetOverview from 'pages/FleetOverview'
-import Maintenance from 'pages/Maintenance'
-import UserActivity from 'pages/UserActivity'
-import EquipmentDashboard from 'pages/EquipmentDashboard'
+import FleetManagement from 'pages/FleetManagement'
 
 function App() {
 
@@ -40,6 +37,9 @@ function App() {
           <Route
             path={ROUTES.ACCOUNT}
             element={<Account />} />
+          <Route
+            path={ROUTES.FLEET_MANAGEMENT}
+            element={<FleetManagement />} />
           <Route
             path={ROUTES.FLEET_OVERVIEW}
             element={<FleetOverview />} />
