@@ -864,8 +864,8 @@ app.get("/dashboard", async (req: Request, res: Response) => {
             for (let fleetIndex = 0; fleetIndex < dashboardData.length; fleetIndex++) {
                 // checks if the current fleet has a vehicle array AND that the current maintenance's vehicle is in the fleet
                 // then it add the current maintenance to the vehicles maintenance property
-                if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId) != -1) {
-                    const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currMaintenance.truckId)
+                if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((vehiclesToAdd: Truck) => vehiclesToAdd.id === currMaintenance.truckId) != -1) {
+                    const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((vehiclesToAdd: Truck) => vehiclesToAdd.id === currMaintenance.truckId)
                     dashboardData[fleetIndex].vehicles[vehicleIndex].maintenance = currMaintenance
                 }
             }
