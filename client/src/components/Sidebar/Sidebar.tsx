@@ -2,8 +2,7 @@ import { Link } from "react-router-dom"
 import * as ROUTES from "data/routes"
 function Sidebar() {
     return (
-        <div className="Sidebar inline-flex flex-col w-64 border-r-1 border-cyan-50">
-            <h2>Gaucho</h2>
+        <div className="Sidebar inline-flex flex-col w-64 h-full bg-white shadow-[rgba(0,0,15,0.5)_2px_6px_10px_-5px] mr-8">
             <ul className="pl-4 mt-8">
                 <h4 className="mb-2">Dashboards</h4>
                 <Link to={ROUTES.FLEET_OVERVIEW}>
@@ -25,12 +24,12 @@ function Sidebar() {
                 <Link to={ROUTES.FLEET_MANAGEMENT}>
                     <li className="pl-8 mb-2">Fleet Management</li>
                 </Link>
-                <Link>
+                <Link to={ROUTES.MAINTENANCE_SETTINGS}>
                     <li className="pl-8 mb-2">Maintenance Settings</li>
                 </Link>
                 <h4 className="mb-2">Upload</h4>
-                <Link>
-                    <li className="pl-8 mb-2">New Entry</li>
+                <Link to={ROUTES.LIST_QR_CODES}>
+                    <li className="pl-8 mb-2">List QR Codes</li>
                 </Link>
             </ul>
         </div>

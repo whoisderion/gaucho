@@ -17,13 +17,13 @@ function Account() {
     }, [])
 
     if (companyInfo) {
+        console.log(companyInfo)
         return (
             <div className='Contents'>
                 <Sidebar />
                 <div className="Settings inline-flex flex-col">
                     <h2 >Account</h2>
                     <div>
-                        <p>Created: </p>
                         <p>Primary Email: {companyInfo.email}</p>
                         <p>Company ID: {companyInfo.id}</p>
                         <p>Company Name: {companyInfo.name}</p>

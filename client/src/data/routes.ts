@@ -11,3 +11,5 @@ export const MAINTENANCE = "/dashboards/maintenance"
 export const USER_ACTIVITY = "/dashboards/activity"
 export const EQUIPMENT = "/dashboards/equipment"
 export const FLEET_MANAGEMENT = "/settings/fleet-management"
+export const LIST_QR_CODES = "/upload/qr-codes"
+export const MAINTENANCE_SETTINGS = '/settings/maintenance'
