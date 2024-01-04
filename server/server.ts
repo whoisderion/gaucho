@@ -3,11 +3,17 @@ import express, { Request, Response, Application } from 'express';
 import { PrismaClient, Users, Role, Fleet, Truck, Equipment, Inventory } from '@prisma/client';
 import cors from 'cors';
 import QRCode from "qrcode";
-import util from 'util'
+import { Url } from 'url';
+const cloudinary = require('cloudinary').v2
 
 const app: Application = express();
 const PORT = process.env.PORT;
 const prisma = new PrismaClient();
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 const corsOptions = {
     origin: ['http://localhost:5173'],
@@ -361,119 +367,96 @@ app.post("/upload/inventory", async (req: Request, res: Response) => {
         }
     })
 
-    // create an array of equipment names in the equipment table and in the given inventory
-    const equipmentNames = equipment.map(equipment => equipment.name)
 
-    // create an array of equipment names from inventory object
-    let inventoryNames: string[] = []
-    for (let equipment in inventory.inventory) {
-        inventoryNames.push(equipment)
-    }
-
-    console.log(truck!.name + "\n")
-    console.log("Inventory Names: " + inventoryNames)
-    console.log("Equipment Names: " + equipmentNames)
-
-    // if the equipment in the inventory is not in the database create a new equipment entry
-    const itemsAreInTable = inventoryNames.every(item => equipmentNames.includes(item))
-    // console.log("items are in table: " + itemsAreInTable)
-    if (itemsAreInTable == false) {
-        let newEquipment: string[]
-
-        newEquipment = inventoryNames.filter(item => !equipmentNames.includes(item))
-        // console.log("\nNew Items: " + newEquipment)
-
-        for (const item of newEquipment) {
-            const newEquipment = await prisma.equipment.create({
-                data: {
-                    name: item,
-                    companyId: companyID
-                }
-            })
-            // console.log("New Equipment")
-            // console.log(newEquipment)
-        }
-
-        // reassign the value for the equipment in the DB to get new items
-        equipment = await prisma.equipment.findMany({
-            include: {
-                Company: {
+app.get("/upload/equipment-fields/:companyID", async (req: Request, res: Response) => {
+    const companyID = req.params.companyID
+    try {
+        const equipmentFields = await prisma.equipment.findMany({
                     where: {
-                        id: companyID
-                    }
-                }
-            }
-        })
-    }
-
-    // add the database ID for all of the equipment in the given truck's inventory
-    for (const [key, value] of Object.entries(inventory.inventory)) {
-
-        const equipmentObj = equipment.find(obj => obj.name === key)
-
-        inventory.inventory[key].dbID = equipmentObj!.id
-    }
-
-    // create an array of objects for the relation of each new inventory record to the existing equipment in the DB
-    let inventoryUploadObj: any = []
-    for (const [key, value] of Object.entries(inventory.inventory)) {
-        const equipmentID = inventory.inventory[key].dbID
-        inventoryUploadObj.push({
-            quantity: value.quantity,
-            equipment: {
-                connect: {
-                    where: {
-                        id: equipmentID
-                    },
-                    create: {
-                        name: key,
-                        companyId: companyID
-                    }
-                }
-            }
-        })
-    }
-
-    // create the inventory record for currTruck in the DB with Equipment[]
-    const newInventory = await prisma.inventory.create({
-        data: {
-            truckId: truck!.id,
-            equipmentItems: {
-                create: inventoryUploadObj,
+                companyId: companyID
             },
-        },
-    })
-    console.log("new inventory")
-    console.log(newInventory)
-    return res.status(201).json(newInventory)
+        })
+        // console.log(equipmentFields)
+        return res.status(200).json({ equipmentFields })
+    } catch (error) {
+        console.error(error)
+        return res.sendStatus(400)
+    }
 })
 
-// TODO: add picture upload functionality
-app.post("/upload/pictures", async (req: Request, res: Response) => {
-    // req: maintenance{...Photos{front:IMG_1653.jpg, back:IMG_1654.jpg, ...n:IMG_16nn}}
-
-    // >>>  give each photo in maintenece{} a uuid
-    // save photo to cloudinary w/ uuid
-
-    // res: 200 and redirect to the success screen(?) || 4xx
-
+app.post("/upload/complete", async (req: Request, res: Response) => {
+    type uploadData = {
+        maintenance: {
+            mileage: number,
+            oil: string,
+            coolant: string,
+            frontDriverTread: string,
+            frontPassengerTread: string,
+            rearDriverTread: string,
+            rearPassengerTread: string,
+            notes: string
+        },
+            equipment: {
+            name: { id: string, quantity: number }
+        },
+        pictures: {}
+    }
+    const data: uploadData = req.body.formData
     const truckID = req.body.truckID
 
-    const photoAreas = await prisma.photoAreas.findMany({
-        where: {
-            truckId: truckID
+    try {
+        const maintenanceUpdate = await prisma.maintenance.create({
+            data: {
+                truckId: truckID,
+                mileage: Number(data.maintenance.mileage) ?? undefined,
+                oil: data.maintenance.oil ?? undefined,
+                coolant: data.maintenance.coolant ?? undefined,
+                frontDriverTread: String(data.maintenance.frontDriverTread) ?? undefined,
+                frontPassengerTread: String(data.maintenance.frontPassengerTread) ?? undefined,
+                rearDriverTread: String(data.maintenance.rearDriverTread) ?? undefined,
+                rearPassengerTread: String(data.maintenance.rearPassengerTread) ?? undefined,
+                notes: data.maintenance.notes ?? undefined
+            }
+        });
+
+        //create an object for the equipment in the inventory update
+        let equipmentItems = []
+        for (const [equipmentName, equipmentValues] of Object.entries(data.equipment)) {
+            equipmentItems.push({ quantity: equipmentValues.quantity, equipmentId: equipmentValues.id })
         }
-    })
 
-    if (photoAreas.length == 0) {
-        // send a message that there are no defined photo areas for the truck
-        return res.sendStatus(204)
-    } else {
-        // upload photos to cloudinary, retreive their URLs
-        // then save them to the approprate photo area's record in prisma
+        const inventoryUpdate = await prisma.inventory.create({
+        data: {
+                truckId: truckID,
+            equipmentItems: {
+                    createMany: {
+                        data: equipmentItems
+                    }
+                }
+            }
+        })
+
+        console.log(data.pictures + '\n')
+
+        let cloudinaryAssetID: string
+        let cloudinaryURL: Url
+        let cloudinarySecureURL: Url
+
+        const uploadedResponse = await cloudinary.uploader.upload(data.pictures, {
+            upload_preset: 'gaucho_update'
+        })
+
+        cloudinaryURL = uploadedResponse.asset_id
+        cloudinaryAssetID = uploadedResponse.url
+        cloudinarySecureURL = uploadedResponse.secure_url
+        console.log(cloudinaryURL, cloudinaryAssetID, cloudinarySecureURL)
+
+        res.sendStatus(200)
+
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(400)
     }
-
-    return res.sendStatus(201)
 })
 
 app.get("/account/company", async (req: Request, res: Response) => {
