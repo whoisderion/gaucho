@@ -4,7 +4,7 @@ import axios from "axios"
 import { useEffect, useRef, useState } from "react"
 import QRCode from "qrcode"
 
-function QRCodes() {
+function SignUpQRCodes() {
 
     // make a request for the qr codes for every truck
 
@@ -105,4 +105,4 @@ function QRCodes() {
     )
 }
 
-export default QRCodes
+export default SignUpQRCodes
