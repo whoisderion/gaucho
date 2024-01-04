@@ -18,7 +18,7 @@ function App() {
 
   return (
     <Router>
-      <div className="App max-w-full w-[100vw] flex-auto">
+      <div className="App w-screen h-screen overflow-hidden">
         <Routes>
           <Route
             path={ROUTES.LANDING}

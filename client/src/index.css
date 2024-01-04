@@ -8,8 +8,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #0f172a;
+  background-color: #faf8f6;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,12 +20,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
 }
-a:hover {
+/* a:hover {
   color: #535bf2;
-}
+} */
 
 body {
   margin: 0;
@@ -51,7 +50,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #d1d5db;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -61,6 +60,21 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+input, select {
+  background-color: white;
+  border-width: 1px;
+  border-color: #495057;
+  color: black;
+}
+
+input:focus {
+  outline: 4px auto #2d44b7;
+}
+
+label {
+  display: block;
 }
 
 @media (prefers-color-scheme: light) {
