@@ -161,7 +161,7 @@ app.post("/setup/fleets", async (req: Request, res: Response) => {
                     license: vehicle.licensePlate,
                     year: (vehicle.year ? vehicle.year : null),
                     fleetId: fleet.id,
-                    companyId: String(companyID)
+                    companyId: String(companyID),
                 })
             })
 
@@ -283,7 +283,7 @@ app.get("/print-qr-codes/:companyID", async (req: Request, res: Response) => {
     function createURLs(trucks: Truck[]): string[] {
         let URLs: string[] = []
         trucks.forEach(truck => {
-            URLs.push(`${process.env.CLIENT_URL}/trucks/qr/${truck.id}`)
+            URLs.push(`${process.env.CLIENT_URL}trucks/upload/${truck.id}`)
         });
         return URLs;
     }
@@ -296,7 +296,7 @@ app.get("/trucks/qr/:truckID", async (req: Request, res: Response) => {
     const truckID = req.params.truckID
     const generateQR = async () => {
         try {
-            const imgURL = await QRCode.toDataURL(`${process.env.CLIENT_URL}/trucks/${truckID}`)
+            const imgURL = await QRCode.toDataURL(`${process.env.CLIENT_URL}trucks/${truckID}`)
             console.log(imgURL)
             res.write(imgURL)
         } catch (err) {
@@ -825,8 +825,8 @@ app.get("/dashboard", async (req: Request, res: Response) => {
             for (let fleetIndex = 0; fleetIndex < dashboardData.length; fleetIndex++) {
                 // checks if the current fleet has a vehicle array AND that the current inventory's vehicle is in the current fleet
                 // then adds the the inventory to the curernt vehicle
-                if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currInventory.truckId) != -1) {
-                    const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((currVehicle: Truck) => currVehicle.id === currInventory.truckId)
+                if (dashboardData[fleetIndex].vehicles && dashboardData[fleetIndex].vehicles.findIndex((vehiclesToAdd: Truck) => vehiclesToAdd.id === currInventory.truckId) != -1) {
+                    const vehicleIndex = dashboardData[fleetIndex].vehicles.findIndex((vehiclesToAdd: Truck) => vehiclesToAdd.id === currInventory.truckId)
                     dashboardData[fleetIndex].vehicles[vehicleIndex].inventory = currInventory
                     // checks to see if there is a last inventory that is not empty
                     // then adds it to the vehicles last inventory property
