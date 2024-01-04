@@ -16,7 +16,7 @@ cloudinary.config({
 })
 
 const corsOptions = {
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'http://10.0.0.20:5173', 'http://192.168.1.64:5173', 'http://172.20.10.2:5173'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     // credentials: true,
@@ -24,7 +24,7 @@ const corsOptions = {
 
 app.set('json spaces', 4)
 app.use(cors(corsOptions))
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
 
 app.get("/", (req: Request, res: Response): void => {
     res.send("Gaucho Index");
