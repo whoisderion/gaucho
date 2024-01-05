@@ -106,7 +106,7 @@ function EditVehicleMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEdi
                         value={vehicle.Fleet.name || ""}
                         onChange={(e) => {
                             const newFleet = fleetData.fleets.filter((fleet) => fleet.name === e.target.value)
-                            setVehicle({ ...vehicle, 'fleet': e.target.value, 'Fleet': newFleet[0] })
+                            setVehicle({ ...vehicle, 'Fleet': newFleet[0] })
                         }}>
                         {fleetData?.fleets.map((fleet) => (
                             <option key={fleet.name} value={fleet.name}>
