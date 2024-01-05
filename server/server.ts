@@ -373,11 +373,37 @@ app.post("/account/equipment-complete", async (req: Request, res: Response) => {
     res.status(200).json(equipmentData)
 })
 
+app.get("/account/fleet/:companyID", async (req: Request, res: Response) => {
+    const companyID = req.params.companyID
+
+    const vehicles = await prisma.truck.findMany({
+        where: { companyId: companyID },
+        select: {
+            name: true,
+            vin: true,
+            license: true,
+            year: true,
+            id: true,
+            Fleet: {
+                select: {
+                    name: true,
+                    id: true
                 }
             }
         }
     })
 
+    const fleets = await prisma.fleet.findMany({
+        where: { companyId: companyID },
+        select: { id: true, name: true }
+    })
+
+    res.status(200).json({
+        vehicles: vehicles,
+        fleets: fleets
+    })
+
+})
 
 app.get("/upload/equipment-fields/:companyID", async (req: Request, res: Response) => {
     const companyID = req.params.companyID
