@@ -514,39 +514,82 @@ app.get("/account/company", async (req: Request, res: Response) => {
     return res.status(200).json(company)
 })
 
-app.post("/account/company", async (req: Request, res: Response) => {
-    // req: newCompanyInfo{email}
+app.get("/account/company/photo-areas/:companyID", async (req: Request, res: Response) => {
+    const companyID = req.params.companyID
 
-    // >>>  update compnay info in DB
+    try {
+        const photoAreas = await prisma.photoAreas.findMany({
+            where: {
+                companyId: companyID
+            },
+            select: {
+                name: true,
+                id: true,
+                companyId: true,
+                position: true,
+            },
+            orderBy: {
+                position: 'asc'
+            }
+        })
 
-    // res: 201 and company{updatedInfo} || 4xx
+        const photoAreasArr = new Array()
 
-    const company = await prisma.company.update({
-        where: {
-            id: req.body.companyID,
-        },
-        data: req.body.data
-    })
+        photoAreas.forEach(area => {
+            photoAreasArr.push({ id: area.id, name: area.name, companyID: area.companyId, position: area.position })
+        })
 
-    return res.status(200).json(company)
+        res.status(201).json(photoAreasArr)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(400)
+    }
 })
 
-app.get("/account/users", async (req: Request, res: Response) => {
-    // >>>  get all users in company's user table
+type MaxPositionResult = {
+    maxPosition: number | null;
+}
 
-    //res: 200 and users[] || 4xx
+app.post("/account/company/photo-areas", async (req: Request, res: Response) => {
+    const photoAreasArr = req.body.tempPhotoAreas
+    const companyID = req.body.companyID
+    const areasToDelete = req.body.areasToDelete
+    try {
+        const updatedPhotoAreas = await Promise.all(photoAreasArr.map(async (area: PhotoAreas) => {
+            const updatedArea = await prisma.photoAreas.upsert({
+                where: {
+                    id: area.id,
+                },
+                update: {
+                    name: area.name,
+                    position: area.position
+                },
+                create: {
+                    name: area.name,
+                    companyId: companyID,
+                    position: area.position,
+                },
+            })
 
-    const users = await prisma.users.findMany({
-        where: {
-            companyId: req.body.companyId
-        }
-    })
+            return updatedArea
+        }))
 
-    return res.status(200).json(users)
+        const deletedPhotoAreas = await prisma.photoAreas.deleteMany({
+            where: {
+                id: {
+                    in: areasToDelete
+                }
+            }
+        })
+
+        res.status(201).json(photoAreasArr)
+
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(400)
+    }
 })
 
-app.post("/account/users", async (req: Request, res: Response) => {
-    // req: newUserInfo{uuid, name}
 
     // >>>  updates the user's info in DB
 
