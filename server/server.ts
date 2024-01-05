@@ -307,61 +307,72 @@ app.get("/trucks/qr/:truckID", async (req: Request, res: Response) => {
     return generateQR()
 })
 
-app.post("/upload/maintenance", async (req: Request, res: Response) => {
-    // req: Truck{milage, oil level, coolant level, tire tread level{}, notes}, truckID
+app.post("/account/equipment-complete", async (req: Request, res: Response) => {
+    // >>>  get all equipment types in company's equipment table
 
-    // >>>  create a uuid for the maintenance update, get the current date/time, save info to the update table
-
-    // res: 200 and maintenance{} || 4xx
-
-    const truckID = req.body.truckID
-
-    const maintenanceUpdate = await prisma.maintenance.create({
-        data: {
-            mileage: Number(req.body.mileage),
-            oil: req.body.oil,
-            coolant: req.body.coolant,
-            frontDriverTread: req.body.tireTread.frontDriver,
-            frontPassengerTread: req.body.tireTread.frontPassanger,
-            rearDriverTread: req.body.tireTread.rearDriver,
-            rearPassengerTread: req.body.tireTread.rearPassanger,
-            notes: req.body.notes,
-            truckId: truckID
-        }
-    })
-
-    return res.status(201).json(maintenanceUpdate)
-})
-
-app.post("/upload/inventory", async (req: Request, res: Response) => {
-    // req: maintenace{...{equipment 1, equipment 2, ...equipment n}}, truckID
-
-    // >>>  save the inventory to maintenace{} in DB
-
-    // res: 200 and maintenance{} || 4xx
+    //res: 200 and inventory[] || 4xx
 
     const companyID = req.body.companyID
-    const truckID = req.body.inventory.truckID
-    const inventory: {
-        truckName: string,
-        truckID: string
-        inventory: {
-            [key: string]: any
-        }
-    } = req.body.inventory
 
-    // get the current truck that matches the current truck in the inventory
-    const truck = await prisma.truck.findFirst({
-        where: {
-            id: truckID
-        }
-    })
+    let inventoryTimeframes: any[] = []
 
-    let equipment = await prisma.equipment.findMany({
-        include: {
-            Company: {
-                where: {
-                    id: companyID
+    const currentDate = new Date();
+    const oneDayAgo = new Date(Number(currentDate) - 1 * 24 * 60 * 60 * 1000);
+    const threeDaysAgo = new Date(Number(currentDate) - 3 * 24 * 60 * 60 * 1000);
+    const oneWeekAgo = new Date(Number(currentDate) - 7 * 24 * 60 * 60 * 1000);
+    const twoWeekAgo = new Date(Number(currentDate) - 14 * 24 * 60 * 60 * 1000);
+    const oneMonthAgo = new Date(Number(currentDate) - 30 * 24 * 60 * 60 * 1000);
+
+    let timeframes = [
+        { label: "oneDayAgo", value: oneDayAgo },
+        { label: "threeDaysAgo", value: threeDaysAgo },
+        { label: "oneWeekAgo", value: oneWeekAgo },
+        { label: "twoWeeksAgo", value: twoWeekAgo },
+        { label: "oneMonthAgo", value: oneMonthAgo }
+    ]
+
+    let equipmentData = []
+
+    for (const date of timeframes) {
+        const recentTruckInventories = await prisma.truck.findMany({
+            where: {
+                companyId: companyID,
+            },
+            select: {
+                // id: true,
+                name: true,
+                inventory: {
+                    where: {
+                        date: {
+                            gte: date.value
+                        },
+                    },
+                    select: {
+                        equipmentItems: {
+                            select: {
+                                equipment: {
+                                    select: {
+                                        name: true
+                                    }
+                                },
+                                quantity: true,
+                            },
+                        },
+                        date: true,
+                    },
+                },
+            },
+        });
+
+        equipmentData.push({
+            label: date.label,
+            inventoryRecord: recentTruckInventories
+        })
+    }
+
+    res.status(200).json(equipmentData)
+})
+
                 }
             }
         }
