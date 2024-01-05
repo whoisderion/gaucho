@@ -409,7 +409,7 @@ app.get("/upload/equipment-fields/:companyID", async (req: Request, res: Respons
     const companyID = req.params.companyID
     try {
         const equipmentFields = await prisma.equipment.findMany({
-                    where: {
+            where: {
                 companyId: companyID
             },
         })
@@ -433,7 +433,7 @@ app.post("/upload/complete", async (req: Request, res: Response) => {
             rearPassengerTread: string,
             notes: string
         },
-            equipment: {
+        equipment: {
             name: { id: string, quantity: number }
         },
         pictures: {}
@@ -463,9 +463,9 @@ app.post("/upload/complete", async (req: Request, res: Response) => {
         }
 
         const inventoryUpdate = await prisma.inventory.create({
-        data: {
+            data: {
                 truckId: truckID,
-            equipmentItems: {
+                equipmentItems: {
                     createMany: {
                         data: equipmentItems
                     }
