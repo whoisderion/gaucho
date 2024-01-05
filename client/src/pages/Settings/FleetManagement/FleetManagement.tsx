@@ -2,8 +2,50 @@ import axios from "axios";
 import Sidebar from "components/Sidebar";
 import { useEffect, useState } from "react";
 
+const companyId = import.meta.env.VITE_COMPANY_ID
+const serverURL = import.meta.env.VITE_SERVER_URL
 
-function EditMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEditing }) {
+type Fleet = {
+    companyId: string,
+    id: string,
+    name: string,
+    vehicles?: Vehicle[]
+}
+
+type Vehicle = {
+    license: string,
+    name: string,
+    vin: string,
+    year: number | null,
+    id: string,
+    Fleet: {
+        name: string,
+        id: string
+    }
+}
+
+type FetchedData = {
+    fleets: Fleet[],
+    vehicles: Vehicle[]
+    photoAreas?: PhotoArea[]
+}
+
+type PhotoArea = {
+    name: string,
+    companyId: string,
+    id: string,
+    position: number
+}
+
+interface EditVehicleMenuProps {
+    vehicle: Vehicle
+    setVehicle: Dispatch<SetStateAction<Vehicle | undefined>>
+    fleetData: FetchedData
+    setFleetData: Dispatch<SetStateAction<FetchedData | undefined>>
+    stopEditing: () => void
+}
+
+
     return (
         <div>
             <div className="bg-primary text-white py-6">
@@ -64,74 +106,7 @@ function EditMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEditing })
     )
 }
 
-const handleSubmit = async (newVehicleData, setFleetData) => {
-    console.log(newVehicleData)
-    await axios.post(import.meta.env.VITE_SERVER_URL + 'account/vehicle', newVehicleData)
-        .then((res) => setFleetData((prevData) => ({ ...prevData, vehicles: [...prevData.vehicles, newVehicleData] })))
-        .catch((err) => console.log(err))
-}
-
 function FleetManagement() {
-    type Fleet = {
-        companyId: string,
-        id: string,
-        name: string,
-        vehicles: Vehicle[]
-    }
-
-    type Inventory = {
-        date: Date,
-        id: string,
-        truckId: string
-    }
-
-    type Maintenance = {
-        coolant: string,
-        date: Date,
-        frontDriverTread: string,
-        frontPassengerTread: string,
-        id: string,
-        milage: number,
-        notes: string,
-        oil: string,
-        rearDriverTread: string,
-        rearPassangerTread: string,
-        truckId: string
-    }
-
-    type Vehicle = {
-        id: string,
-        name: string,
-        vin: string,
-        license: string,
-        year: number,
-        fleetId: string,
-        urlPath: string,
-        inventory: Inventory,
-        maintenance: Maintenance
-    }
-
-    type FetchedData = {
-        fleets: Fleet[],
-        vehicles: {
-            license: string,
-            name: string,
-            vin: string,
-            year: number,
-            fleet: {
-                name: string
-            },
-            photoAreas?: {
-                name: string
-            }[]
-        }
-    }
-
-    type PhotoArea = {
-        name: string,
-        companyId: string,
-        id: string
-    }
 
     const [fleetData, setFleetData] = useState<FetchedData>()
     const [isEditingVehicle, setIsEditingVehicle] = useState<boolean>(false)
