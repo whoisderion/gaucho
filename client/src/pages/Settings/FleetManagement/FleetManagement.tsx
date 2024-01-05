@@ -1,6 +1,6 @@
 import axios from "axios";
 import Sidebar from "components/Sidebar";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
 const companyId = import.meta.env.VITE_COMPANY_ID
 const serverURL = import.meta.env.VITE_SERVER_URL
