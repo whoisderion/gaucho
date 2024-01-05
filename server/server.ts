@@ -765,34 +765,50 @@ app.get("/account/fleet", async (req: Request, res: Response) => {
     return res.status(200).json(fleet)
 })
 
-app.post("/account/fleet", async (req: Request, res: Response) => {
+app.post("/account/vehicle", async (req: Request, res: Response) => {
     // req: changes[...newVehicleInfo{vehicle{uuid, truckName,}}]
 
-    // >>>  updates the fleet/truck info in DB
+    // >>>  updates the fleet/p info in DB
 
     // res: 201 and Fleet[] || 4xx
 
-    const fleet = req.body.fleet
-
-    let updatedFleet: Fleet[] = []
-
-    for (const group of fleet) {
-        const upsertedVehicle = await prisma.fleet.upsert({
-            where: {
-                id: group.id || ""
-            },
-            update: {
-                name: group.name
-            },
-            create: {
-                name: group.name,
-                companyId: req.body.companyID
-            }
-        })
-        updatedFleet.push(upsertedVehicle)
+    type VehicleData = {
+        name: string,
+        vin: string,
+        license: string,
+        year: number,
+        id: string,
+        fleet: string
+        Fleet: {
+            name: string,
+            id: string
+        }
     }
 
-    res.status(201).json(updatedFleet)
+    const vehicleData: VehicleData = req.body
+    const { fleet, ...prismaData } = vehicleData
+
+    try {
+        const updatedVehicle = await prisma.truck.update({
+            where: {
+                id: prismaData.id,
+            },
+            data: {
+                ...prismaData,
+                Fleet: {
+                    connect: {
+                        id: prismaData.Fleet.id
+                    }
+                }
+            }
+        })
+        console.log(updatedVehicle)
+        res.status(200).json(updatedVehicle)
+    } catch (error) {
+        console.error(error)
+        res.status(400)
+    }
+
 })
 
 // TODO: delete fleet
