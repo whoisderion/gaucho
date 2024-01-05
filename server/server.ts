@@ -307,14 +307,12 @@ app.get("/trucks/qr/:truckID", async (req: Request, res: Response) => {
     return generateQR()
 })
 
-app.post("/account/equipment-complete", async (req: Request, res: Response) => {
+app.get("/account/equipment-complete/:companyId", async (req: Request, res: Response) => {
     // >>>  get all equipment types in company's equipment table
 
     //res: 200 and inventory[] || 4xx
 
-    const companyID = req.body.companyID
-
-    let inventoryTimeframes: any[] = []
+    const companyID = req.params.companyId
 
     const currentDate = new Date();
     const oneDayAgo = new Date(Number(currentDate) - 1 * 24 * 60 * 60 * 1000);

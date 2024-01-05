@@ -26,11 +26,7 @@ function EquipmentDashboard() {
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios.post("http://127.0.0.1:4474/account/equipment-complete", {
-                params: {
-                    "companyID": "clpw9jgxd0000ztvheigeqjgf"
-                }
-            }).then((res) => {
+            await axios.get("http://127.0.0.1:4474/account/equipment-complete/" + import.meta.env.VITE_COMPANY_ID).then((res) => {
                 setEquipmentData(res.data)
                 console.log(res.data)
                 const defaultRecord = res.data.find((record: { label: string; }) => record.label === "threeDaysAgo");
