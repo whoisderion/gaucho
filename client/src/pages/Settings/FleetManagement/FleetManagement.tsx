@@ -47,6 +47,22 @@ interface EditVehicleMenuProps {
 
 function EditVehicleMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEditing }: EditVehicleMenuProps) {
 
+    const handleSubmit = async (newVehicleData: EditVehicleMenuProps["vehicle"], setFleetData: EditVehicleMenuProps["setFleetData"]) => {
+        console.log(newVehicleData)
+        await axios.post(serverURL + 'account/vehicle', newVehicleData)
+            .then(() => setFleetData((prevData) => {
+                if (prevData) {
+                    const updatedVehicles = prevData.vehicles.map((vehicle) =>
+                        vehicle.id === newVehicleData.id ? newVehicleData : vehicle
+                    )
+                    return { ...prevData, vehicles: updatedVehicles }
+                } else {
+                    console.error("Failed saving changes to vehicle!")
+                    return prevData
+                }
+            }))
+            .catch((err) => console.log(err))
+    }
 
     return (
         <div>
