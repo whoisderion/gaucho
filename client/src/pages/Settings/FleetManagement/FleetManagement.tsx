@@ -95,9 +95,9 @@ function EditVehicleMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEdi
                     <label htmlFor="year">Year</label>
                     <input
                         type="number"
-                        value={vehicle.year || 0}
+                        value={vehicle.year || ""}
                         className=""
-                        onChange={(e) => { setVehicle({ ...vehicle, 'year': parseInt(e.target.value) }) }}
+                        onChange={(e) => { setVehicle({ ...vehicle, 'year': e.target.value == "" ? null : parseInt(e.target.value) }) }}
                         autoComplete="off" />
                     <label htmlFor="fleet">Fleet</label>
                     <select
