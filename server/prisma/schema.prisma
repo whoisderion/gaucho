@@ -11,16 +11,17 @@ datasource db {
 }
 
 model Company {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   name        String
-  email       String      @unique
+  email       String       @unique
   phoneNumber String
-  dateCreated DateTime    @default(now())
+  dateCreated DateTime     @default(now())
   users       Users[]
   fleet       Fleet[]
   equipment   Equipment[]
   role        Role[]
   Truck       Truck[]
+  photoAreas  PhotoAreas[]
 }
 
 model Users {
@@ -59,7 +60,6 @@ model Truck {
   fleetId     String?       @default("null")
   maintenance Maintenance[]
   inventory   Inventory[]
-  photoAreas  PhotoAreas[]
   Company     Company       @relation(fields: [companyId], references: [id])
   companyId   String
 
@@ -70,24 +70,36 @@ model Truck {
 model Maintenance {
   id                  String   @id @default(cuid())
   date                DateTime @default(now())
-  mileage             Int
-  oil                 String
-  coolant             String
-  frontDriverTread    String
-  frontPassengerTread String
-  rearDriverTread     String
-  rearPassengerTread  String
-  notes               String
+  mileage             Int?
+  oil                 String?
+  coolant             String?
+  frontDriverTread    String?
+  frontPassengerTread String?
+  rearDriverTread     String?
+  rearPassengerTread  String?
+  notes               String?
   Truck               Truck?   @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   truckId             String?
 }
 
 model Inventory {
-  id             String                 @id @default(cuid())
-  date           DateTime               @default(now())
-  Truck          Truck?                 @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  truckId        String?
-  equipmentItems EquipmentInInventory[]
+  id              String                 @id @default(cuid())
+  date            DateTime               @default(now())
+  Truck           Truck?                 @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  truckId         String?
+  equipmentItems  EquipmentInInventory[]
+  inventoryPhotos InventoryPhoto[]
+}
+
+model InventoryPhoto {
+  inventory    Inventory  @relation(fields: [inventoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  inventoryId  String
+  photoArea    PhotoAreas @relation(fields: [photoAreasId], references: [id])
+  photoAreasId String     @unique
+  photo        Photos     @relation(fields: [photoId], references: [id])
+  photoId      String     @unique
+
+  @@id([inventoryId, photoAreasId, photoId])
 }
 
 model EquipmentInInventory {
@@ -111,16 +123,22 @@ model Equipment {
 }
 
 model PhotoAreas {
-  id      String   @id @default(cuid())
-  name    String
-  Truck   Truck?   @relation(fields: [truckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  truckId String?
-  Photos  Photos[]
+  id             String          @id @default(cuid())
+  name           String
+  company        Company?        @relation(fields: [companyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  companyId      String
+  position       Int             @default(0)
+  Photos         Photos[]
+  inventoryPhoto InventoryPhoto?
 }
 
 model Photos {
-  id           String     @id @default(cuid())
-  date         DateTime   @default(now())
-  photoArea    PhotoAreas @relation(fields: [photoAreasId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  photoAreasId String
+  id                  String          @id @default(cuid())
+  date                DateTime        @default(now())
+  photoArea           PhotoAreas?     @relation(fields: [photoAreasId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  photoAreasId        String?
+  inventoryPhoto      InventoryPhoto?
+  cloudinaryURL       String
+  cloudinaryAssetID   String
+  cloudinarySecureURL String
 }

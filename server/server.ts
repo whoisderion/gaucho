@@ -1,6 +1,6 @@
 require('dotenv').config();
 import express, { Request, Response, Application } from 'express';
-import { PrismaClient, Users, Role, Fleet, Truck, Equipment, Inventory } from '@prisma/client';
+import { PrismaClient, Users, Role, Fleet, Truck, Equipment, Inventory, PhotoAreas } from '@prisma/client';
 import cors from 'cors';
 import QRCode from "qrcode";
 import { Url } from 'url';
