@@ -128,9 +128,9 @@ function FleetManagement() {
 
     const [fleetData, setFleetData] = useState<FetchedData>()
     const [isEditingVehicle, setIsEditingVehicle] = useState<boolean>(false)
-    const [editingVehicle, setEditingVehicle] = useState(null)
-    const [isEditingPhotoAreas, setIsEditingPhotoAreas] = useState(false)
-    const [isEditingFleets, setIsEditingFleets] = useState(false)
+    const [editingVehicle, setEditingVehicle] = useState<Vehicle>()
+    const [isEditingPhotoAreas, setIsEditingPhotoAreas] = useState<boolean>(false)
+    const [isEditingFleets, setIsEditingFleets] = useState<boolean>(false)
     const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([])
     const [tempPhotoAreas, setTempPhotoAreas] = useState<PhotoArea[]>([])
 
