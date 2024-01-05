@@ -747,21 +747,7 @@ app.get("/account/equipment", async (req: Request, res: Response) => {
     res.status(201).json(updatedEquipment)
 })
 
-// TODO: delete equipment
-
-app.get("/account/fleet", async (req: Request, res: Response) => {
-    // >>>  get all vehicles in company's fleet table
-
-    //res: 200 and Fleet[] || 4xx
-
-    const fleet = await prisma.fleet.findMany({
-        where: {
-            companyId: req.body.companyID
-        }
-    })
-
-    return res.status(200).json(fleet)
-})
+// // TODO: delete equipment
 
 app.post("/account/vehicle", async (req: Request, res: Response) => {
     // req: changes[...newVehicleInfo{vehicle{uuid, truckName,}}]
@@ -808,8 +794,44 @@ app.post("/account/vehicle", async (req: Request, res: Response) => {
     }
 
 })
+app.post("/account/fleet", async (req: Request, res: Response) => {
+    interface RequestBody {
+        tempFleets: Fleet[]
+        fleetsToDelete: string[]
+        companyId: string
+    }
+    const { tempFleets, fleetsToDelete, companyId }: RequestBody = req.body
+    try {
+        const updatedFleets = await Promise.all(tempFleets.map(async (fleet: Fleet) => {
+            const updatedFleet = await prisma.fleet.upsert({
+                where: {
+                    id: fleet.id
+                },
+                update: {
+                    name: fleet.name
+                },
+                create: {
+                    name: fleet.name,
+                    companyId: companyId
+                }
+            })
+        }))
 
-// TODO: delete fleet
+        const deletedFleets = await prisma.fleet.deleteMany({
+            where: {
+                id: {
+                    in: fleetsToDelete
+                }
+            }
+        })
+
+        res.status(200).json(tempFleets)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(400)
+    }
+})
+
 
 app.get("/dashboard", async (req: Request, res: Response) => {
     // >>>  gets all the relavant data to populate the dashboard
