@@ -117,7 +117,7 @@ function EditVehicleMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEdi
                 </form>
                 <div className="mt-4 space-x-2">
                     <button className=" inline-block" onClick={stopEditing}>Cancel</button>
-                    <button className=" inline-block" onClick={() => { handleSubmit(vehicle, setFleetData) }}>Save Changes</button>
+                    <button className=" inline-block" onClick={() => { handleSubmit(vehicle, setFleetData).then(stopEditing) }}>Save Changes</button>
                 </div>
             </div>
         </div>
