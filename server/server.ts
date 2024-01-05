@@ -546,10 +546,6 @@ app.get("/account/company/photo-areas/:companyID", async (req: Request, res: Res
     }
 })
 
-type MaxPositionResult = {
-    maxPosition: number | null;
-}
-
 app.post("/account/company/photo-areas", async (req: Request, res: Response) => {
     const photoAreasArr = req.body.tempPhotoAreas
     const companyID = req.body.companyID
