@@ -546,7 +546,7 @@ app.get("/account/company/photo-areas/:companyID", async (req: Request, res: Res
 
 app.post("/account/company/photo-areas", async (req: Request, res: Response) => {
     const photoAreasArr = req.body.tempPhotoAreas
-    const companyID = req.body.companyID
+    const companyId = req.body.companyId
     const areasToDelete = req.body.areasToDelete
     try {
         const updatedPhotoAreas = await Promise.all(photoAreasArr.map(async (area: PhotoAreas) => {
@@ -560,7 +560,7 @@ app.post("/account/company/photo-areas", async (req: Request, res: Response) => 
                 },
                 create: {
                     name: area.name,
-                    companyId: companyID,
+                    companyId: companyId,
                     position: area.position,
                 },
             })
