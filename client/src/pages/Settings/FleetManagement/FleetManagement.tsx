@@ -45,6 +45,8 @@ interface EditVehicleMenuProps {
     stopEditing: () => void
 }
 
+function EditVehicleMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEditing }: EditVehicleMenuProps) {
+
 
     return (
         <div>
@@ -301,7 +303,7 @@ function FleetManagement() {
                 {isEditingVehicle && editingVehicle && (
                     <div className="overlay h-full w-full fixed z-20 top-0 left-0 right-0 bottom-0 bg-black/50">
                         <div className="overlay-contents bg-white w-[600px] float-right">
-                            <EditMenu vehicle={editingVehicle} setVehicle={setEditingVehicle} fleetData={fleetData} setFleetData={setFleetData} stopEditing={stopEditing} />
+                            <EditVehicleMenu vehicle={editingVehicle} setVehicle={setEditingVehicle} fleetData={fleetData} setFleetData={setFleetData} stopEditing={stopEditing} />
                         </div>
                     </div>
                 )}
