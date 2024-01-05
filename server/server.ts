@@ -227,31 +227,31 @@ app.post("/setup/inventory", async (req: Request, res: Response) => {
                     }
                 })
 
-            inventoryUploadObj.push({
-                quantity: value.quantity,
-                equipment: {
-                    connectOrCreate: {
-                        where: {
+                inventoryUploadObj.push({
+                    quantity: value.quantity,
+                    equipment: {
+                        connectOrCreate: {
+                            where: {
                                 id: currEquipment ? currEquipment.id : ""
-                        },
-                        create: {
+                            },
+                            create: {
                                 name: currItemName,
-                            companyId: companyID
+                                companyId: companyID
+                            }
                         }
                     }
-                }
-            })
-        }
+                })
+            }
 
-        // create the inventory record for currTruck in the DB with Equipment[]
-        const newInventory = await prisma.inventory.create({
-            data: {
-                truckId: truck!.id,
-                equipmentItems: {
-                    create: inventoryUploadObj,
+            // create the inventory record for currTruck in the DB with Equipment[]
+            const newInventory = await prisma.inventory.create({
+                data: {
+                    truckId: truck!.id,
+                    equipmentItems: {
+                        create: inventoryUploadObj,
+                    },
                 },
-            },
-        })
+            })
         }
         await createInventoryRecord()
 
