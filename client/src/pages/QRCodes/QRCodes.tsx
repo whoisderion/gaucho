@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useState, useRef, useEffect } from "react"
-import QRCode from "qrcode"
+import QRCode from "react-qr-code"
 import Sidebar from "components/Sidebar"
 
 function QRCodes() {
