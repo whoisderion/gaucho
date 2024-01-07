@@ -133,6 +133,9 @@ function FleetManagement() {
     const [isEditingFleets, setIsEditingFleets] = useState<boolean>(false)
     const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([])
     const [tempPhotoAreas, setTempPhotoAreas] = useState<PhotoArea[]>([])
+    const [areasToDelete, setAreasToDelete] = useState<String[]>([])
+    const dragArea = useRef<number>(0)
+    const draggedOverArea = useRef<number>(0)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -189,10 +192,6 @@ function FleetManagement() {
             <td>{vehicle.vin}</td>
             <td>{vehicle.year}</td>
             <td>{vehicle.Fleet.name}</td>
-            <td><ul>{vehicle.photoArea &&
-                vehicle.photoAreas.map((photoArea) => {
-                    <li>{photoArea.name}</li>
-                })}</ul></td>
             <td><Dropdown vehicle={vehicle}></Dropdown></td>
         </tr>
     )
@@ -215,28 +214,74 @@ function FleetManagement() {
         />
     ))
 
-    const listPhotoAreas = tempPhotoAreas && tempPhotoAreas.map((area, index) => (
+    const listPhotoAreas = tempPhotoAreas && tempPhotoAreas.map((currArea, index) => (
+        <div
+            key={index}
+            className=" m-2 bg-secondary"
+            onDragStart={() => (dragArea.current = index)}
+            onDragEnter={() => (draggedOverArea.current = index)}
+            onDragEnd={handleMovePhotoArea}
+            onDragOver={(e) => { e.preventDefault }}
+            draggable>
+            <span className="mx-4">≡</span>
         <input
             type="text"
-            value={area.name}
-            onChange={(e) => {
+                value={currArea.name}
+                onChange={(e) => { handlePhotoAreaRename(e, index) }}
+                autoComplete="off"
+                className="inline-block"
+            />
+            <span className=" inline-block mx-4"
+                onClick={() => { handleDeletePhotoArea(index, currArea) }}>X</span>
+        </div>
+    ))
+
+    function handleMovePhotoArea() {
+        const areasClone = [...tempPhotoAreas]
+        const draggedArea = areasClone.splice(dragArea.current, 1)[0]
+        areasClone.splice(draggedOverArea.current, 0, draggedArea)
+        setTempPhotoAreas(areasClone)
+    }
+
+    const handlePhotoAreaRename = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
                 const updatedAreas = [...tempPhotoAreas];
                 updatedAreas[index].name = e.target.value;
                 setTempPhotoAreas(updatedAreas);
-            }}
-            autoComplete="off"
-            key={index}
-            className="block"
-        />
-    ));
-
-    const handlePASubmit = async () => {
-        console.log(tempPhotoAreas)
-        await axios.post(import.meta.env.VITE_SERVER_URL + 'account/company/photo-areas', { tempPhotoAreas: tempPhotoAreas, companyID: import.meta.env.VITE_COMPANY_ID })
-        // .then((res) => { setPhotoAreas(tempPhotoAreas), console.log(photoAreas) })
-        // .catch((err) => console.log(err))
     }
 
+    const handleDeletePhotoArea = (index: number, currArea: PhotoArea) => {
+        const newArr = tempPhotoAreas.filter((area) => area !== currArea)
+        console.log("deleting:", tempPhotoAreas[index])
+        console.log(newArr)
+        setAreasToDelete([...areasToDelete, tempPhotoAreas[index].id])
+        setTempPhotoAreas(newArr)
+    }
+
+    const handleAddNewPhotoArea = () => {
+        if (tempPhotoAreas[0] === undefined || tempPhotoAreas[tempPhotoAreas.length - 1].name !== "") {
+            setTempPhotoAreas([...tempPhotoAreas, { name: "", companyId: companyId, id: String(Date.now()), position: tempPhotoAreas.length }]);
+        } else {
+            setTempPhotoAreas(tempPhotoAreas)
+            console.warn("Please name the previous Photo Area first")
+        }
+    }
+
+    const handlePhotoAreaCancel = () => {
+        setTempPhotoAreas(photoAreas)
+        setAreasToDelete([])
+        setIsEditingPhotoAreas(false)
+    }
+
+    const handlePhotoAreaSubmit = async () => {
+        const sortedPhotoAreas = tempPhotoAreas.map((area, index) => ({ ...area, position: index }))
+        await axios.post(serverURL + 'account/company/photo-areas', {
+            tempPhotoAreas: sortedPhotoAreas,
+            companyId: companyId,
+            areasToDelete: areasToDelete
+        })
+            .then((res) => { setPhotoAreas(res.data), console.log(res.data), setIsEditingPhotoAreas(false) })
+            .catch((err) => { console.log(err), setIsEditingPhotoAreas(false) })
+    }
     if (isEditingPhotoAreas) {
         return (
             <div className="Contents flex">
@@ -248,22 +293,11 @@ function FleetManagement() {
                     <div className="PhotoAreas block">
                         <label>Edit Photo Areas</label>
                         {listPhotoAreas}
-                        <button
-                            onClick={(e) => {
-                                if (tempPhotoAreas[0] === undefined || tempPhotoAreas[tempPhotoAreas.length - 1].name !== "") {
-                                    setTempPhotoAreas([...tempPhotoAreas, { name: "", companyId: import.meta.env.VITE_COMPANY_ID, id: String(Date.now()) }]);
-                                }
-                                e.preventDefault();
-                            }}
-                        >Add A New Area</button>
+                        <button onClick={handleAddNewPhotoArea}>Add A New Area</button>
                     </div>
                     <div className=" space-x-4 my-4">
-                        <button onClick={() => { setIsEditingPhotoAreas(false) }}>Cancel</button>
-                        <button
-                            onClick={(e) => {
-                                console.log(tempPhotoAreas)
-                                handlePASubmit()
-                            }}>Save</button>
+                        <button onClick={handlePhotoAreaCancel}>Cancel</button>
+                        <button onClick={handlePhotoAreaSubmit}>Save</button>
                     </div>
                 </div>
             </div>
@@ -306,7 +340,6 @@ function FleetManagement() {
                                     <th scope="col">VIN</th>
                                     <th scope="col">Year</th>
                                     <th scope="col">Fleet</th>
-                                    <th scope="col">Photo Areas</th>
                                 </tr>
                             </thead>
                             <tbody>
