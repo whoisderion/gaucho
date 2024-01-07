@@ -1,5 +1,7 @@
 import axios from "axios"
-import { useEffect, useState } from "react"
+
+const serverURL = import.meta.env.VITE_SERVER_URL
+const companyId = import.meta.env.VITE_COMPANY_ID
 
 const handleInputChange = (e: React.ChangeEvent<HTMLElement>, setFormData: React.Dispatch<React.SetStateAction<any>>, section: string) => {
     const { name, value, type } = e.target as HTMLInputElement
@@ -279,11 +281,7 @@ function Upload() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}upload/equipment-fields/${import.meta.env.VITE_COMPANY_ID}`)
-                // console.log(res.data)
-                const newEquipmentFields = res.data.equipmentFields.map((equipmentType: EquipmentType) => ({ "name": equipmentType.name, "id": equipmentType.id }))
-                setEquipmentFields((prevEquipmentFields: string[]) => [...prevEquipmentFields, ...newEquipmentFields])
-                const newEquipmentObj = newEquipmentFields.reduce((acc, obj) => {
+                const res = await axios.get(`${serverURL}upload/equipment-fields/${companyId}`)
                     acc[obj.name] = {
                         id: obj.id,
                         quantity: null
