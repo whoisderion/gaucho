@@ -280,10 +280,10 @@ app.get("/print-qr-codes/:companyID", async (req: Request, res: Response) => {
         }
     });
 
-    function createURLs(trucks: Truck[]): string[] {
-        let URLs: string[] = []
+    function createURLs(trucks: Truck[]): { url: string, name: string }[] {
+        let URLs: { url: string, name: string }[] = []
         trucks.forEach(truck => {
-            URLs.push(`${process.env.CLIENT_URL}trucks/upload/${truck.id}`)
+            URLs.push({ url: `${process.env.CLIENT_URL}trucks/upload/${truck.id}`, name: truck.name })
         });
         return URLs;
     }
