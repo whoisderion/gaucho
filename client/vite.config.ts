@@ -8,13 +8,7 @@ export default defineConfig(({command, mode}) => {
   return {
     plugins: [react(), tsconfigPaths()],
     server: {
-      host: true,
-      proxy: {
-        "/api":  {
-            target:  env.VITE_SERVER_URL,
-            rewrite: (path) => path.replace(/^\/api/, env.VITE_SERVER_URL),
-          }
-      }
+      host: true
     }
   }
 })

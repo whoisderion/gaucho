@@ -26,7 +26,7 @@ function EquipmentDashboard() {
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios.get("/api/account/equipment-complete/" + import.meta.env.VITE_COMPANY_ID, {
+            await axios.get(import.meta.env.VITE_SERVER_URL + "/account/equipment-complete/" + import.meta.env.VITE_COMPANY_ID, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
