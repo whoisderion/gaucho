@@ -6,6 +6,9 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   server: {
-    host: true
+    host: true,
+    proxy: {
+      "/api": process.env.VITE_SERVER_URL,
+    }
   }
 })
