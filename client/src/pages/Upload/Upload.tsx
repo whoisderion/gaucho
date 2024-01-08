@@ -53,15 +53,22 @@ const previewFile = (file, setPreviewSource) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onloadend = () => {
-        setPreviewSource(reader.result)
+        setFormData(prevFormData => {
+            const updatedPictures = [...prevFormData.pictures];
+            updatedPictures[index] = {
+                photoArea: area,
+                previewSource: reader.result as string
+            };
+            return { ...prevFormData, pictures: updatedPictures };
+        });
     }
 }
 
 function UploadMaintenace({ setUploadingMaintenance, setUploadingInventory, formData, setFormData }: {
     setUploadingMaintenance: React.Dispatch<React.SetStateAction<boolean>>,
     setUploadingInventory: React.Dispatch<React.SetStateAction<boolean>>,
-    formData: any
-    setFormData: React.Dispatch<React.SetStateAction<any>>
+    formData: uploadFormData
+    setFormData: React.Dispatch<React.SetStateAction<uploadFormData>>
 }) {
     return (
         <div className="Contents">
@@ -145,12 +152,12 @@ function UploadMaintenace({ setUploadingMaintenance, setUploadingInventory, form
 }
 
 function UploadInventory({ formData, setFormData, equipmentFields, setUploadingMaintenance, setUploadingInventory, setUploadingPictures }: {
-    formData: any
+    formData: any,
+    setFormData: React.Dispatch<React.SetStateAction<any>>,
+    equipmentFields: any,
     setUploadingMaintenance: React.Dispatch<React.SetStateAction<boolean>>,
     setUploadingInventory: React.Dispatch<React.SetStateAction<boolean>>,
-    setUploadingPictures: React.Dispatch<React.SetStateAction<boolean>>,
-    setFormData: React.Dispatch<React.SetStateAction<any>>
-    equipmentFields: any
+    setUploadingPictures: React.Dispatch<React.SetStateAction<boolean>>
 }) {
     handleSubmit
     return (
@@ -197,10 +204,10 @@ function UploadInventory({ formData, setFormData, equipmentFields, setUploadingM
     )
 }
 
-function UploadPictures({ formData, setUploadingInventory, setUploadingPictures, previewSource, setPreviewSource }: {
-    formData: any,
+    formData: uploadFormData,
     setUploadingInventory: React.Dispatch<React.SetStateAction<boolean>>,
     setUploadingPictures: React.Dispatch<React.SetStateAction<boolean>>,
+    photoAreas: PhotoArea[]
 }) {
     return (
         <div className="Contents">
@@ -237,17 +244,47 @@ function UploadPictures({ formData, setUploadingInventory, setUploadingPictures,
 
 type uploadFormData = {
     maintenance: {
-        mileage: number,
-        oil: string,
-        coolant: string,
-        frontDriverTread: string,
-        frontPassengerTread: string,
-        rearDriverTread: string,
-        rearPassengerTread: string,
-        notes: string,
+        mileage?: number,
+        oil?: string,
+        coolant?: string,
+        frontDriverTread?: boolean,
+        frontPassengerTread?: boolean,
+        rearDriverTread?: boolean,
+        rearPassengerTread?: boolean,
+        notes?: string,
     },
-    equipment: { name: string, id: string, quantity: string }[],
-    photos: {}
+    equipment: { [key: string]: { id: string, quantity: number } },
+    pictures: {
+        photoArea: PhotoArea,
+        previewSource: string
+    }[]
+}
+
+const initialFormData: uploadFormData = {
+    maintenance: {
+        mileage: 0,
+        oil: '',
+        coolant: '',
+        frontDriverTread: false,
+        frontPassengerTread: false,
+        rearDriverTread: false,
+        rearPassengerTread: false,
+        notes: '',
+    },
+    equipment: {},
+    pictures: [],
+}
+
+type PhotoArea = {
+    id: string,
+    name: string,
+    companyID: string,
+    position: number
+}
+
+type EquipmentType = {
+    id: string,
+    name: string
 }
 
 function Upload() {
@@ -256,27 +293,8 @@ function Upload() {
     const [uploadingInventory, setUploadingInventory] = useState(false)
     const [uploadingPictures, setUploadingPictures] = useState(false)
     const [equipmentFields, setEquipmentFields] = useState<any>([])
-    const [previewSource, setPreviewSource] = useState()
-    const [formData, setFormData] = useState({
-        maintenance: {
-            mileage: null,
-            oil: null,
-            coolant: null,
-            frontDriverTread: null,
-            frontPassengerTread: null,
-            rearDriverTread: null,
-            rearPassengerTread: null,
-            notes: null,
-        },
-        equipment: {},
-        photos: {}
-    })
-
-    type EquipmentType = {
-        id: string,
-        name: string,
-        companyId: string
-    }
+    const [formData, setFormData] = useState<uploadFormData>(initialFormData)
+    const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -325,8 +343,8 @@ function Upload() {
                 setUploadingInventory={setUploadingInventory}
                 setUploadingPictures={setUploadingPictures}
                 formData={formData}
-                previewSource={previewSource}
-                setPreviewSource={setPreviewSource} />
+                setFormData={setFormData}
+                photoAreas={photoAreas} />
         )
     }
 }
