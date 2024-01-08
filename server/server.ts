@@ -16,7 +16,7 @@ cloudinary.config({
 })
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://10.0.0.20:5173', 'http://192.168.1.64:5173', 'http://172.20.10.2:5173'],
+    origin: ['http://localhost:5173', 'http://10.0.0.20:5173', 'http://192.168.1.64:5173', 'http://172.20.10.2:5173', 'https://gaucho-client-production.up.railway.app'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     // credentials: true,
