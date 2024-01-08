@@ -16,7 +16,7 @@ cloudinary.config({
 })
 
 const corsOptions = {
-    origin: ['http://localhost', 'http://10.0.0.20', 'http://192.168.1.64', 'http://172.20.10.2', 'https://gaucho-client-production.up.railway.app'],
+    origin: ['http://localhost:5173', 'http://10.0.0.20:4173', 'http://10.0.0.20:5173', 'http://192.168.1.64:5173', 'http://172.20.10.2:5173', 'https://gaucho-client-production.up.railway.app'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -801,11 +801,13 @@ app.post("/account/fleet", async (req: Request, res: Response) => {
 })
 
 
-app.get("/dashboard", async (req: Request, res: Response) => {
+app.get("/dashboard/:companyId", async (req: Request, res: Response) => {
     // >>>  gets all the relavant data to populate the dashboard
 
     // res: dashboard{fleet{}}
     // note: redundant IDs will be kept for sanity checks/easier debugging
+    
+    const companyId = req.params.companyId
 
     type DashboardVehicle = {
         id: string,
@@ -830,7 +832,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
     // returns an array of fleets that the company have created
     const fleet = await prisma.fleet.findMany({
         where: {
-            companyId: req.body.companyID
+            companyId: companyId
         }
     })
 
@@ -838,7 +840,7 @@ app.get("/dashboard", async (req: Request, res: Response) => {
     const vehicles = await prisma.truck.findMany({
         where: {
             Fleet: {
-                companyId: req.body.companyId
+                companyId: companyId
             }
         }
     })
