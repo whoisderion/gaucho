@@ -8,16 +8,16 @@ function Account() {
 
     useEffect(() => {
         async function getCompanyInfo() {
-            await axios.get(import.meta.env.VITE_SERVER_URL + '/account/' + import.meta.env.VITE_COMPANY_ID)
+            await axios.get(import.meta.env.VITE_SERVER_URL + '/account/company/' + import.meta.env.VITE_COMPANY_ID)
                 .then(function (res: any) {
                     setCompanyInfo(res.data)
+                    console.log(res.data)
                 })
         }
         getCompanyInfo()
     }, [])
 
     if (companyInfo) {
-        console.log(companyInfo)
         return (
             <div className='Contents'>
                 <Sidebar />
