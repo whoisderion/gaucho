@@ -12,7 +12,7 @@ function SignUp() {
         let data = new FormData(e.target as HTMLFormElement)
         let formObject = Object.fromEntries(data.entries())
         console.log(formObject['company-name'], formObject['company-email'], formObject['phone-number'])
-        await axios.post(`${import.meta.env.VITE_SERVER_URL}create-account`, {
+        await axios.post(`${import.meta.env.VITE_SERVER_URL}/create-account`, {
             companyName: formObject['company-name'],
             email: formObject['company-email'],
             phoneNumber: formObject['phone-number']

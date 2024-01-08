@@ -25,18 +25,18 @@ function SignUpQRCodes() {
                 if (fleetsData) {
                     // console.log(parsedData)
 
-                    axios.post(`${import.meta.env.VITE_SERVER_URL}setup/fleets`, {
+                    axios.post(`${import.meta.env.VITE_SERVER_URL}/setup/fleets`, {
                         fleets: parsedData.fleets,
                         companyID: currCompanyID
                     })
                         .then(() => {
-                            axios.post(`${import.meta.env.VITE_SERVER_URL}setup/inventory`, {
+                            axios.post(`${import.meta.env.VITE_SERVER_URL}/setup/inventory`, {
                                 fleets: parsedData.fleets,
                                 equipmentTypes: parsedData.equipmentTypes,
                                 companyID: currCompanyID
                             })
                                 .then(() => {
-                                    axios.get(`${import.meta.env.VITE_SERVER_URL}print-qr-codes/${currCompanyID}`)
+                                    axios.get(`${import.meta.env.VITE_SERVER_URL}/print-qr-codes/${currCompanyID}`)
                                         .then(res => {
                                             setQRData(res.data)
                                         })

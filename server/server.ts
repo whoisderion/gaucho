@@ -494,14 +494,14 @@ app.post("/upload/complete", async (req: Request, res: Response) => {
     }
 })
 
-app.get("/account/company", async (req: Request, res: Response) => {
+app.get("/account/company/:companyID", async (req: Request, res: Response) => {
     // req: companyID
 
     // >>>  get company email, address, notification settings
 
     // res: 200 and company{} || 4xx
 
-    const companyID = req.query.companyID as string
+    const companyID = req.params.companyID as string
 
     const company = await prisma.company.findUnique({
         where: {

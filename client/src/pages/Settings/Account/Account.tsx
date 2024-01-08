@@ -8,7 +8,7 @@ function Account() {
 
     useEffect(() => {
         async function getCompanyInfo() {
-            await axios.get(import.meta.env.VITE_SERVER_URL + 'account/company?companyID=clpw9jgxd0000ztvheigeqjgf')
+            await axios.get(import.meta.env.VITE_SERVER_URL + '/account/' + import.meta.env.VITE_COMPANY_URL)
                 .then(function (res: any) {
                     setCompanyInfo(res.data)
                 })

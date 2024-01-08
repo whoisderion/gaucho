@@ -18,7 +18,12 @@ function QRCodes() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await axios.get(`${import.meta.env.VITE_SERVER_URL}print-qr-codes/${currCompanyID}`)
+                await axios.get(`${import.meta.env.VITE_SERVER_URL}/print-qr-codes/${currCompanyID}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                      }
+                })
                     .then(res => {
                         setQRData(res.data)
                         console.log(res.data)

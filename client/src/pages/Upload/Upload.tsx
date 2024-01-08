@@ -32,7 +32,7 @@ const handleSubmit = async (e: React.FormEvent, formData: uploadFormData) => {
     const pathArray = window.location.pathname.split('/')
     const truckID = pathArray[pathArray.length - 1]
 
-    const uploadUpdate = await axios.post(`${import.meta.env.VITE_SERVER_URL}upload/complete`, {
+    const uploadUpdate = await axios.post(`${import.meta.env.VITE_SERVER_URL}/upload/complete`, {
         formData: formData,
         truckID: truckID,
         companyID: import.meta.env.VITE_COMPANY_ID
@@ -304,7 +304,7 @@ function Upload() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await axios.get(`${serverURL}upload/equipment-fields/${companyId}`)
+                const res = await axios.get(`${serverURL}/upload/equipment-fields/${companyId}`)
                 const newEquipmentFields: EquipmentType[] = res.data.equipmentFields.map((equipmentType: EquipmentType) => ({ "name": equipmentType.name, "id": equipmentType.id }))
                 setEquipmentFields(newEquipmentFields)
                 const newEquipmentObj = newEquipmentFields.reduce((acc: { [key: string]: { id: string; quantity: number } }, obj) => {
@@ -318,7 +318,7 @@ function Upload() {
                     ...prevFormData,
                     equipment: newEquipmentObj
                 }))
-                await axios.get(`${serverURL}account/company/photo-areas/${companyId}`)
+                await axios.get(`${serverURL}/account/company/photo-areas/${companyId}`)
                     .then((res: any) => {
                         setPhotoAreas(res.data)
                         const picturesData = res.data.map((area: PhotoArea) => ({ photoArea: area, previewSource: "" }))

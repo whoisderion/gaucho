@@ -58,10 +58,11 @@ function Maintenance() {
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios.get("http://127.0.0.1:4474/dashboard", {
-                params: {
-                    "companyID": "clpw9jgxd0000ztvheigeqjgf"
-                }
+            await axios.get(import.meta.env.VITE_SERVER_URL + "/dashboard"+ import.meta.env.VITE_COMPANY_ID, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  }
             }).then((res) => {
                 setDashboardData(res.data)
                 console.log(res.data)
