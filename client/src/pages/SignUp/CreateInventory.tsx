@@ -103,7 +103,7 @@ function CreateInventory() {
                                 isEditingEquipment={isEditingEquipment}
                                 handleEquipmentEdit={handleEquipmentEdit} />
                         </div>
-                        <Fleet fleet={selectedFleet} currFleet={currFleet} />
+                        <Fleet fleet={selectedFleet} currFleet={currFleet} equipmentTypes={equipmentTypes} />
                     </div>
                 </div>
                 <button onClick={continueSignup}>Complete</button>
