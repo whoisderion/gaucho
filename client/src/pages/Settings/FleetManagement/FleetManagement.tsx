@@ -161,17 +161,17 @@ function FleetManagement() {
         fetchData()
     }, [])
 
-    const startEditing = (vehicle) => {
+    const startEditing = (vehicle: Vehicle) => {
         setIsEditingVehicle(true);
         setEditingVehicle(vehicle);
-    };
+    }
 
     const stopEditing = () => {
         setIsEditingVehicle(false);
-        setEditingVehicle(null);
-    };
+        setEditingVehicle(undefined);
+    }
 
-    function Dropdown({ vehicle }) {
+    function Dropdown({ vehicle }: { vehicle: Vehicle }) {
         return (
             <div className="dropdown relative inline-block group">
                 <button className="dropbtn">⋮</button>
@@ -188,7 +188,7 @@ function FleetManagement() {
         )
     }
 
-    const listVehicles = fleetData && fleetData.vehicles.map((vehicle) =>
+    const listVehicles = fleetData && fleetData.vehicles.map((vehicle: Vehicle) =>
         <tr key={vehicle.name} >
             <td className="py-4">{vehicle.name}</td>
             <td>{vehicle.license}</td>
