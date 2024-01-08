@@ -49,7 +49,7 @@ function EditVehicleMenu({ vehicle, setVehicle, fleetData, setFleetData, stopEdi
 
     const handleSubmit = async (newVehicleData: EditVehicleMenuProps["vehicle"], setFleetData: EditVehicleMenuProps["setFleetData"]) => {
         console.log(newVehicleData)
-        await axios.post(serverURL + 'account/vehicle', newVehicleData)
+        await axios.post(serverURL + '/account/vehicle', newVehicleData)
             .then(() => setFleetData((prevData) => {
                 if (prevData) {
                     const updatedVehicles = prevData.vehicles.map((vehicle) =>
@@ -141,7 +141,7 @@ function FleetManagement() {
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios.get(`${serverURL}account/fleet/${companyId}`)
+            await axios.get(`${serverURL}/account/fleet/${companyId}`)
                 .then((res) => {
                     setFleetData(res.data)
                     setTempFleets(res.data.fleets)
@@ -149,7 +149,7 @@ function FleetManagement() {
                 }).catch((err) => {
                     console.error(err)
                 })
-            await axios.get(`${serverURL}account/company/photo-areas/${companyId}`)
+            await axios.get(`${serverURL}/account/company/photo-areas/${companyId}`)
                 .then((res) => {
                     setPhotoAreas(res.data)
                     setTempPhotoAreas(res.data)
@@ -279,7 +279,7 @@ function FleetManagement() {
     }
 
     const handleEditFleetSubmit = async () => {
-        await axios.post(serverURL + 'account/fleet', { tempFleets: tempFleets, fleetsToDelete: fleetsToDelete, companyId: companyId })
+        await axios.post(serverURL + '/account/fleet', { tempFleets: tempFleets, fleetsToDelete: fleetsToDelete, companyId: companyId })
             .then((res) => { setTempFleets(res.data), console.log(res.data), setIsEditingFleets(false) })
             .catch((err) => console.error(err))
     }
@@ -322,7 +322,7 @@ function FleetManagement() {
 
     const handlePhotoAreaSubmit = async () => {
         const sortedPhotoAreas = tempPhotoAreas.map((area, index) => ({ ...area, position: index }))
-        await axios.post(serverURL + 'account/company/photo-areas', {
+        await axios.post(serverURL + '/account/company/photo-areas', {
             tempPhotoAreas: sortedPhotoAreas,
             companyId: companyId,
             areasToDelete: areasToDelete
