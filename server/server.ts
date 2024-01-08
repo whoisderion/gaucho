@@ -584,168 +584,136 @@ app.post("/account/company/photo-areas", async (req: Request, res: Response) => 
     }
 })
 
+// // app.post("/account/company", async (req: Request, res: Response) => {
+// //     // req: newCompanyInfo{email}
 
-    // >>>  updates the user's info in DB
+// //     // >>>  update compnay info in DB
 
-    // res: 201 and users[user{updatedInfo}] || 4xx
+// //     // res: 201 and company{updatedInfo} || 4xx
 
-    let users: Users[] = []
+// //     const company = await prisma.company.update({
+// //         where: {
+// //             id: req.body.companyID,
+// //         },
+// //         data: req.body.data
+// //     })
 
-    for (const user of req.body.users) {
-        const updatedUser = await prisma.users.update({
-            where: {
-                id: user.id
-            },
-            data: user
-        })
-        users.push(updatedUser)
-    }
+// //     return res.status(200).json(company)
+// // })
 
-    return res.status(201).json(users)
-})
+// // app.get("/account/users", async (req: Request, res: Response) => {
+// //     // >>>  get all users in company's user table
 
-// TODO: delete user
+// //     //res: 200 and users[] || 4xx
 
-app.get("/account/roles", async (req: Request, res: Response) => {
-    // >>>  get all roles in company's role table
+// //     const users = await prisma.users.findMany({
+// //         where: {
+// //             companyId: req.body.companyId
+// //         }
+// //     })
 
-    //res: 200 and roles[] || 4xx
+// //     return res.status(200).json(users)
+// // })
 
-    const roles = await prisma.role.findMany({
-        where: {
-            companyId: req.body.companyID
-        }
-    })
+// // app.post("/account/users", async (req: Request, res: Response) => {
+// //     // req: newUserInfo{uuid, name}
 
-    res.status(200).json(roles)
-})
+// //     // >>>  updates the user's info in DB
 
-app.post("/account/roles", async (req: Request, res: Response) => {
-    // req: newRoleParameters{roleName, role{}}
+// //     // res: 201 and users[user{updatedInfo}] || 4xx
 
-    // >>>  updates the roles in DB
+// //     let users: Users[] = []
 
-    // res: 201 and roles[role{newParams}] || 4xx
+// //     for (const user of req.body.users) {
+// //         const updatedUser = await prisma.users.update({
+// //             where: {
+// //                 id: user.id
+// //             },
+// //             data: user
+// //         })
+// //         users.push(updatedUser)
+// //     }
 
-    const roles: Role[] = req.body.roles
-    let updatedRoles: Role[] = []
-    for (const role of roles) {
-        const updatedRole = await prisma.role.upsert({
-            where: {
-                name: role.name
-            },
-            update: {
-                name: role.name
-            },
-            create: {
-                name: role.name,
-                companyId: req.body.companyID
-            }
-        })
-        updatedRoles.push(updatedRole)
-    }
+// //     return res.status(201).json(users)
+// // })
 
-    return res.status(201).json(updatedRoles)
-})
+// // // TODO: delete user
 
-// TODO: delete role
+// // app.get("/account/roles", async (req: Request, res: Response) => {
+// //     // >>>  get all roles in company's role table
 
-app.post("/account/equipment-complete", async (req: Request, res: Response) => {
-    // >>>  get all equipment types in company's equipment table
+// //     //res: 200 and roles[] || 4xx
 
-    //res: 200 and inventory[] || 4xx
+// //     const roles = await prisma.role.findMany({
+// //         where: {
+// //             companyId: req.body.companyID
+// //         }
+// //     })
 
-    const companyID = req.body.companyID
+// //     res.status(200).json(roles)
+// // })
 
-    let inventoryTimeframes: any[] = []
+// // app.post("/account/roles", async (req: Request, res: Response) => {
+// //     // req: newRoleParameters{roleName, role{}}
 
-    const currentDate = new Date();
-    const oneDayAgo = new Date(Number(currentDate) - 1 * 24 * 60 * 60 * 1000);
-    const threeDaysAgo = new Date(Number(currentDate) - 3 * 24 * 60 * 60 * 1000);
-    const oneWeekAgo = new Date(Number(currentDate) - 7 * 24 * 60 * 60 * 1000);
-    const twoWeekAgo = new Date(Number(currentDate) - 14 * 24 * 60 * 60 * 1000);
-    const oneMonthAgo = new Date(Number(currentDate) - 30 * 24 * 60 * 60 * 1000);
+// //     // >>>  updates the roles in DB
 
-    let timeframes = [
-        { label: "oneDayAgo", value: oneDayAgo },
-        { label: "threeDaysAgo", value: threeDaysAgo },
-        { label: "oneWeekAgo", value: oneWeekAgo },
-        { label: "twoWeeksAgo", value: twoWeekAgo },
-        { label: "oneMonthAgo", value: oneMonthAgo }
-    ]
+// //     // res: 201 and roles[role{newParams}] || 4xx
 
-    let equipmentData = []
+// //     const roles: Role[] = req.body.roles
+// //     let updatedRoles: Role[] = []
+// //     for (const role of roles) {
+// //         const updatedRole = await prisma.role.upsert({
+// //             where: {
+// //                 name: role.name
+// //             },
+// //             update: {
+// //                 name: role.name
+// //             },
+// //             create: {
+// //                 name: role.name,
+// //                 companyId: req.body.companyID
+// //             }
+// //         })
+// //         updatedRoles.push(updatedRole)
+// //     }
 
-    for (const date of timeframes) {
-        const recentTruckInventories = await prisma.truck.findMany({
-        where: {
-                companyId: companyID,
-            },
-            select: {
-                // id: true,
-                name: true,
-                inventory: {
-                    where: {
-                        date: {
-                            gte: date.value
-                        },
-                    },
-                    select: {
-                        equipmentItems: {
-                            select: {
-                                equipment: {
-                                    select: {
-                                        name: true
-                                    }
-                                },
-                                quantity: true,
-                            },
-                        },
-                        date: true,
-                    },
-                },
-            },
-        });
+// //     return res.status(201).json(updatedRoles)
+// // })
 
-        equipmentData.push({
-            label: date.label,
-            inventoryRecord: recentTruckInventories
-        })
-    }
+// // TODO: delete role
 
-    res.status(200).json(equipmentData)
-})
+// // OLD POST VERB
 
-// OLD POST VERB
-app.get("/account/equipment", async (req: Request, res: Response) => {
-    // req: changes[...newEquipmentInfo{equipment{name, description}}]
+// // app.get("/account/equipment", async (req: Request, res: Response) => {
+// //     // req: changes[...newEquipmentInfo{equipment{name, description}}]
 
-    // >>>  updates the equipment info in DB
+// //     // >>>  updates the equipment info in DB
 
-    // res: 201 and allEquipment[] || 4xx
+// //     // res: 201 and allEquipment[] || 4xx
 
-    const equipment = req.body.equipment
+// //     const equipment = req.body.equipment
 
-    let updatedEquipment: Equipment[] = []
+// //     let updatedEquipment: Equipment[] = []
 
-    for (const item of equipment) {
-        const upsertedItem = await prisma.equipment.upsert({
-            where: {
-                id: item.id || ""
-            },
-            update: {
-                name: item.name
-            },
-            create: {
-                name: item.name,
-                companyId: req.body.companyID
-            }
-        })
-        updatedEquipment.push(upsertedItem)
-    }
+// //     for (const item of equipment) {
+// //         const upsertedItem = await prisma.equipment.upsert({
+// //             where: {
+// //                 id: item.id || ""
+// //             },
+// //             update: {
+// //                 name: item.name
+// //             },
+// //             create: {
+// //                 name: item.name,
+// //                 companyId: req.body.companyID
+// //             }
+// //         })
+// //         updatedEquipment.push(upsertedItem)
+// //     }
 
-    res.status(201).json(updatedEquipment)
-})
+// //     res.status(201).json(updatedEquipment)
+// // })
 
 // // TODO: delete equipment
 
