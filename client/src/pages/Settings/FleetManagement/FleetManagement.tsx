@@ -203,15 +203,15 @@ function FleetManagement() {
         <div
             key={fleet.id}
             className=" block my-4">
-        <input
-            type="text"
-            value={fleet.name}
-            onChange={(e) => {
+            <input
+                type="text"
+                value={fleet.name}
+                onChange={(e) => {
                     const newFleet: Fleet = { ...fleet, name: e.target.value }
                     setTempFleets((prevData) => prevData.map((prevFleet, currIndex) => currIndex === index ? newFleet : prevFleet))
-            }}
-            autoComplete="off"
-        />
+                }}
+                autoComplete="off"
+            />
             <span
                 className=" mx-4"
                 onClick={() => { handleDeleteFleet(fleet, index) }}>
@@ -229,8 +229,8 @@ function FleetManagement() {
             onDragOver={(e) => { e.preventDefault }}
             draggable>
             <span className="mx-4">≡</span>
-        <input
-            type="text"
+            <input
+                type="text"
                 value={currArea.name}
                 onChange={(e) => { handlePhotoAreaRename(e, index) }}
                 autoComplete="off"
@@ -292,9 +292,9 @@ function FleetManagement() {
     }
 
     const handlePhotoAreaRename = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-                const updatedAreas = [...tempPhotoAreas];
-                updatedAreas[index].name = e.target.value;
-                setTempPhotoAreas(updatedAreas);
+        const updatedAreas = [...tempPhotoAreas];
+        updatedAreas[index].name = e.target.value;
+        setTempPhotoAreas(updatedAreas);
     }
 
     const handleDeletePhotoArea = (index: number, currArea: PhotoArea) => {
