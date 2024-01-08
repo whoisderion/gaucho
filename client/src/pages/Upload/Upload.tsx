@@ -1,12 +1,13 @@
 import axios from "axios"
+import { ChangeEvent, useEffect, useState } from "react"
 
 const serverURL = import.meta.env.VITE_SERVER_URL
 const companyId = import.meta.env.VITE_COMPANY_ID
 
-const handleInputChange = (e: React.ChangeEvent<HTMLElement>, setFormData: React.Dispatch<React.SetStateAction<any>>, section: string) => {
+const handleInputChange = (e: React.ChangeEvent<HTMLElement>, setFormData: React.Dispatch<React.SetStateAction<uploadFormData>>, section: keyof uploadFormData) => {
     const { name, value, type } = e.target as HTMLInputElement
-    const isEquipment = section === 'equipment'
-    setFormData((previousFormData) => ({
+    const isEquipment = (section === 'equipment')
+    setFormData((previousFormData: uploadFormData) => ({
         ...previousFormData,
         [section]: {
             ...previousFormData[section],
@@ -26,12 +27,8 @@ const handleInputChange = (e: React.ChangeEvent<HTMLElement>, setFormData: React
     }))
 }
 
-const handleSubmit = async (e: React.FormEvent, formData: any, previewSource) => {
+const handleSubmit = async (e: React.FormEvent, formData: uploadFormData) => {
     e.preventDefault()
-    if (previewSource) {
-        formData = { ...formData, pictures: previewSource }
-    }
-    console.log(formData)
     const pathArray = window.location.pathname.split('/')
     const truckID = pathArray[pathArray.length - 1]
 
@@ -44,23 +41,24 @@ const handleSubmit = async (e: React.FormEvent, formData: any, previewSource) =>
     return (uploadUpdate)
 }
 
-const handleFileInputChange = (e, setPreviewSource) => {
-    const file = e.target.files[0]
-    previewFile(file, setPreviewSource)
-}
-
-const previewFile = (file, setPreviewSource) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onloadend = () => {
-        setFormData(prevFormData => {
-            const updatedPictures = [...prevFormData.pictures];
-            updatedPictures[index] = {
-                photoArea: area,
-                previewSource: reader.result as string
-            };
-            return { ...prevFormData, pictures: updatedPictures };
-        });
+const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>,
+    area: PhotoArea,
+    setFormData: React.Dispatch<React.SetStateAction<uploadFormData>>,
+    index: number) => {
+    if (e.target.files) {
+        const file = e.target.files[0]
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onloadend = () => {
+            setFormData(prevFormData => {
+                const updatedPictures = [...prevFormData.pictures]
+                updatedPictures[index] = {
+                    photoArea: area,
+                    previewSource: reader.result as string
+                }
+                return { ...prevFormData, pictures: updatedPictures }
+            })
+        }
     }
 }
 
@@ -204,7 +202,9 @@ function UploadInventory({ formData, setFormData, equipmentFields, setUploadingM
     )
 }
 
+function UploadPictures({ formData, setFormData, setUploadingInventory, setUploadingPictures, photoAreas }: {
     formData: uploadFormData,
+    setFormData: React.Dispatch<React.SetStateAction<uploadFormData>>,
     setUploadingInventory: React.Dispatch<React.SetStateAction<boolean>>,
     setUploadingPictures: React.Dispatch<React.SetStateAction<boolean>>,
     photoAreas: PhotoArea[]
@@ -240,7 +240,7 @@ function UploadInventory({ formData, setFormData, equipmentFields, setUploadingM
                         setUploadingPictures(false)
                     }}>Back</button>
                     <button
-                        onClick={(e) => { handleSubmit(e, formData, previewSource) }}>Submit</button>
+                        onClick={(e) => { handleSubmit(e, formData) }}>Submit</button>
                 </div>
             </div>
         </div>
@@ -305,9 +305,12 @@ function Upload() {
         const fetchData = async () => {
             try {
                 const res = await axios.get(`${serverURL}upload/equipment-fields/${companyId}`)
+                const newEquipmentFields: EquipmentType[] = res.data.equipmentFields.map((equipmentType: EquipmentType) => ({ "name": equipmentType.name, "id": equipmentType.id }))
+                setEquipmentFields(newEquipmentFields)
+                const newEquipmentObj = newEquipmentFields.reduce((acc: { [key: string]: { id: string; quantity: number } }, obj) => {
                     acc[obj.name] = {
                         id: obj.id,
-                        quantity: null
+                        quantity: 0
                     }
                     return acc
                 }, {})
@@ -315,6 +318,12 @@ function Upload() {
                     ...prevFormData,
                     equipment: newEquipmentObj
                 }))
+                await axios.get(`${serverURL}account/company/photo-areas/${companyId}`)
+                    .then((res: any) => {
+                        setPhotoAreas(res.data)
+                        const picturesData = res.data.map((area: PhotoArea) => ({ photoArea: area, previewSource: "" }))
+                        setFormData(prevFormData => ({ ...prevFormData, pictures: picturesData }))
+                    })
             } catch (err) {
                 console.error(err)
             }
@@ -332,7 +341,6 @@ function Upload() {
                 setFormData={setFormData} />
         )
     } else if (uploadingInventory) {
-        console.log(formData)
         return (
             <UploadInventory
                 equipmentFields={equipmentFields}
