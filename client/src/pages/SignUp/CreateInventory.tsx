@@ -8,6 +8,7 @@ type Vehicle = {
     licensePlate: string,
     vinNumber: string
     id: number
+    equipment: { equipmentTypeID: number, quantity: number }[]
 }
 
 type fleet = {
@@ -30,16 +31,16 @@ function CreateInventory() {
         {
             name: 'Fleet 1',
             vehicles: [
-                { name: 'Vehicle 1', licensePlate: 'ABC123', vinNumber: '123456', id: 1 },
-                { name: 'Vehicle 2', licensePlate: 'DEF456', vinNumber: '789012', id: 2 }
+                { name: 'Vehicle 1', licensePlate: 'ABC123', vinNumber: '123456', id: 1, equipment: [] },
+                { name: 'Vehicle 2', licensePlate: 'DEF456', vinNumber: '789012', id: 2, equipment: [] }
             ],
             id: 1
         },
         {
             name: 'Fleet 2',
             vehicles: [
-                { name: 'Vehicle 3', licensePlate: 'GHI789', vinNumber: '345678', id: 1 },
-                { name: 'Vehicle 4', licensePlate: 'JKL012', vinNumber: '901234', id: 2 }
+                { name: 'Vehicle 3', licensePlate: 'GHI789', vinNumber: '345678', id: 1, equipment: [] },
+                { name: 'Vehicle 4', licensePlate: 'JKL012', vinNumber: '901234', id: 2, equipment: [] }
             ],
             id: 2
         }
