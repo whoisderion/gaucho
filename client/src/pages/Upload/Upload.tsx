@@ -209,25 +209,30 @@ function UploadInventory({ formData, setFormData, equipmentFields, setUploadingM
     setUploadingPictures: React.Dispatch<React.SetStateAction<boolean>>,
     photoAreas: PhotoArea[]
 }) {
+
+    const displayPhotoAreas = photoAreas.map((area: PhotoArea, index: number) => (
+        <div key={index} className="border border-black my-2 p-2">
+            <p>{area.name}</p>
+            <p>{ }</p>
+            <input
+                type="file"
+                name="photo1"
+                id=""
+                accept="image/*"
+                onChange={(e) => { handleFileInputChange(e, area, setFormData, index) }} />
+            <div className="mt-6">
+                <p>Preview</p>
+                <img src={formData.pictures[index].previewSource} alt="" />
+            </div>
+        </div>
+    ))
+
     return (
         <div className="Contents">
             <div className=" max-w-lg border mx-auto px-20 py-7 text-center ">
                 <h2>Upload Pictures</h2>
                 <div>
-                    This has yet to be implemented ¯\_(ツ)_/¯
-                    <input
-                        type="file"
-                        name="photo1"
-                        id=""
-                        accept="image/*"
-                        value={formData.Pictures}
-                        onChange={(e) => { handleFileInputChange(e, setPreviewSource) }} />
-                    {previewSource && (
-                        <div className="mt-6">
-                            <p>Preview</p>
-                            <img src={previewSource} alt="" />
-                        </div>
-                    )}
+                    {displayPhotoAreas}
                 </div>
                 <div className=" space-x-6">
                     <button onClick={() => {
