@@ -29,8 +29,7 @@ function EquipmentDashboard() {
             await axios.get(import.meta.env.VITE_SERVER_URL + "/account/equipment-complete/" + import.meta.env.VITE_COMPANY_ID, {
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    credentials: "include"
+                    'Content-Type': 'application/json'
                   }
             }).then((res) => {
                 setEquipmentData(res.data)
