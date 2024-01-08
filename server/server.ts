@@ -19,16 +19,11 @@ const corsOptions = {
     origin: ['http://localhost:5173', 'http://10.0.0.20:4173', 'http://192.168.1.64:5173', 'http://172.20.10.2:5173', 'https://gaucho-client-production.up.railway.app'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    // credentials: true,
+    credentials: true,
 }
 
 app.set('json spaces', 4)
-app.use((req, res, next) => {
-    cors(corsOptions)
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With')
-    next()
-})
+app.use(cors(corsOptions))
 app.use(express.json({ limit: '50mb' }))
 
 app.get("/", (req: Request, res: Response): void => {
