@@ -139,14 +139,14 @@ function FleetManagement() {
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios.get(`${import.meta.env.VITE_SERVER_URL}account/fleet/${import.meta.env.VITE_COMPANY_ID}`)
+            await axios.get(`${serverURL}account/fleet/${companyId}`)
                 .then((res) => {
                     setFleetData(res.data)
                     console.log("fleetData", res.data)
                 }).catch((err) => {
                     console.error(err)
                 })
-            await axios.get(`${import.meta.env.VITE_SERVER_URL}account/company/photo-areas/${import.meta.env.VITE_COMPANY_ID}`)
+            await axios.get(`${serverURL}account/company/photo-areas/${companyId}`)
                 .then((res) => {
                     setPhotoAreas(res.data)
                     setTempPhotoAreas(res.data)
