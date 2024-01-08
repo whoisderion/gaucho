@@ -14,6 +14,6 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
-    "semicolon": false
+    "semi": "off"
   },
 }
