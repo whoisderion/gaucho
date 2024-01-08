@@ -58,7 +58,7 @@ function Maintenance() {
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios.get(import.meta.env.VITE_SERVER_URL + "/dashboard"+ import.meta.env.VITE_COMPANY_ID, {
+            await axios.get(import.meta.env.VITE_SERVER_URL + "/dashboard/"+ import.meta.env.VITE_COMPANY_ID, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
