@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import * as ROUTES from 'data/routes'
 import axios from "axios";
+import { FormEvent } from "react";
 
 function SignUp() {
 
     const navigate = useNavigate();
 
-    const formSubmit = async (e) => {
+    const formSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        let data = new FormData(e.target)
+        let data = new FormData(e.target as HTMLFormElement)
         let formObject = Object.fromEntries(data.entries())
         console.log(formObject['company-name'], formObject['company-email'], formObject['phone-number'])
         await axios.post(`${import.meta.env.VITE_SERVER_URL}create-account`, {
