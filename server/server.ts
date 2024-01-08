@@ -23,7 +23,12 @@ const corsOptions = {
 }
 
 app.set('json spaces', 4)
-app.use(cors(corsOptions))
+app.use((req, res, next) => {
+    cors(corsOptions)
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With')
+    next()
+})
 app.use(express.json({ limit: '50mb' }))
 
 app.get("/", (req: Request, res: Response): void => {
