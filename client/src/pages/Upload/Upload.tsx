@@ -228,7 +228,7 @@ function UploadInventory({ formData, setFormData, equipmentFields, setUploadingM
     ))
 
     return (
-        <div className="Contents">
+        <div className="Contents overflow-auto max-h-[90%]">
             <div className=" max-w-lg border mx-auto px-20 py-7 text-center ">
                 <h2>Upload Pictures</h2>
                 <div>
