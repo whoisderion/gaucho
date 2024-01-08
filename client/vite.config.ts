@@ -13,7 +13,7 @@ export default defineConfig(({command, mode}) => {
         "/api":  {
             target:  env.VITE_SERVER_URL,
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, ''),
+            rewrite: (path) => path.replace(/^\/api/, env.VITE_SERVER_URL),
           }
       }
     }
