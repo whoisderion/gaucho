@@ -134,6 +134,8 @@ function FleetManagement() {
     const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([])
     const [tempPhotoAreas, setTempPhotoAreas] = useState<PhotoArea[]>([])
     const [areasToDelete, setAreasToDelete] = useState<String[]>([])
+    const [tempFleets, setTempFleets] = useState<Fleet[]>([])
+    const [fleetsToDelete, setFleetsToDelete] = useState<String[]>([])
     const dragArea = useRef<number>(0)
     const draggedOverArea = useRef<number>(0)
 
@@ -142,6 +144,7 @@ function FleetManagement() {
             await axios.get(`${serverURL}account/fleet/${companyId}`)
                 .then((res) => {
                     setFleetData(res.data)
+                    setTempFleets(res.data.fleets)
                     console.log("fleetData", res.data)
                 }).catch((err) => {
                     console.error(err)
@@ -196,22 +199,24 @@ function FleetManagement() {
         </tr>
     )
 
-    const listEditingFleets = fleetData && fleetData.fleets.map((fleet) => (
+    const listEditingFleets = tempFleets && tempFleets.map((fleet, index) => (
+        <div
+            key={fleet.id}
+            className=" block my-4">
         <input
             type="text"
             value={fleet.name}
-            key={fleet.id} // Added unique key to prevent React warnings
             onChange={(e) => {
-                setFleetData((prevData) => ({
-                    ...prevData,
-                    fleets: prevData.fleets.map((f) =>
-                        f.id === fleet.id ? { ...f, name: e.target.value } : f
-                    ),
-                    vehicles: prevData.vehicles || [] // Ensure vehicles is always an array
-                }));
+                    const newFleet: Fleet = { ...fleet, name: e.target.value }
+                    setTempFleets((prevData) => prevData.map((prevFleet, currIndex) => currIndex === index ? newFleet : prevFleet))
             }}
             autoComplete="off"
         />
+            <span
+                className=" mx-4"
+                onClick={() => { handleDeleteFleet(fleet, index) }}>
+                X</span>
+        </div>
     ))
 
     const listPhotoAreas = tempPhotoAreas && tempPhotoAreas.map((currArea, index) => (
@@ -235,6 +240,49 @@ function FleetManagement() {
                 onClick={() => { handleDeletePhotoArea(index, currArea) }}>X</span>
         </div>
     ))
+
+    const handleDeleteFleet = (currFleet: Fleet, index: number) => {
+        if (tempFleets && fleetData) {
+            let isEmptyFleet = true
+            for (const vehicle of fleetData.vehicles) {
+                if (vehicle.Fleet.id == currFleet.id) {
+                    isEmptyFleet = false
+                }
+            }
+            if (!isEmptyFleet) {
+                return (console.warn("Remove all vehicles from this fleet first!"))
+            } else {
+                const newArr = tempFleets.filter((fleet) => fleet.id != currFleet.id)
+                setTempFleets(newArr)
+                console.log("deleting:", tempFleets[index])
+                setFleetsToDelete((prevData) => [...prevData, tempFleets[index].id])
+            }
+        } else {
+            console.error("Failed to delete the selected fleet")
+        }
+    }
+
+    const handleAddNewFleet = () => {
+        if (tempFleets[tempFleets.length - 1].name !== "New Fleet") {
+            setTempFleets([...tempFleets, { name: "New Fleet", companyId: companyId, id: String(Date.now()) }])
+        } else {
+            console.warn("Please name previous fleet first")
+        }
+    }
+
+    const handleEditFleetCancel = () => {
+        if (fleetData) {
+            setTempFleets(fleetData.fleets)
+            setFleetsToDelete([])
+            setIsEditingFleets(false)
+        }
+    }
+
+    const handleEditFleetSubmit = async () => {
+        await axios.post(serverURL + 'account/fleet', { tempFleets: tempFleets, fleetsToDelete: fleetsToDelete, companyId: companyId })
+            .then((res) => { setTempFleets(res.data), console.log(res.data), setIsEditingFleets(false) })
+            .catch((err) => console.error(err))
+    }
 
     function handleMovePhotoArea() {
         const areasClone = [...tempPhotoAreas]
@@ -312,10 +360,13 @@ function FleetManagement() {
                     <h3>Edit Fleets</h3>
                     <div>
                         {listEditingFleets}
+                        <div>
+                            <button className="p-2" onClick={handleAddNewFleet}>Add New Fleet</button>
+                        </div>
                     </div>
                     <div className=" space-x-4 my-4">
-                        <button onClick={() => { setIsEditingFleets(false) }}>Cancel</button>
-                        <button>Save</button>
+                        <button onClick={handleEditFleetCancel}>Cancel</button>
+                        <button onClick={handleEditFleetSubmit}>Save</button>
                     </div>
                 </div>
             </div>
