@@ -4,18 +4,16 @@ import * as ROUTES from 'data/routes.ts'
 
 import Landing from 'pages/Landing'
 import SignUp from 'pages/SignUp/SignUp'
+import SignIn from 'pages/SignIn'
+import Home from 'pages/Home'
+import {CreateFleet, CreateInventory, SignUpQRCodes} from 'pages/SignUp'
+import {FleetOverview, Maintenance, UserActivity, EquipmentDashboard} from 'pages/Dashboards'
 import Account from 'pages/Settings/Account'
-import CreateFleet from 'pages/SignUp/CreateFleet'
-import CreateInventory from 'pages/SignUp/CreateInventory'
-import SignUpQRCodes from 'pages/SignUp/QRCodes'
-import FleetOverview from 'pages/Dashboards/FleetOverview'
-import Maintenance from 'pages/Dashboards/Maintenance'
-import UserActivity from 'pages/Dashboards/UserActivity'
-import EquipmentDashboard from 'pages/Dashboards/EquipmentDashboard'
 import FleetManagement from 'pages/Settings/FleetManagement'
+import MaintenanceSettings from 'pages/Settings/MaintenanceSettings'
 import QRCodes from 'pages/QRCodes'
 import Upload from 'pages/Upload'
-import MaintenanceSettings from 'pages/Settings/MaintenanceSettings'
+
 
 function App() {
 
