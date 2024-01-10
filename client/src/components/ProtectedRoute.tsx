@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
-import {useAuth} from "hooks/Auth"
+import {UseAuth} from "hooks/Auth"
 import * as ROUTES from "data/routes"
 
 const ProtectedRoute = ({children} : any) => {
-    const {user} = useAuth()
+    const {user} = UseAuth()
 
     if(!user) {
         return <Navigate to={ROUTES.SIGN_IN}/>

@@ -1,6 +1,7 @@
 import 'App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import * as ROUTES from 'data/routes.ts'
+import ProtectedRoute from 'components/ProtectedRoute'
 
 import Landing from 'pages/Landing'
 import SignUp from 'pages/SignUp/SignUp'
