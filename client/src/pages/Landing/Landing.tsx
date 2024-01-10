@@ -6,11 +6,9 @@ function Landing() {
         <div>
             <div className="text-emerald-700">Welcome to Gaucho</div>
             <div>
-                <Link to={ROUTES.SIGN_UP}><button>Create a Company</button></Link>
+                <Link to={ROUTES.SIGN_UP}><button>Sign Up</button></Link>
 
-                <Link to={ROUTES.ACCOUNT}><button>View Company Details</button></Link>
-
-                <Link to={ROUTES.FLEET_OVERVIEW}><button>View Company Dashboards</button></Link>
+                <Link to={ROUTES.SIGN_IN}><button>Sign In</button></Link>
             </div>
         </div>
     )
