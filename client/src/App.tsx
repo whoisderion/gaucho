@@ -28,52 +28,55 @@ function App() {
           <Route
             path={ROUTES.LANDING}
             element={<Landing />} />
-          {/* <Route
-            path={ROUTES.HOME}
-            element={<Home />} /> */}
           <Route
             path={ROUTES.SIGN_UP}
-            element={<SignUp />} />
+            element={<SignUp/>} />
+          <Route 
+            path={ROUTES.SIGN_IN}
+            element={<SignIn/>}/>
           <Route
-            path={ROUTES.CREATE_FLEET}
-            element={<CreateFleet />} />
-          <Route
-            path={ROUTES.CREATE_INVENTORY}
-            element={<CreateInventory />} />
-          <Route
-            path={ROUTES.PRINT_QR_CODES}
-            element={<SignUpQRCodes />} />
-          <Route
-            path={ROUTES.ACCOUNT}
-            element={<Account />} />
-          <Route
-            path={ROUTES.FLEET_MANAGEMENT}
-            element={<FleetManagement />} />
-          <Route
-            path={ROUTES.MAINTENANCE_SETTINGS}
-            element={<MaintenanceSettings />} />
-          <Route
-            path={ROUTES.FLEET_OVERVIEW}
-            element={<FleetOverview />} />
-          <Route
-            path={ROUTES.MAINTENANCE}
-            element={<Maintenance />} />
-          <Route
-            path={ROUTES.USER_ACTIVITY}
-            element={<UserActivity />} />
-          <Route
-            path={ROUTES.EQUIPMENT}
-            element={<EquipmentDashboard />} />
-          <Route
-            path={ROUTES.LIST_QR_CODES}
-            element={<QRCodes />} />
-          <Route
-            path='/trucks/upload/:id'
-            element={<Upload />} />
-        </Routes>
-      </div>
-    </Router>
-  )
-}
+            path={ROUTES.HOME}
+            element={<Home />} />
+            <Route
+              path={ROUTES.CREATE_FLEET}
+              element={<CreateFleet />} />
+            <Route
+              path={ROUTES.CREATE_INVENTORY}
+              element={<CreateInventory />} />
+            <Route
+              path={ROUTES.PRINT_QR_CODES}
+              element={<SignUpQRCodes />} />
+            <Route
+              path={ROUTES.ACCOUNT}
+              element={<Account />} />
+            <Route
+              path={ROUTES.FLEET_MANAGEMENT}
+              element={<FleetManagement />} />
+            <Route
+              path={ROUTES.MAINTENANCE_SETTINGS}
+              element={<MaintenanceSettings />} />
+            <Route
+              path={ROUTES.FLEET_OVERVIEW}
+              element={<FleetOverview />} />
+            <Route
+              path={ROUTES.MAINTENANCE}
+              element={<Maintenance />} />
+            <Route
+              path={ROUTES.USER_ACTIVITY}
+              element={<UserActivity />} />
+            <Route
+              path={ROUTES.EQUIPMENT}
+              element={<EquipmentDashboard />} />
+            <Route
+              path={ROUTES.LIST_QR_CODES}
+              element={<QRCodes />} />
+            <Route
+              path='/trucks/upload/:id'
+              element={<Upload />} />
+          </Routes>
+        </div>
+      </Router>
+    )
+  }
 
 export default App
