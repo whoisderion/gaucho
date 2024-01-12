@@ -22,9 +22,7 @@ function App() {
     <AuthProvider>
     <Router>
       <div className="App w-screen h-screen overflow-hidden">
-        <nav className=' border-solid border-ternary border-b-2 '>
-          <h2>Gaucho</h2>
-        </nav>
+        <Navigation/>
         <Routes>
             <Route
               path={ROUTES.LANDING}
