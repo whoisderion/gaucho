@@ -14,11 +14,12 @@ import FleetManagement from 'pages/Settings/FleetManagement'
 import MaintenanceSettings from 'pages/Settings/MaintenanceSettings'
 import QRCodes from 'pages/QRCodes'
 import Upload from 'pages/Upload'
-
+import { AuthProvider } from 'hooks/Auth'
+import Navigation from 'components/Navigation'
 
 function App() {
-
-  return (
+  return ( 
+    <AuthProvider>
     <Router>
       <div className="App w-screen h-screen overflow-hidden">
         <nav className=' border-solid border-ternary border-b-2 '>
@@ -76,6 +77,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </AuthProvider>
     )
   }
 

@@ -1,21 +1,22 @@
-import { Auth } from '@supabase/auth-ui-react'
+// import { Auth } from '@supabase/auth-ui-react'
 import {UseAuth} from '../../hooks/Auth'
-import { supabaseClient } from 'config/supabase-client'
+// import { supabaseClient } from 'config/supabase-client'
 import * as ROUTES from 'data/routes'
-import { FormEvent, FormEventHandler, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { FormEvent, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const SignIn = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const {session, signIn} = UseAuth()
-  console.log('session auth:', session)
+  const {signIn} = UseAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(email, password)
     signIn(email,password)
+    console.log("signed in")
+    navigate(ROUTES.FLEET_MANAGEMENT)
   }
 
   return (

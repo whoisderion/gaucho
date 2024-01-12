@@ -27,6 +27,7 @@ export const AuthProvider = ({children} : any) => {
   
       const { data: { subscription }} = supabaseClient.auth.onAuthStateChange((_event, session) => {
         setSession(session)
+        console.log("subscription", subscription)
       })
 
       setData()
@@ -34,19 +35,19 @@ export const AuthProvider = ({children} : any) => {
       return () => subscription.unsubscribe()
     }, [])
 
-    const signIn = (email: string, password: string) => {
-      supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    })
-      console.log(email,password)
-    }
-
     const value = {
       session, 
       user, 
-      signIn: (email: string, password: string) => signIn(email, password),
-      signOut: () => supabaseClient.auth.signOut()
+      signIn: async (email: string, password: string) => {
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        })
+      },
+      signOut: async () => {
+        const {error} = await supabaseClient.auth.signOut()
+        console.log(session, "error:", error)
+      }
     }
       
   return (
