@@ -26,18 +26,15 @@ function App() {
           <h2>Gaucho</h2>
         </nav>
         <Routes>
-          <Route
-            path={ROUTES.LANDING}
-            element={<Landing />} />
-          <Route
-            path={ROUTES.SIGN_UP}
-            element={<SignUp/>} />
-          <Route 
-            path={ROUTES.SIGN_IN}
-            element={<SignIn/>}/>
-          <Route
-            path={ROUTES.HOME}
-            element={<Home />} />
+            <Route
+              path={ROUTES.LANDING}
+              element={<Landing />} />
+            <Route
+              path={ROUTES.SIGN_UP}
+              element={<SignUp/>} />
+            <Route 
+              path={ROUTES.SIGN_IN}
+              element={<SignIn/>}/>
             <Route
               path={ROUTES.CREATE_FLEET}
               element={<CreateFleet />} />
@@ -48,29 +45,32 @@ function App() {
               path={ROUTES.PRINT_QR_CODES}
               element={<SignUpQRCodes />} />
             <Route
+              path={ROUTES.HOME}
+              element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route
               path={ROUTES.ACCOUNT}
-              element={<Account />} />
+              element={<ProtectedRoute><Account /></ProtectedRoute>} />
             <Route
               path={ROUTES.FLEET_MANAGEMENT}
-              element={<FleetManagement />} />
+              element={<ProtectedRoute><FleetManagement /></ProtectedRoute>} />
             <Route
               path={ROUTES.MAINTENANCE_SETTINGS}
-              element={<MaintenanceSettings />} />
+              element={<ProtectedRoute><MaintenanceSettings /></ProtectedRoute>} />
             <Route
               path={ROUTES.FLEET_OVERVIEW}
-              element={<FleetOverview />} />
+              element={<ProtectedRoute><FleetOverview /></ProtectedRoute>} />
             <Route
               path={ROUTES.MAINTENANCE}
-              element={<Maintenance />} />
+              element={<ProtectedRoute><Maintenance /></ProtectedRoute>} />
             <Route
               path={ROUTES.USER_ACTIVITY}
-              element={<UserActivity />} />
+              element={<ProtectedRoute><UserActivity /></ProtectedRoute>} />
             <Route
               path={ROUTES.EQUIPMENT}
-              element={<EquipmentDashboard />} />
+              element={<ProtectedRoute><EquipmentDashboard /></ProtectedRoute>} />
             <Route
               path={ROUTES.LIST_QR_CODES}
-              element={<QRCodes />} />
+              element={<ProtectedRoute><QRCodes /></ProtectedRoute>} />
             <Route
               path='/trucks/upload/:id'
               element={<Upload />} />
