@@ -18,7 +18,7 @@ function Navigation() {
 						navigate(ROUTES.LANDING)
 					}}
 				>
-					Sign In
+					Sign Out
 				</button>
 			)}
 		</nav>
