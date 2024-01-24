@@ -1,18 +1,19 @@
 import { Link } from "react-router-dom"
 import * as ROUTES from "data/routes"
+import { Button } from "@/components/ui/button"
 
 function Landing() {
 	return (
 		<div>
 			<div className='text-emerald-700'>Welcome to Gaucho</div>
 			<div>
-				<Link to={ROUTES.SIGN_UP}>
-					<button>Sign Up</button>
-				</Link>
+				<Button asChild>
+					<Link to={ROUTES.SIGN_UP}>Sign Up</Link>
+				</Button>
 
-				<Link to={ROUTES.SIGN_IN}>
-					<button>Sign In</button>
-				</Link>
+				<Button asChild>
+					<Link to={ROUTES.SIGN_IN}>Sign In</Link>
+				</Button>
 			</div>
 		</div>
 	)
