@@ -1,3 +1,3 @@
-import QRCodes from "./QRCodes";
+import QRCodes from "./QRCodes"
 
 export default QRCodes

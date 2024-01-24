@@ -1,3 +1,3 @@
-import EquipmentDashboard from "./EquipmentDashboard";
+import EquipmentDashboard from "./EquipmentDashboard"
 
 export default EquipmentDashboard

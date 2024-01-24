@@ -1,3 +1,3 @@
-import MaintenanceSettings from "./MaintenanceSettings";
+import MaintenanceSettings from "./MaintenanceSettings"
 
 export default MaintenanceSettings

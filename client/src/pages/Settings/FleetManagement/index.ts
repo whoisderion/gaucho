@@ -1,3 +1,3 @@
-import FleetManagement from "./FleetManagement";
+import FleetManagement from "./FleetManagement"
 
 export default FleetManagement
