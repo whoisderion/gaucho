@@ -30,6 +30,8 @@ const corsOptions = {
 		"http://10.0.0.20:4173",
 		"http://10.0.0.20:5173",
 		"http://192.168.1.64:5173",
+		"http://192.0.0.1:5173",
+		"http://172.16.102.105:5173",
 		"http://172.20.10.2:5173",
 		"https://gaucho-client-production.up.railway.app",
 	],
