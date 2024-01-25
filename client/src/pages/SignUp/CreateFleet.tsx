@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"
 import * as ROUTES from "data/routes"
 import { Equipment, Fleet, Fleets } from "components/FleetObjects"
 
+import { Button } from "@/components/ui/button"
+
 type Vehicle = {
 	name: string
 	licensePlate: string
@@ -214,17 +216,16 @@ function CreateFleet() {
 		}
 	}
 
-	// 'type' must be a property in type Vehicle (name, licensePlate, vinNumber)
 	function handleVehicleChange(
 		vehicleId: number,
 		fleetId: number,
-		e:
+		type: string,
+		e?:
 			| React.ChangeEvent<HTMLInputElement>
 			| React.ChangeEvent<HTMLSelectElement>
 			| React.MouseEvent<HTMLButtonElement, MouseEvent>,
-		type: string,
-		currEquipmentTypeID: number | undefined,
-		equipmentQuantity: number | undefined
+		currEquipmentTypeID?: number | undefined,
+		equipmentQuantity?: number | undefined
 	) {
 		setFleets(
 			fleets.map((fleet) => {
@@ -336,14 +337,12 @@ function CreateFleet() {
 
 	return (
 		<div className='flex flex-wrap'>
-			<div id='fleet-menu' className='w-[20%]'>
-				<h1>Fleets</h1>
-				<hr className='my-2' />
+			<div id='fleet-menu' className='w-[20%] ml-8'>
 				<div>
 					<Fleets fleets={fleets} selectFleet={selectFleet} />
-					<button onClick={createNewFleet}>+ Create Fleet</button>
+					<Button onClick={createNewFleet}>+ Create Fleet</Button>
 				</div>
-				<div>
+				<div className='mt-8'>
 					<Equipment
 						equipmentTypes={equipmentTypes}
 						addEquipmentType={addEquipmentType}
@@ -370,7 +369,7 @@ function CreateFleet() {
 				)}
 			</div>
 			<div className=' basis-full grow w-full text-center mt-12'>
-				<button onClick={continueSignup}>Continue</button>
+				<Button onClick={continueSignup}>Continue</Button>
 			</div>
 		</div>
 	)

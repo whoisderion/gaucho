@@ -1,3 +1,14 @@
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+	Select,
+	SelectTrigger,
+	SelectValue,
+	SelectContent,
+	SelectItem,
+} from "@/components/ui/select"
+import { useState } from "react"
+
 type Vehicle = {
 	name: string
 	licensePlate: string
@@ -28,15 +39,15 @@ type FleetProps = {
 	deleteVehicle?: (vehicleId: number, fleetId: number) => void
 	createNewVehicle?: (fleetId: number) => void
 	handleVehicleChange?: (
-		id: number,
+		vehicleId: number,
 		fleetId: number,
-		e:
+		type: string,
+		e?:
 			| React.ChangeEvent<HTMLInputElement>
 			| React.ChangeEvent<HTMLSelectElement>
 			| React.MouseEvent<HTMLButtonElement, MouseEvent>,
-		type: string,
-		currEquipmentTypeID?: number,
-		equipmentQuantity?: number
+		currEquipmentTypeID?: number | undefined,
+		equipmentQuantity?: number | undefined
 	) => void
 	equipmentTypes: Equipment[]
 }
@@ -61,6 +72,8 @@ const Fleet: React.FC<FleetProps> = ({
 	handleVehicleChange,
 	equipmentTypes,
 }) => {
+	const [key, setKey] = useState<number>(+new Date())
+
 	if (
 		handleFleetNameChange &&
 		deleteFleet &&
@@ -69,28 +82,31 @@ const Fleet: React.FC<FleetProps> = ({
 		handleVehicleChange
 	) {
 		return (
-			<div className='pl-12'>
-				<h3 className='text-left mb-8 text-3xl'>
-					{/* TODO: find an alternative solution to autoFocus */}
-					<input
-						type='text'
-						name='name'
-						value={fleet.name}
-						key={fleet.id}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-							handleFleetNameChange(fleet.id, e)
+			<div className='pl-8'>
+				<h4>Fleet Name</h4>
+				<div className='flex'>
+					<h3 className='text-left mb-4 text-3xl'>
+						<Input
+							type='text'
+							name='name'
+							value={fleet.name}
+							key={fleet.id}
+							className=' w-96'
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								handleFleetNameChange(fleet.id, e)
+							}}
+						/>
+					</h3>
+					<Button
+						onClick={() => {
+							deleteFleet(currFleet)
 						}}
-						autoFocus
-					/>
-				</h3>
-				<button
-					onClick={() => {
-						deleteFleet(currFleet)
-					}}
-				>
-					Delete {fleet.name}
-				</button>
-				<hr />
+						variant={"destructive"}
+						className=' ml-4'
+					>
+						Delete {fleet.name}
+					</Button>
+				</div>
 				<h4 className='text-left text-xl my-4'>Vehicles</h4>
 				<ul>
 					{fleet.vehicles.map((vehicle) => (
@@ -98,20 +114,20 @@ const Fleet: React.FC<FleetProps> = ({
 							<li className='border-solid border-[1px] mb-4 py-2 flex w-10/12'>
 								<div className='vehicle-info'>
 									<div className=' flex-auto flex-grow-[5]'>
-										<input
+										<Input
 											type='text'
 											name='vehicleName'
 											value={vehicle.name}
 											key={vehicle.id + "Name"}
+											placeholder='Vehicle Name'
 											onChange={(e) =>
-												handleVehicleChange(vehicle.id, fleet.id, e, "name")
+												handleVehicleChange(vehicle.id, fleet.id, "name", e)
 											}
-											autoFocus
 										/>
 									</div>
 									<div className='text-left flex-grow grid grid-rows-2 grid-cols-2'>
-										<p>License Plate: </p>
-										<input
+										<p className=' m-auto'>License Plate: </p>
+										<Input
 											type='text'
 											name='vehicleLicense'
 											value={vehicle.licensePlate}
@@ -120,14 +136,13 @@ const Fleet: React.FC<FleetProps> = ({
 												handleVehicleChange(
 													vehicle.id,
 													fleet.id,
-													e,
-													"licensePlate"
+													"licensePlate",
+													e
 												)
 											}
-											autoFocus
 										/>
-										<p>VIN Number: </p>
-										<input
+										<p className='m-auto [&&]:mt-2'>VIN Number: </p>
+										<Input
 											type='text'
 											name='vinNumber'
 											value={vehicle.vinNumber}
@@ -136,11 +151,10 @@ const Fleet: React.FC<FleetProps> = ({
 												handleVehicleChange(
 													vehicle.id,
 													fleet.id,
-													e,
-													"vinNumber"
+													"vinNumber",
+													e
 												)
 											}
-											autoFocus
 										/>
 									</div>
 								</div>
@@ -155,107 +169,123 @@ const Fleet: React.FC<FleetProps> = ({
 											if (currEquipment) {
 												return (
 													<div key={equipment.equipmentTypeID}>
-														<div>{currEquipment.name}</div>
-														<input
-															type='number'
-															name={`equipmentName${equipment.equipmentTypeID}`}
-															min={0}
-															value={
-																equipment.quantity === 0
-																	? "0"
-																	: equipment.quantity
-															}
-															onChange={(e) =>
-																handleVehicleChange(
-																	vehicle.id,
-																	fleet.id,
-																	e,
-																	"changeEquipmentQuantity",
-																	equipment.equipmentTypeID,
-																	Number(e.target.value)
-																)
-															}
-															autoFocus
-														/>
-														<button
-															type='button'
-															onClick={(e) =>
-																handleVehicleChange(
-																	vehicle.id,
-																	fleet.id,
-																	e,
-																	"removeEquipmentType",
-																	equipment.equipmentTypeID
-																)
-															}
-														>
-															X
-														</button>
+														<p>{currEquipment.name}</p>
+														<div className='flex'>
+															<Input
+																type='number'
+																name={`equipmentName${equipment.equipmentTypeID}`}
+																min={0}
+																value={
+																	equipment.quantity === 0
+																		? "0"
+																		: equipment.quantity
+																}
+																onChange={(e) =>
+																	handleVehicleChange(
+																		vehicle.id,
+																		fleet.id,
+																		"changeEquipmentQuantity",
+																		e,
+																		equipment.equipmentTypeID,
+																		Number(e.target.value)
+																	)
+																}
+															/>
+															<Button
+																onClick={(e) =>
+																	handleVehicleChange(
+																		vehicle.id,
+																		fleet.id,
+																		"removeEquipmentType",
+																		e,
+																		equipment.equipmentTypeID
+																	)
+																}
+																variant={"ghost"}
+															>
+																X
+															</Button>
+														</div>
 													</div>
 												)
 											}
 										}
 									})}
-									<select
-										onChange={(e) => {
-											if (e.target.value === "Add Equipment") {
-												e.preventDefault()
-											} else {
+									<Select
+										onValueChange={(e) => {
+											if (e !== "Add Equipment") {
 												const equipment = equipmentTypes.filter((equipment) => {
-													if (equipment.name === e.target.value) {
+													if (equipment.name === e) {
 														return equipment
 													}
 												})
-												const equipemntID = equipment[0].id
+												const equipmentID = equipment[0].id
 												handleVehicleChange(
 													vehicle.id,
 													fleet.id,
-													e,
 													"addEquipmentType",
-													equipemntID
+													undefined,
+													equipmentID
+												)
+												setKey(+new Date())
+												console.log(
+													vehicle.equipment.length == equipmentTypes.length
 												)
 											}
 										}}
+										key={key}
 									>
-										<option value={"Add Equipment"}>Add Equipment</option>
-										{equipmentTypes.map((equipment) => {
-											const inVehicleArr = vehicle.equipment.some(
-												(item) => item.equipmentTypeID === equipment.id
-											)
-											if (!inVehicleArr) {
-												return (
-													<option
-														value={equipment.name}
-														id={`${vehicle.id + equipment.id}`}
-														key={`${vehicle.id + equipment.id}`}
-													>
-														{equipment.name}
-													</option>
-												)
+										<SelectTrigger
+											className={
+												vehicle.equipment.length == equipmentTypes.length
+													? " mt-2 bg-muted"
+													: " mt-2"
 											}
-										})}
-									</select>
+										>
+											<SelectValue placeholder={"Add Equipment"} />
+										</SelectTrigger>
+										<SelectContent>
+											{equipmentTypes.map((equipment) => {
+												const inVehicleArr = vehicle.equipment.some(
+													(item) => item.equipmentTypeID === equipment.id
+												)
+												if (!inVehicleArr) {
+													return (
+														<SelectItem
+															value={equipment.name}
+															id={`${vehicle.id + equipment.id}`}
+															key={`${vehicle.id + equipment.id}`}
+														>
+															{equipment.name}
+														</SelectItem>
+													)
+												}
+											})}
+										</SelectContent>
+									</Select>
 								</div>
 							</li>
 
 							<div>
-								<button
+								<Button
 									onClick={() => {
 										deleteVehicle(vehicle.id, fleet.id)
 									}}
+									variant={"destructive"}
 								>
 									Delete
-								</button>
+								</Button>
 							</div>
 						</div>
 					))}
-					<button
+					<Button
 						onClick={() => {
 							createNewVehicle(fleet.id)
 						}}
+						variant={"outline"}
 					>
 						Add Vehicle
-					</button>
+					</Button>
 				</ul>
 			</div>
 		)

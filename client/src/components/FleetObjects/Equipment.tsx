@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
 type Equipment = {
 	name: string
 	id: number
@@ -26,49 +29,55 @@ const Equipment: React.FC<EquipmentProps> = ({
 	if (isEditingEquipment) {
 		return (
 			<div>
-				<h3>Equipment</h3>
+				<h2>Equipment</h2>
 				{equipmentTypes.map((equipment) => {
 					return (
-						<div className='flex' key={equipment.id}>
-							<input
+						<div className='flex py-1' key={equipment.id}>
+							<Input
 								type='text'
 								value={equipment.name}
 								onChange={(e) => {
 									handleEquipmentEdit(equipment.id, e)
 								}}
-								autoFocus
 							/>
-							<button
+							<Button
 								onClick={() => {
 									deleteEquipmentType(equipment.id)
 								}}
-								className=' p-1 m-1'
+								// className=' p-1 m-1'
+								variant={"ghost"}
+								className=' hover:bg-destructive hover:opacity-90'
 							>
 								X
-							</button>
+							</Button>
 						</div>
 					)
 				})}
-				<button onClick={addEquipmentType} className='block'>
+				<Button
+					onClick={addEquipmentType}
+					className='block my-2'
+					variant='outline'
+				>
 					Add New Equipment
-				</button>
-				<button onClick={editEquipmentTypes}>Finish Editing</button>
+				</Button>
+				<Button onClick={editEquipmentTypes} className='block my-2'>
+					Finish Editing
+				</Button>
 			</div>
 		)
 	} else {
 		// not editing equipment
 		return (
 			<div>
-				<h3 className='text-5xl my-4'>Equipment</h3>
-				<hr className='my-4' />
+				<h2>Equipment</h2>
 				{equipmentTypes.map((equipment) => {
 					return (
-						<div className='flex' key={equipment.id} draggable>
-							<p>- {equipment.name}</p>
+						<div className='flex pl-6 ' key={equipment.id} draggable>
+							<p className='py-3'>- {equipment.name}</p>
 						</div>
 					)
 				})}
-				<button onClick={editEquipmentTypes}>Edit Equipment</button>
+				<Button onClick={editEquipmentTypes}>Edit Equipment</Button>
 			</div>
 		)
 	}
