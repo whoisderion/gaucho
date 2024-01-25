@@ -20,6 +20,7 @@ type FleetsProps = {
 const Fleets: React.FC<FleetsProps> = ({ fleets, selectFleet }) => {
 	return (
 		<div className='fleets-list text-left'>
+			<h2>Fleets</h2>
 			<ul>
 				{fleets.map((fleet) => (
 					<li
@@ -29,10 +30,10 @@ const Fleets: React.FC<FleetsProps> = ({ fleets, selectFleet }) => {
 						}}
 						className='fleet mb-4'
 					>
-						<h3 className='fleet-name'>{fleet.name}</h3>
+						<h4 className='fleet-name pt-2'>{fleet.name}</h4>
 						<ul className='pl-6'>
 							{fleet.vehicles.map((vehicle, vehicleIndex) => (
-								<li key={vehicleIndex}>
+								<li key={vehicleIndex} className='pt-1'>
 									<p>- {vehicle.name}</p>
 								</li>
 							))}
