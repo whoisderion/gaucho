@@ -498,22 +498,18 @@ function FleetManagement() {
 									setIsEditingFleets(true)
 								}}
 							>
-								{" "}
 								Edit Fleets
-							</button>
+							</Button>
+							<Button>Add A New Vehicle</Button>
+							<Button>Print QR Codes</Button>
 						</div>
-						<table className='vehicles table-auto text-left min-w-[80%]'>
-							<thead>
-								<tr>
-									<th scope='col'>Name</th>
-									<th scope='col'>License</th>
-									<th scope='col'>VIN</th>
-									<th scope='col'>Year</th>
-									<th scope='col'>Fleet</th>
-								</tr>
-							</thead>
-							<tbody>{listVehicles}</tbody>
-						</table>
+						<div className=' mr-8'>
+							<DataTable
+								columns={columns}
+								data={fleetData.vehicles}
+								startEditing={startEditing}
+							/>
+						</div>
 					</div>
 				</div>
 				{isEditingVehicle && editingVehicle && (
