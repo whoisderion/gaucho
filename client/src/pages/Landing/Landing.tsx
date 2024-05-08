@@ -7,10 +7,12 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion"
-import { default as Test } from "assets/test.mp4"
 import { default as Wave } from "assets/wave-haikei.svg"
-import { default as Image } from "assets/feature_1.webp"
+import { default as Image } from "assets/feature_1.jpeg"
 import { Check, X } from "lucide-react"
+
+const Test =
+	"https://stafvkxufrwikaopaoom.supabase.co/storage/v1/object/sign/website-assets/test%20trimmed.mp4?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJ3ZWJzaXRlLWFzc2V0cy90ZXN0IHRyaW1tZWQubXA0IiwiaWF0IjoxNzE1MjA1NDc2LCJleHAiOjE3NDY3NDE0NzZ9.7Q-ZQdfxY50U3I7hGHGTLdhJo_zBbGJ9mEUEB0mw4Dc&t=2024-05-08T21%3A57%3A56.438Z"
 
 function Landing() {
 	return (
