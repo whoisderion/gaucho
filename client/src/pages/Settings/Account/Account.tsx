@@ -1,5 +1,4 @@
 import axios from "axios"
-import Sidebar from "components/Sidebar"
 import { useEffect, useState } from "react"
 
 function Account() {
@@ -20,28 +19,20 @@ function Account() {
 		}
 		getCompanyInfo()
 	}, [])
-
 	if (companyInfo) {
 		return (
-			<div className='Contents'>
-				<Sidebar />
-				<div className='Settings inline-flex flex-col'>
-					<h2>Account</h2>
-					<div>
-						<p>Primary Email: {companyInfo.email}</p>
-						<p>Company ID: {companyInfo.id}</p>
-						<p>Company Name: {companyInfo.name}</p>
-						<p>Phone Number: {companyInfo.phoneNumber}</p>
-					</div>
+			<div className='Settings flex-col mx-auto w-3/4 mt-4'>
+				<h2>Account</h2>
+				<div>
+					<p>Primary Email: {companyInfo.email}</p>
+					<p>Company ID: {companyInfo.id}</p>
+					<p>Company Name: {companyInfo.name}</p>
+					<p>Phone Number: {companyInfo.phoneNumber}</p>
 				</div>
 			</div>
 		)
 	} else {
-		return (
-			<div>
-				<Sidebar />
-			</div>
-		)
+		return <div></div>
 	}
 }
 

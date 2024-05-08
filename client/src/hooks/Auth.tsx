@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { Session, User } from "@supabase/supabase-js"
 import { supabaseClient } from "config/supabase-client"
+import { useNavigate } from "react-router-dom"
+import * as ROUTES from "data/routes"
 
 type AuthContext = {
 	session: Session | null | undefined
@@ -20,6 +22,8 @@ export const AuthProvider = ({ children }: any) => {
 	const [user, setUser] = useState<User>()
 	const [session, setSession] = useState<Session | null>(null)
 	const [loading, setLoading] = useState(true)
+
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		const setData = async () => {
@@ -53,9 +57,28 @@ export const AuthProvider = ({ children }: any) => {
 				email: email,
 				password: password,
 			})
+			navigate(ROUTES.EQUIPMENT)
+			console.log("signed in")
 		},
 		signOut: async () => {
-			await supabaseClient.auth.signOut()
+			await supabaseClient.auth.signOut() // <= this trigger onAuthStateChange
+			const { data: authListener } = supabaseClient.auth.onAuthStateChange(
+				async (event, session) => {
+					const body = JSON.stringify({ event, session })
+					const headers = new Headers({ "Content-Type": "application/json" })
+
+					await fetch("/api/login", {
+						method: "post",
+						body,
+						headers,
+						credentials: "same-origin",
+					})
+				}
+			)
+			navigate(ROUTES.LANDING)
+			return () => {
+				authListener.subscription.unsubscribe()
+			}
 		},
 	}
 

@@ -18,11 +18,11 @@ function Sidebar() {
 					<li className='pl-8 mb-2'>User Activity</li>
 				</Link> */}
 				<h4 className='mb-2'>Settings</h4>
-				<Link to={ROUTES.ACCOUNT}>
-					<li className='pl-8 mb-2'>Account Settings</li>
-				</Link>
 				<Link to={ROUTES.FLEET_MANAGEMENT}>
 					<li className='pl-8 mb-2'>Fleet Management</li>
+				</Link>
+				<Link to={ROUTES.ACCOUNT}>
+					<li className='pl-8 mb-2'>Account Settings</li>
 				</Link>
 				{/* <Link to={ROUTES.MAINTENANCE_SETTINGS}>
 					<li className='pl-8 mb-2'>Maintenance Settings</li>

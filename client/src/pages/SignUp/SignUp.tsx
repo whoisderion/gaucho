@@ -16,6 +16,13 @@ import {
 	FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card"
 
 const phoneRegex = new RegExp(
 	/^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
@@ -58,52 +65,62 @@ function SignUp() {
 	}
 
 	return (
-		<div className=' max-w-xl mx-auto'>
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className=' space-y-8'>
-					<FormField
-						control={form.control}
-						name='companyName'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Company Name</FormLabel>
-								<FormControl>
-									<Input placeholder='ACME Co.' {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name='phoneNumber'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Company Phone Number</FormLabel>
-								<FormControl>
-									<Input placeholder='123-456-7890' {...field} />
-								</FormControl>
-								<FormDescription>10 digit phone number</FormDescription>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name='companyEmail'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Company Email</FormLabel>
-								<FormControl>
-									<Input placeholder='comapny@email.com' {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<Button type='submit'>Submit</Button>
-				</form>
-			</Form>
+		<div className=' flex justify-center items-center bg-secondary h-full'>
+			<Card className=' max-w-xl mx-auto  md:w-1/3'>
+				<CardHeader>
+					<CardTitle>Sign Up for Gaucho</CardTitle>
+				</CardHeader>
+				<CardContent className=' px-10'>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className=' space-y-4'>
+							<FormField
+								control={form.control}
+								name='companyName'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Company Name</FormLabel>
+										<FormControl>
+											<Input placeholder='ACME Co.' {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name='phoneNumber'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Company Phone Number</FormLabel>
+										<FormControl>
+											<Input placeholder='123-456-7890' {...field} />
+										</FormControl>
+										<FormDescription>10 digit phone number</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name='companyEmail'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Company Email</FormLabel>
+										<FormControl>
+											<Input placeholder='comapny@email.com' {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<Button type='submit' className=' bg-primary'>
+								Continue
+							</Button>
+						</form>
+					</Form>
+				</CardContent>
+				<CardFooter></CardFooter>
+			</Card>
 		</div>
 	)
 }

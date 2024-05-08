@@ -19,12 +19,14 @@ interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
 	data: TData[]
 	startEditing: (vehicle: Vehicle) => void
+	deleteVehicle: (idToFilter: string) => void
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
 	startEditing,
+	deleteVehicle,
 }: DataTableProps<TData, TValue>) {
 	const table = useReactTable({
 		data,
@@ -65,6 +67,7 @@ export function DataTable<TData, TValue>({
 										{flexRender(cell.column.columnDef.cell, {
 											...cell.getContext(),
 											startEditing,
+											deleteVehicle,
 										})}
 									</TableCell>
 								))}

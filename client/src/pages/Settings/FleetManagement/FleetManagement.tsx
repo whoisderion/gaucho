@@ -1,6 +1,15 @@
 import axios from "axios"
-import Sidebar from "components/Sidebar"
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import QRCodes from "pages/QRCodes"
+import { useEffect, useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { DataTable } from "./data-table"
+import { Vehicle, columns } from "./columns"
+import { EditVehicleMenu } from "./EditVehicleMenu"
+import { X } from "lucide-react"
+import { GripHorizontal } from "lucide-react"
+import { Toaster, toast } from "sonner"
+import EditEquipment from "./EditEquipment"
 
 const companyId = import.meta.env.VITE_COMPANY_ID
 const serverURL = import.meta.env.VITE_SERVER_URL
@@ -12,19 +21,7 @@ type Fleet = {
 	vehicles?: Vehicle[]
 }
 
-type Vehicle = {
-	license: string
-	name: string
-	vin: string
-	year: number | null
-	id: string
-	Fleet: {
-		name: string
-		id: string
-	}
-}
-
-type FetchedData = {
+export type FetchedData = {
 	fleets: Fleet[]
 	vehicles: Vehicle[]
 	photoAreas?: PhotoArea[]
@@ -37,137 +34,14 @@ type PhotoArea = {
 	position: number
 }
 
-interface EditVehicleMenuProps {
-	vehicle: Vehicle
-	setVehicle: Dispatch<SetStateAction<Vehicle | undefined>>
-	fleetData: FetchedData
-	setFleetData: Dispatch<SetStateAction<FetchedData | undefined>>
-	stopEditing: () => void
-}
-
-function EditVehicleMenu({
-	vehicle,
-	setVehicle,
-	fleetData,
-	setFleetData,
-	stopEditing,
-}: EditVehicleMenuProps) {
-	const handleSubmit = async (
-		newVehicleData: EditVehicleMenuProps["vehicle"],
-		setFleetData: EditVehicleMenuProps["setFleetData"]
-	) => {
-		console.log(newVehicleData)
-		await axios
-			.post(serverURL + "/account/vehicle", newVehicleData)
-			.then(() =>
-				setFleetData((prevData) => {
-					if (prevData) {
-						const updatedVehicles = prevData.vehicles.map((vehicle) =>
-							vehicle.id === newVehicleData.id ? newVehicleData : vehicle
-						)
-						return { ...prevData, vehicles: updatedVehicles }
-					} else {
-						console.error("Failed saving changes to vehicle!")
-						return prevData
-					}
-				})
-			)
-			.catch((err) => console.log(err))
-	}
-
-	return (
-		<div>
-			<div className='bg-primary text-white py-6'>
-				<h3>{vehicle.name} Settings</h3>
-			</div>
-			<div className='p-6'>
-				<form action=''>
-					<label>Name:</label>
-					<input
-						type='text'
-						className=' bg-white border-2 border-slate-500'
-						value={vehicle.name || ""}
-						onChange={(e) => {
-							setVehicle({ ...vehicle, name: e.target.value })
-						}}
-						autoComplete='off'
-					/>
-					<label htmlFor='license'>License</label>
-					<input
-						type='text'
-						value={vehicle.license || ""}
-						className=''
-						onChange={(e) => {
-							setVehicle({ ...vehicle, license: e.target.value })
-						}}
-						autoComplete='off'
-					/>
-					<label htmlFor='vin'>VIN</label>
-					<input
-						type='text'
-						value={vehicle.vin || ""}
-						className=''
-						onChange={(e) => {
-							setVehicle({ ...vehicle, vin: e.target.value })
-						}}
-						autoComplete='off'
-					/>
-					<label htmlFor='year'>Year</label>
-					<input
-						type='number'
-						value={vehicle.year || ""}
-						className=''
-						onChange={(e) => {
-							setVehicle({
-								...vehicle,
-								year: e.target.value == "" ? null : parseInt(e.target.value),
-							})
-						}}
-						autoComplete='off'
-					/>
-					<label htmlFor='fleet'>Fleet</label>
-					<select
-						name='fleet'
-						id='fleet'
-						value={vehicle.Fleet.name || ""}
-						onChange={(e) => {
-							const newFleet = fleetData.fleets.filter(
-								(fleet) => fleet.name === e.target.value
-							)
-							setVehicle({ ...vehicle, Fleet: newFleet[0] })
-						}}
-					>
-						{fleetData?.fleets.map((fleet) => (
-							<option key={fleet.name} value={fleet.name}>
-								{fleet.name}
-							</option>
-						))}
-					</select>
-				</form>
-				<div className='mt-4 space-x-2'>
-					<button className=' inline-block' onClick={stopEditing}>
-						Cancel
-					</button>
-					<button
-						className=' inline-block'
-						onClick={() => {
-							handleSubmit(vehicle, setFleetData).then(stopEditing)
-						}}
-					>
-						Save Changes
-					</button>
-				</div>
-			</div>
-		</div>
-	)
-}
-
 function FleetManagement() {
 	const [fleetData, setFleetData] = useState<FetchedData>()
 	const [isEditingVehicle, setIsEditingVehicle] = useState<boolean>(false)
 	const [editingVehicle, setEditingVehicle] = useState<Vehicle>()
 	const [isEditingPhotoAreas, setIsEditingPhotoAreas] = useState<boolean>(false)
 	const [isEditingFleets, setIsEditingFleets] = useState<boolean>(false)
+	const [isPrintingQR, setIsPrintingQR] = useState<boolean>(false)
+	const [isEditingEquipment, setIsEditingEquipment] = useState<boolean>(false)
 	const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([])
 	const [tempPhotoAreas, setTempPhotoAreas] = useState<PhotoArea[]>([])
 	const [areasToDelete, setAreasToDelete] = useState<String[]>([])
@@ -212,45 +86,11 @@ function FleetManagement() {
 		setEditingVehicle(undefined)
 	}
 
-	function Dropdown({ vehicle }: { vehicle: Vehicle }) {
-		return (
-			<div className='dropdown relative inline-block group'>
-				<button className='dropbtn'>⋮</button>
-				<div className='dropdown-content hidden absolute bg-slate-300 min-w-160px shadow-sm z-10 group-hover:block'>
-					<span
-						className='px-3 py-4 block cursor-pointer hover:bg-slate-400'
-						onClick={() => startEditing(vehicle)}
-					>
-						Edit
-					</span>
-					<span className='px-3 py-4 block cursor-pointer hover:bg-slate-400'>
-						Delete
-					</span>
-				</div>
-			</div>
-		)
-	}
-
-	const listVehicles =
-		fleetData &&
-		fleetData.vehicles.map((vehicle: Vehicle) => (
-			<tr key={vehicle.name}>
-				<td className='py-4'>{vehicle.name}</td>
-				<td>{vehicle.license}</td>
-				<td>{vehicle.vin}</td>
-				<td>{vehicle.year}</td>
-				<td>{vehicle.Fleet.name}</td>
-				<td>
-					<Dropdown vehicle={vehicle}></Dropdown>
-				</td>
-			</tr>
-		))
-
 	const listEditingFleets =
 		tempFleets &&
 		tempFleets.map((fleet, index) => (
-			<div key={fleet.id} className=' block my-4'>
-				<input
+			<div key={fleet.id} className=' flex my-4'>
+				<Input
 					type='text'
 					value={fleet.name}
 					onChange={(e) => {
@@ -261,16 +101,16 @@ function FleetManagement() {
 							)
 						)
 					}}
-					autoComplete='off'
 				/>
-				<span
+				<Button
 					className=' mx-4'
+					variant={"ghost"}
 					onClick={() => {
 						handleDeleteFleet(fleet, index)
 					}}
 				>
-					X
-				</span>
+					<X />
+				</Button>
 			</div>
 		))
 
@@ -279,7 +119,7 @@ function FleetManagement() {
 		tempPhotoAreas.map((currArea, index) => (
 			<div
 				key={index}
-				className=' m-2 bg-secondary'
+				className=' m-2 py-1 border border-border rounded-lg flex'
 				onDragStart={() => (dragArea.current = index)}
 				onDragEnter={() => (draggedOverArea.current = index)}
 				onDragEnd={handleMovePhotoArea}
@@ -288,24 +128,24 @@ function FleetManagement() {
 				}}
 				draggable
 			>
-				<span className='mx-4'>≡</span>
-				<input
+				<GripHorizontal size={40} className=' my-auto mx-2' />
+				<Input
 					type='text'
 					value={currArea.name}
 					onChange={(e) => {
 						handlePhotoAreaRename(e, index)
 					}}
-					autoComplete='off'
-					className='inline-block'
+					className='inline-block my-auto'
 				/>
-				<span
-					className=' inline-block mx-4'
+				<Button
+					className=' inline-block my-auto'
+					variant={"ghost"}
 					onClick={() => {
 						handleDeletePhotoArea(index, currArea)
 					}}
 				>
-					X
-				</span>
+					<X className='my-auto' />
+				</Button>
 			</div>
 		))
 
@@ -318,7 +158,7 @@ function FleetManagement() {
 				}
 			}
 			if (!isEmptyFleet) {
-				return console.warn("Remove all vehicles from this fleet first!")
+				toast.warning(`Remove all vehicles from ${currFleet.name} first!`)
 			} else {
 				const newArr = tempFleets.filter((fleet) => fleet.id != currFleet.id)
 				setTempFleets(newArr)
@@ -403,7 +243,6 @@ function FleetManagement() {
 				},
 			])
 		} else {
-			setTempPhotoAreas(tempPhotoAreas)
 			console.warn("Please name the previous Photo Area first")
 		}
 	}
@@ -434,87 +273,148 @@ function FleetManagement() {
 				console.log(err), setIsEditingPhotoAreas(false)
 			})
 	}
+
+	const handleAddNewVehicle = () => {
+		// create a new editing vehicle
+		// set is editing to true
+		// if cancelled then remove the editing vehicle
+		// if saved then add the editing vehicle to the fleetdata.vehicles
+
+		setEditingVehicle({
+			license: "",
+			name: "",
+			vin: "",
+			year: null,
+			id: "",
+			Fleet: {
+				name: "",
+				id: "",
+			},
+		})
+
+		setIsEditingVehicle(true)
+	}
+
+	const handleDeleteVehicle = async (idToFilter: String) => {
+		if (fleetData?.vehicles) {
+			const newVehicles = fleetData.vehicles.filter(
+				(vehicle) => vehicle.id !== idToFilter
+			)
+			await axios
+				.delete(serverURL + `/account/vehicle/${companyId}/${idToFilter}`)
+				.then((res) => {
+					console.log(res.data)
+					setFleetData({ ...fleetData, vehicles: newVehicles })
+				})
+				.catch((err) => console.error(err))
+		}
+	}
+
+	function stopEditingEquipment() {
+		setIsEditingEquipment(false)
+	}
+
 	if (isEditingPhotoAreas) {
 		return (
-			<div className='Contents flex'>
-				<Sidebar />
+			<div className='Contents flex mx-auto w-3/4 my-8'>
 				<div>
-					<div>
-						<h2 className=''>Fleet Management</h2>
-					</div>
+					<h2 className=''>Fleet Management</h2>
+					<h3 className=' my-3'>Edit Photo Areas</h3>
 					<div className='PhotoAreas block'>
-						<label>Edit Photo Areas</label>
 						{listPhotoAreas}
-						<button onClick={handleAddNewPhotoArea}>Add A New Area</button>
+						<Button className='block' onClick={handleAddNewPhotoArea}>
+							Add A New Area
+						</Button>
 					</div>
 					<div className=' space-x-4 my-4'>
-						<button onClick={handlePhotoAreaCancel}>Cancel</button>
-						<button onClick={handlePhotoAreaSubmit}>Save</button>
+						<Button onClick={handlePhotoAreaCancel}>Cancel</Button>
+						<Button onClick={handlePhotoAreaSubmit}>Save</Button>
 					</div>
 				</div>
 			</div>
 		)
-	}
-	if (isEditingFleets) {
+	} else if (isEditingFleets) {
 		return (
-			<div className='Contents flex'>
-				<Sidebar />
+			<div className='Contents flex mx-auto w-3/4 my-8'>
 				<div>
 					<h2 className=''>Fleet Management</h2>
-					<h3>Edit Fleets</h3>
+					<h3 className=' mt-2'>Edit Fleets</h3>
 					<div>
 						{listEditingFleets}
 						<div>
-							<button className='p-2' onClick={handleAddNewFleet}>
+							<Button className='p-2' onClick={handleAddNewFleet}>
 								Add New Fleet
-							</button>
+							</Button>
 						</div>
 					</div>
 					<div className=' space-x-4 my-4'>
-						<button onClick={handleEditFleetCancel}>Cancel</button>
-						<button onClick={handleEditFleetSubmit}>Save</button>
+						<Button onClick={handleEditFleetCancel} variant={"secondary"}>
+							Cancel
+						</Button>
+						<Button onClick={handleEditFleetSubmit}>Save</Button>
 					</div>
+					<Toaster />
 				</div>
 			</div>
 		)
-	}
-	if (fleetData) {
+	} else if (isPrintingQR) {
 		return (
-			<div className='Contents flex'>
-				<Sidebar />
-				<div className='Dashboard inline-flex flex-col flex-1'>
-					<h2 className=''>Fleet Management</h2>
-					<div className=''>
-						<div className=' space-x-4 my-4'>
-							<button
-								onClick={() => {
-									setIsEditingPhotoAreas(true)
-								}}
-							>
-								Edit Photo Areas
-							</button>
-							<button
-								onClick={() => {
-									setIsEditingFleets(true)
-								}}
-							>
-								Edit Fleets
-							</Button>
-							<Button>Add A New Vehicle</Button>
-							<Button>Print QR Codes</Button>
-						</div>
-						<div className=' mr-8'>
-							<DataTable
-								columns={columns}
-								data={fleetData.vehicles}
-								startEditing={startEditing}
-							/>
-						</div>
-					</div>
+			<div className='Contents flex mx-auto w-3/4 my-8'>
+				<QRCodes closePrinting={() => setIsPrintingQR(false)} />
+			</div>
+		)
+	} else if (isEditingEquipment) {
+		return (
+			<div className='Contents flex mx-auto w-3/4 my-8'>
+				<EditEquipment stopEditing={() => stopEditingEquipment()} />
+			</div>
+		)
+	} else if (fleetData) {
+		return (
+			<div className='Dashboard flex-col flex-1 w-3/4 mx-auto my-8 mr-16'>
+				<h2 className=''>Fleet Management</h2>
+				<div className='Navigation space-x-4 my-4 '>
+					<Button
+						onClick={() => {
+							setIsEditingPhotoAreas(true)
+						}}
+					>
+						Edit Photo Areas
+					</Button>
+					<Button
+						onClick={() => {
+							setIsEditingFleets(true)
+						}}
+					>
+						Edit Fleets
+					</Button>
+					<Button onClick={handleAddNewVehicle}>Add A New Vehicle</Button>
+					<Button
+						onClick={() => {
+							setIsEditingEquipment(true)
+						}}
+					>
+						Edit Equipment
+					</Button>
+					<Button
+						onClick={() => {
+							setIsPrintingQR(true)
+						}}
+					>
+						Print QR Codes
+					</Button>
+				</div>
+				<div className='Table mb-8'>
+					<DataTable
+						columns={columns}
+						data={fleetData.vehicles}
+						startEditing={startEditing}
+						deleteVehicle={handleDeleteVehicle}
+					/>
 				</div>
 				{isEditingVehicle && editingVehicle && (
 					<div className='overlay h-full w-full fixed z-20 top-0 left-0 right-0 bottom-0 bg-black/50'>
-						<div className='overlay-contents bg-white w-[600px] float-right'>
+						<div className='overlay-contents bg-white w-1/4 float-right h-full'>
 							<EditVehicleMenu
 								vehicle={editingVehicle}
 								setVehicle={setEditingVehicle}
@@ -529,11 +429,8 @@ function FleetManagement() {
 		)
 	} else {
 		return (
-			<div>
-				<Sidebar />
-				<div className='Dashboard inline-flex flex-col'>
-					Loading Dashboard Data
-				</div>
+			<div className='Dashboard inline-flex flex-col'>
+				Loading Dashboard Data
 			</div>
 		)
 	}

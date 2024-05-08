@@ -19,6 +19,7 @@ export type Vehicle = {
 interface CellContextWithStartEditing<TData, TValue>
 	extends CellContext<TData, TValue> {
 	startEditing: (vehicle: Vehicle) => void
+	deleteVehicle: (idToFilter: string) => void
 }
 
 const columnHelper = createColumnHelper<Vehicle>()
@@ -57,6 +58,7 @@ export const columns: ColumnDef<Vehicle>[] = [
 				<VehicleContextMenu
 					vehicleRow={vehicleRow}
 					startEditing={contextWithStartEditing.startEditing}
+					deleteVehicle={contextWithStartEditing.deleteVehicle}
 				/>
 			)
 		},

@@ -33,9 +33,12 @@ const corsOptions = {
 		"http://192.0.0.1:5173",
 		"http://172.16.102.105:5173",
 		"http://172.20.10.2:5173",
+		"http://172.16.102.161:5173",
+		"http://172.16.102.233:5173",
+		"http://172.16.102.248:5173",
 		"https://gaucho-client-production.up.railway.app",
 	],
-	methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+	methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE"],
 	allowedHeaders: ["Content-Type", "Authorization"],
 	credentials: true,
 }
@@ -308,7 +311,7 @@ app.get("/print-qr-codes/:companyID", async (req: Request, res: Response) => {
 		let URLs: { url: string; name: string }[] = []
 		trucks.forEach((truck) => {
 			URLs.push({
-				url: `${process.env.CLIENT_URL}trucks/upload/${truck.id}`,
+				url: `${process.env.CLIENT_URL}/trucks/upload/${truck.id}`,
 				name: truck.name,
 			})
 		})
@@ -335,6 +338,31 @@ app.get("/trucks/qr/:truckID", async (req: Request, res: Response) => {
 	}
 	return generateQR()
 })
+
+app.get(
+	"/vehicle-name/:companyID/:vehicleID",
+	async (req: Request, res: Response) => {
+		const companyID = req.params.companyID
+		const vehicleID = req.params.vehicleID
+
+		try {
+			const vehicleName = await prisma.truck.findFirst({
+				where: {
+					id: vehicleID,
+					companyId: companyID,
+				},
+				select: {
+					name: true,
+				},
+			})
+
+			res.status(200).json(vehicleName)
+		} catch (err) {
+			console.error(err)
+			res.status(400).json("failed locating vehicle")
+		}
+	}
+)
 
 app.get(
 	"/account/equipment-complete/:companyId",
@@ -403,6 +431,69 @@ app.get(
 	}
 )
 
+app.get("/equipment/types/:companyID", async (req: Request, res: Response) => {
+	const companyID = req.params.companyID
+
+	const equipmentTypes = await prisma.equipment.findMany({
+		where: {
+			companyId: companyID,
+		},
+		select: {
+			name: true,
+			id: true,
+			companyId: true,
+		},
+	})
+
+	res.status(200).json(equipmentTypes)
+})
+
+interface equipmentData {
+	name: string
+	id: string
+	companyId: string
+}
+
+app.post("/equipment/types/:companyID", async (req: Request, res: Response) => {
+	const companyID = req.params.companyID
+	const equipmentData: equipmentData[] = req.body.updatedEquipment
+	const equipmentToDelete: string[] = req.body.typesToDelete
+	try {
+		const updatedEquipmentTypes = await Promise.all(
+			equipmentData.map(async (equipmentType) => {
+				const updatedEquipment = await prisma.equipment.upsert({
+					where: {
+						id: equipmentType.id,
+					},
+					update: {
+						name: equipmentType.name,
+					},
+					create: {
+						name: equipmentType.name,
+						companyId: companyID,
+					},
+				})
+				return updatedEquipment
+			})
+		)
+
+		const deletedEquipmentTypes = await prisma.equipment.deleteMany({
+			where: {
+				id: {
+					in: equipmentToDelete,
+				},
+			},
+		})
+
+		res
+			.status(200)
+			.json({ upserted: updatedEquipmentTypes, deleted: deletedEquipmentTypes })
+	} catch (error) {
+		console.error(error)
+		res.status(400)
+	}
+})
+
 app.get("/account/fleet/:companyID", async (req: Request, res: Response) => {
 	const companyID = req.params.companyID
 
@@ -468,7 +559,15 @@ app.post("/upload/complete", async (req: Request, res: Response) => {
 		equipment: {
 			name: { id: string; quantity: number }
 		}
-		pictures: {}
+		pictures: {
+			photoArea: {
+				id: string
+				name: string
+				companyID: string
+				position: number
+			}
+			previewSource: string
+		}[]
 	}
 	const data: uploadData = req.body.formData
 	const truckID = req.body.truckID
@@ -513,24 +612,65 @@ app.post("/upload/complete", async (req: Request, res: Response) => {
 			},
 		})
 
-		console.log(data.pictures + "\n")
-
 		let cloudinaryAssetID: string
-		let cloudinaryURL: Url
-		let cloudinarySecureURL: Url
+		let cloudinaryURL: string
+		let cloudinarySecureURL: string
+		if (data.pictures.length > 0) {
+			try {
+				console.log("Uploading photos to Cloudinary...")
+				const photoUploads = data.pictures.map(async (photo) => {
+					const uploadedResponse = await cloudinary.uploader.upload(
+						photo.previewSource,
+						{
+							upload_preset: "gaucho_update",
+						}
+					)
 
-		const uploadedResponse = await cloudinary.uploader.upload(data.pictures, {
-			upload_preset: "gaucho_update",
-		})
+					cloudinaryAssetID = uploadedResponse.asset_id
+					cloudinaryURL = uploadedResponse.url as string
+					cloudinarySecureURL = uploadedResponse.secure_url as string
 
-		cloudinaryURL = uploadedResponse.asset_id
-		cloudinaryAssetID = uploadedResponse.url
-		cloudinarySecureURL = uploadedResponse.secure_url
-		console.log(cloudinaryURL, cloudinaryAssetID, cloudinarySecureURL)
+					// Records the data associated with this photo from its cloudinary upload
+					const databasePhotoRecord = await prisma.photos.create({
+						data: {
+							photoAreasId: photo.photoArea.id,
+							cloudinaryAssetID: cloudinaryAssetID,
+							cloudinaryURL: cloudinaryURL,
+							cloudinarySecureURL: cloudinarySecureURL,
+						},
+					})
 
-		res.sendStatus(200)
+					// Relates the record of the current photo in the database to the inventory record that was just created
+					const inventoryPhotoRecord = await prisma.inventoryPhoto.create({
+						data: {
+							inventoryId: inventoryUpdate.id,
+							photoAreasId: photo.photoArea.id,
+							photoId: databasePhotoRecord.id,
+						},
+					})
+				})
+
+				Promise.all(photoUploads)
+					.then(() => {
+						console.log("Photo upload successful!")
+						res
+							.status(200)
+							.send("Inventory, Maintenance, and Photo upload successful!")
+					})
+					.catch((err) => console.error("photo upload issue:", err))
+			} catch (error) {
+				console.error(error)
+				res.status(500).send("Unable to upload photos to Cloudinary")
+			}
+		}
+		res
+			.status(200)
+			.send(
+				"Inventory and Maintenance upload successful! No Pictures were sent to the server to upload."
+			)
 	} catch (error) {
 		console.error(error)
+		console.error("Failed uploading inventory and maintenance to DB")
 		res.sendStatus(400)
 	}
 })
@@ -629,7 +769,9 @@ app.post(
 				},
 			})
 
-			res.status(201).json(photoAreasArr)
+			res
+				.status(201)
+				.json({ updated: updatedPhotoAreas, deleted: deletedPhotoAreas })
 		} catch (error) {
 			console.error(error)
 			res.sendStatus(400)
@@ -770,7 +912,7 @@ app.post(
 
 // // TODO: delete equipment
 
-app.post("/account/vehicle", async (req: Request, res: Response) => {
+app.post("/account/vehicle/:companyID", async (req: Request, res: Response) => {
 	// req: changes[...newVehicleInfo{vehicle{uuid, truckName,}}]
 
 	// >>>  updates the fleet/p info in DB
@@ -792,19 +934,31 @@ app.post("/account/vehicle", async (req: Request, res: Response) => {
 
 	const vehicleData: VehicleData = req.body
 	const { fleet, ...prismaData } = vehicleData
+	const companyID = req.params.companyID
 
 	try {
-		const updatedVehicle = await prisma.truck.update({
+		const updatedVehicle = await prisma.truck.upsert({
 			where: {
 				id: prismaData.id,
 			},
-			data: {
-				...prismaData,
+			update: {
+				name: prismaData.name,
+				vin: prismaData.vin,
+				license: prismaData.license,
+				year: prismaData.year,
 				Fleet: {
 					connect: {
 						id: prismaData.Fleet.id,
 					},
 				},
+			},
+			create: {
+				name: prismaData.name,
+				vin: prismaData.vin,
+				license: prismaData.license,
+				year: prismaData.year,
+				companyId: companyID,
+				fleetId: prismaData.Fleet.id,
 			},
 		})
 		console.log(updatedVehicle)
@@ -814,6 +968,27 @@ app.post("/account/vehicle", async (req: Request, res: Response) => {
 		res.status(400)
 	}
 })
+
+app.delete(
+	"/account/vehicle/:companyID/:vehicleID",
+	async (req: Request, res: Response) => {
+		const companyID = req.params.companyID
+		const vehicleID = req.params.vehicleID
+		try {
+			const deletedVehicle = await prisma.truck.delete({
+				where: {
+					id: vehicleID,
+					companyId: companyID,
+				},
+			})
+			res.json(deletedVehicle).status(200)
+		} catch (error) {
+			console.error(error)
+			res.status(400)
+		}
+	}
+)
+
 app.post("/account/fleet", async (req: Request, res: Response) => {
 	interface RequestBody {
 		tempFleets: Fleet[]

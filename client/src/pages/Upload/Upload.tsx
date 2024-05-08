@@ -1,5 +1,9 @@
 import axios from "axios"
 import { ChangeEvent, useEffect, useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
 
 const serverURL = import.meta.env.VITE_SERVER_URL
 const companyId = import.meta.env.VITE_COMPANY_ID
@@ -37,14 +41,26 @@ const handleSubmit = async (e: React.FormEvent, formData: uploadFormData) => {
 	const pathArray = window.location.pathname.split("/")
 	const truckID = pathArray[pathArray.length - 1]
 
-	const uploadUpdate = await axios.post(
-		`${import.meta.env.VITE_SERVER_URL}/upload/complete`,
-		{
-			formData: formData,
+	const removedEmptyPhotos = formData.pictures.filter(
+		(photo) => photo.previewSource !== ""
+	)
+	const dataToUpload = { ...formData, pictures: removedEmptyPhotos }
+	console.log(dataToUpload)
+
+	const uploadUpdate = await axios
+		.post(`${import.meta.env.VITE_SERVER_URL}/upload/complete`, {
+			formData: dataToUpload,
 			truckID: truckID,
 			companyID: import.meta.env.VITE_COMPANY_ID,
-		}
-	)
+		})
+		.then((res) => {
+			console.log(res.data)
+			alert("The upload was a success! Please close this window.")
+			console.log("close")
+		})
+		.catch((err) => {
+			console.log(err)
+		})
 
 	return uploadUpdate
 }
@@ -77,23 +93,26 @@ function UploadMaintenace({
 	setUploadingInventory,
 	formData,
 	setFormData,
+	vehicleName,
 }: {
 	setUploadingMaintenance: React.Dispatch<React.SetStateAction<boolean>>
 	setUploadingInventory: React.Dispatch<React.SetStateAction<boolean>>
 	formData: uploadFormData
 	setFormData: React.Dispatch<React.SetStateAction<uploadFormData>>
+	vehicleName: string
 }) {
 	return (
-		<div className='Contents'>
-			<div className=' max-w-lg border mx-auto px-20 py-7 text-center'>
+		<div className='Contents overflow-scroll bg-secondary '>
+			<div className=' max-w-lg border mx-auto px-20 py-7 text-center mt-4 mb-6 bg-white'>
+				<h3 className=' min-h-[2rem]'>{vehicleName}</h3>
 				<h2>Upload Maintenance</h2>
-				<div className=' text-left mb-8'>
+				<div className=' text-left mb-8 '>
 					<form className='maintenance flex flex-col space-y-2'>
-						<div className='mileage mx-auto'>
-							<label htmlFor='mileage'>Mileage</label>
-							<input
+						<div className='mileage mx-auto w-full max-w-2xl mt-4'>
+							<Label htmlFor='mileage'>Mileage</Label>
+							<Input
 								type='number'
-								// inputMode="numeric"
+								// InputMode="numeric"
 								// pattern="[0-9]+"
 								name='mileage'
 								value={formData.maintenance.mileage || ""}
@@ -103,9 +122,9 @@ function UploadMaintenace({
 								autoComplete='off'
 							/>
 						</div>
-						<div className='oil mx-auto'>
-							<label htmlFor='oil'>Oil</label>
-							<input
+						<div className='oil mx-auto w-full max-w-2xl'>
+							<Label htmlFor='oil'>Oil</Label>
+							<Input
 								type='text'
 								name='oil'
 								value={formData.maintenance.oil || ""}
@@ -115,9 +134,9 @@ function UploadMaintenace({
 								autoComplete='off'
 							/>
 						</div>
-						<div className='coolant mx-auto'>
-							<label htmlFor='coolant'>Coolant</label>
-							<input
+						<div className='coolant mx-auto w-full max-w-2xl'>
+							<Label htmlFor='coolant'>Coolant</Label>
+							<Input
 								type='text'
 								name='coolant'
 								value={formData.maintenance.coolant || ""}
@@ -127,66 +146,92 @@ function UploadMaintenace({
 								autoComplete='off'
 							/>
 						</div>
-						<div className='tire-tread mx-auto'>
-							<label htmlFor='rearPassengerTread'>Front Driver Tread</label>
-							<input
-								type='checkbox'
-								name='frontDriverTread'
-								checked={formData.maintenance.frontDriverTread || false}
-								onChange={(e) =>
-									handleInputChange(e, setFormData, "maintenance")
-								}
-							/>
-							<label htmlFor='frontPassengerTread'>Front Passenger Tread</label>
-							<input
-								type='checkbox'
-								name='frontPassengerTread'
-								checked={formData.maintenance.frontPassengerTread || false}
-								onChange={(e) =>
-									handleInputChange(e, setFormData, "maintenance")
-								}
-							/>
-							<label htmlFor='rearDriverTread'>Rear Driver Tread</label>
-							<input
-								type='checkbox'
-								name='rearDriverTread'
-								checked={formData.maintenance.rearDriverTread || false}
-								onChange={(e) =>
-									handleInputChange(e, setFormData, "maintenance")
-								}
-							/>
-							<label htmlFor='rearPassengerTread'>Rear Passenger Tread</label>
-							<input
-								type='checkbox'
-								name='rearPassengerTread'
-								checked={formData.maintenance.rearPassengerTread || false}
-								onChange={(e) =>
-									handleInputChange(e, setFormData, "maintenance")
-								}
-							/>
+						<div className='tire-tread mx-auto w-full max-w-2xl grid grid-cols-2'>
+							<div>
+								<Label
+									htmlFor='rearPassengerTread'
+									className=' mx-auto text-center block w-full mt-4 mb-2'
+								>
+									Front Driver Tread
+								</Label>
+								<Input
+									type='checkbox'
+									name='frontDriverTread'
+									checked={formData.maintenance.frontDriverTread || false}
+									onChange={(e) =>
+										handleInputChange(e, setFormData, "maintenance")
+									}
+								/>
+							</div>
+							<div>
+								<Label
+									htmlFor='frontPassengerTread'
+									className=' mx-auto text-center block w-full mt-4 mb-2'
+								>
+									Front Passenger Tread
+								</Label>
+								<Input
+									type='checkbox'
+									name='frontPassengerTread'
+									checked={formData.maintenance.frontPassengerTread || false}
+									onChange={(e) =>
+										handleInputChange(e, setFormData, "maintenance")
+									}
+								/>
+							</div>
+							<div>
+								<Label
+									htmlFor='rearDriverTread'
+									className=' mx-auto text-center block w-full mt-4 mb-2'
+								>
+									Rear Driver Tread
+								</Label>
+								<Input
+									type='checkbox'
+									name='rearDriverTread'
+									checked={formData.maintenance.rearDriverTread || false}
+									onChange={(e) =>
+										handleInputChange(e, setFormData, "maintenance")
+									}
+								/>
+							</div>
+							<div>
+								<Label
+									htmlFor='rearPassengerTread'
+									className=' mx-auto text-center block w-full mt-4 mb-2'
+								>
+									Rear Passenger Tread
+								</Label>
+								<Input
+									type='checkbox'
+									name='rearPassengerTread'
+									checked={formData.maintenance.rearPassengerTread || false}
+									onChange={(e) =>
+										handleInputChange(e, setFormData, "maintenance")
+									}
+								/>
+							</div>
 						</div>
-						<div className='notes mx-auto'>
-							<label htmlFor='notes'>Notes</label>
-							<input
-								type='text'
+						<div className='notes mx-auto w-full max-w-2xl'>
+							<Label htmlFor='notes'>Notes</Label>
+							<Textarea
 								name='notes'
 								value={formData.maintenance.notes || ""}
 								onChange={(e) =>
 									handleInputChange(e, setFormData, "maintenance")
 								}
-								autoComplete='off'
 							/>
 						</div>
 					</form>
 				</div>
-				<button
+				<Button
 					onClick={() => {
 						setUploadingInventory(true)
 						setUploadingMaintenance(false)
 					}}
 				>
 					Continue
-				</button>
+				</Button>
 			</div>
 		</div>
 	)
@@ -199,6 +244,7 @@ function UploadInventory({
 	setUploadingMaintenance,
 	setUploadingInventory,
 	setUploadingPictures,
+	vehicleName,
 }: {
 	formData: any
 	setFormData: React.Dispatch<React.SetStateAction<any>>
@@ -206,20 +252,22 @@ function UploadInventory({
 	setUploadingMaintenance: React.Dispatch<React.SetStateAction<boolean>>
 	setUploadingInventory: React.Dispatch<React.SetStateAction<boolean>>
 	setUploadingPictures: React.Dispatch<React.SetStateAction<boolean>>
+	vehicleName: string
 }) {
 	handleSubmit
 	return (
 		<div className='Contents'>
 			<div className=' max-w-lg border mx-auto px-20 py-7 text-center '>
+				<h3 className=' min-h-[2rem]'>{vehicleName}</h3>
 				<h2>Upload Inventory</h2>
 				<div className=' text-left mb-8'>
 					<form className=' flex flex-col space-y-2'>
 						{equipmentFields.map(
 							(equipment: { name: string; id: string }, index: string) => {
 								return (
-									<div key={index} className='mx-auto'>
-										<label htmlFor={equipment.name}>{equipment.name}</label>
-										<input
+									<div key={index} className='mx-auto '>
+										<Label htmlFor={equipment.name}>{equipment.name}</Label>
+										<Input
 											type='text'
 											inputMode='numeric'
 											pattern='[0-9]+'
@@ -237,22 +285,22 @@ function UploadInventory({
 					</form>
 				</div>
 				<div className=' space-x-6'>
-					<button
+					<Button
 						onClick={() => {
 							setUploadingMaintenance(true)
 							setUploadingInventory(false)
 						}}
 					>
 						Back
-					</button>
-					<button
+					</Button>
+					<Button
 						onClick={() => {
 							setUploadingPictures(true)
 							setUploadingInventory(false)
 						}}
 					>
 						Continue
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -265,18 +313,20 @@ function UploadPictures({
 	setUploadingInventory,
 	setUploadingPictures,
 	photoAreas,
+	vehicleName,
 }: {
 	formData: uploadFormData
 	setFormData: React.Dispatch<React.SetStateAction<uploadFormData>>
 	setUploadingInventory: React.Dispatch<React.SetStateAction<boolean>>
 	setUploadingPictures: React.Dispatch<React.SetStateAction<boolean>>
 	photoAreas: PhotoArea[]
+	vehicleName: string
 }) {
 	const displayPhotoAreas = photoAreas.map((area: PhotoArea, index: number) => (
 		<div key={index} className='border border-black my-2 p-2'>
 			<p>{area.name}</p>
 			<p>{}</p>
-			<input
+			<Input
 				type='file'
 				name='photo1'
 				id=''
@@ -293,26 +343,27 @@ function UploadPictures({
 	))
 
 	return (
-		<div className='Contents overflow-auto max-h-[90%]'>
+		<div className='Contents overflow-auto bg-secondary'>
 			<div className=' max-w-lg border mx-auto px-20 py-7 text-center '>
+				<h3 className=' min-h-[2rem]'>{vehicleName}</h3>
 				<h2>Upload Pictures</h2>
 				<div>{displayPhotoAreas}</div>
 				<div className=' space-x-6'>
-					<button
+					<Button
 						onClick={() => {
 							setUploadingInventory(true)
 							setUploadingPictures(false)
 						}}
 					>
 						Back
-					</button>
-					<button
+					</Button>
+					<Button
 						onClick={(e) => {
 							handleSubmit(e, formData)
 						}}
 					>
 						Submit
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>
@@ -371,18 +422,21 @@ function Upload() {
 	const [equipmentFields, setEquipmentFields] = useState<any>([])
 	const [formData, setFormData] = useState<uploadFormData>(initialFormData)
 	const [photoAreas, setPhotoAreas] = useState<PhotoArea[]>([])
+	const [vehicleName, setVehicleName] = useState<string>("")
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const res = await axios.get(
+				const equipmentFields = await axios.get(
 					`${serverURL}/upload/equipment-fields/${companyId}`
 				)
 				const newEquipmentFields: EquipmentType[] =
-					res.data.equipmentFields.map((equipmentType: EquipmentType) => ({
-						name: equipmentType.name,
-						id: equipmentType.id,
-					}))
+					equipmentFields.data.equipmentFields.map(
+						(equipmentType: EquipmentType) => ({
+							name: equipmentType.name,
+							id: equipmentType.id,
+						})
+					)
 				setEquipmentFields(newEquipmentFields)
 				const newEquipmentObj = newEquipmentFields.reduce(
 					(acc: { [key: string]: { id: string; quantity: number } }, obj) => {
@@ -411,11 +465,16 @@ function Upload() {
 							pictures: picturesData,
 						}))
 					})
+
+				const truckID = window.location.pathname.split("/").pop()
+				await axios
+					.get(`${serverURL}/vehicle-name/${companyId}/${truckID}`)
+					.then((res) => setVehicleName(res.data.name))
+					.catch((err) => console.error(err))
 			} catch (err) {
 				console.error(err)
 			}
 		}
-
 		fetchData()
 	}, [])
 
@@ -426,6 +485,7 @@ function Upload() {
 				setUploadingInventory={setUploadingInventory}
 				formData={formData}
 				setFormData={setFormData}
+				vehicleName={vehicleName}
 			/>
 		)
 	} else if (uploadingInventory) {
@@ -437,6 +497,7 @@ function Upload() {
 				setUploadingPictures={setUploadingPictures}
 				formData={formData}
 				setFormData={setFormData}
+				vehicleName={vehicleName}
 			/>
 		)
 	} else if (uploadingPictures) {
@@ -447,6 +508,7 @@ function Upload() {
 				formData={formData}
 				setFormData={setFormData}
 				photoAreas={photoAreas}
+				vehicleName={vehicleName}
 			/>
 		)
 	}

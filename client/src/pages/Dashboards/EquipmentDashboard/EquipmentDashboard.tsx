@@ -1,4 +1,3 @@
-import Sidebar from "components/Sidebar"
 import { useEffect, useState } from "react"
 import axios from "axios"
 
@@ -7,20 +6,22 @@ function EquipmentDashboard() {
 		label: string
 		inventoryRecord: {
 			name: string
-			inventory: {
-				equipmentItems: {
-					equipment: {
-						name: string
-					}
-					quantity: number
-				}[]
-				date: string
-			}[]
+			inventory: Inventory[]
 		}[]
 	}[]
 
+	type Inventory = {
+		equipmentItems: {
+			equipment: {
+				name: string
+			}
+			quantity: number
+		}[]
+		date: string
+	}
+
 	const [equipmentData, setEquipmentData] = useState<EquipmentData>([])
-	const [selectedTimeframe, setSelectedTimeframe] = useState("threeDaysAgo")
+	const [selectedTimeframe, setSelectedTimeframe] = useState("oneMonthAgo")
 	const [selectedRecord, setSelectedRecord] = useState<EquipmentData[0] | null>(
 		null
 	)
@@ -43,7 +44,7 @@ function EquipmentDashboard() {
 					setEquipmentData(res.data)
 					console.log(res.data)
 					const defaultRecord = res.data.find(
-						(record: { label: string }) => record.label === "threeDaysAgo"
+						(record: { label: string }) => record.label === "oneMonthAgo"
 					)
 					setSelectedRecord(defaultRecord || null)
 				})
@@ -64,27 +65,76 @@ function EquipmentDashboard() {
 		setSelectedRecord(record || null)
 	}
 
-	const renderInventoryRecord = () => {
+	function compareInventoryRecords(
+		lastRecord: Inventory,
+		secondToLastRecord: Inventory
+	) {
+		for (const item of lastRecord.equipmentItems) {
+			const matchingItem = secondToLastRecord.equipmentItems.find(
+				(equipment) => equipment.equipment.name === item.equipment.name
+			)
+
+			if (matchingItem) {
+				const quantityDifference = item.quantity - matchingItem.quantity
+				if (quantityDifference !== 0) {
+					console.log(
+						`Item: ${item.equipment.name}, Quantity Difference: ${quantityDifference}`
+					)
+				}
+			} else {
+				// Item is new in the last record
+				console.log(
+					`Item: ${item.equipment.name}, Quantity Difference: +${item.quantity}`
+				)
+			}
+		}
+	}
+
+	function getLocaleString(date: Date) {
+		return date.toLocaleString("en-US", {
+			weekday: "short",
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+			hour: "numeric",
+			minute: "numeric",
+		})
+	}
+
+	function renderInventoryRecord() {
 		if (selectedRecord) {
-			return selectedRecord.inventoryRecord.map((vehicle) => (
-				<div key={vehicle.name}>
-					<h4 className='mt-4'>{vehicle.name}</h4>
-					{vehicle.inventory.map((equipmentItem, index) => {
-						if (equipmentItem.equipmentItems.length !== 0) {
-							return (
-								<div key={index} className='ml-6'>
-									<p>{equipmentItem.date}</p>
-									{equipmentItem.equipmentItems.map((item, i) => (
-										<p key={i} className='ml-6'>
-											{item.equipment.name}: {item.quantity}
-										</p>
+			return selectedRecord.inventoryRecord.map((vehicle) => {
+				const lastRecord = vehicle.inventory[vehicle.inventory.length - 1]
+				const secondToLastRecord =
+					vehicle.inventory[vehicle.inventory.length - 2]
+
+				// compare the quantity in each record to display the difference if there is one
+				if (lastRecord && secondToLastRecord) {
+					console.log("LR:", lastRecord, "StLR:", secondToLastRecord)
+					compareInventoryRecords(lastRecord, secondToLastRecord)
+				}
+
+				return (
+					<div key={vehicle.name}>
+						<h4 className='mt-4'>{vehicle.name}</h4>
+						<div>
+							<p>
+								{lastRecord &&
+									`Last Updated: ${getLocaleString(new Date(lastRecord.date))}`}
+							</p>
+							<ul>
+								{lastRecord &&
+									lastRecord.equipmentItems.map((item, i) => (
+										<li key={i} className='ml-6'>
+											{item.equipment.name}: {item.quantity}{" "}
+											{/* add the change from */}
+										</li>
 									))}
-								</div>
-							)
-						}
-					})}
-				</div>
-			))
+							</ul>
+						</div>
+					</div>
+				)
+			})
 		} else if (equipmentData.length !== 0) {
 			return <div>No data available for the selected timeframe.</div>
 		} else {
@@ -95,8 +145,7 @@ function EquipmentDashboard() {
 	if (equipmentData.length !== 0) {
 		return (
 			<div className='Contents'>
-				<Sidebar />
-				<div className='Dashboard inline-flex flex-col'>
+				<div className='Dashboard flex-col w-3/4 mx-auto my-4'>
 					<nav className='Dashboard-Nav'>
 						<h2 className=' mb-8 flex'>Equipment Dashboard</h2>
 						<div className=' inline-flex'>
@@ -130,7 +179,7 @@ function EquipmentDashboard() {
 							</div>
 						</div>
 					</nav>
-					<section className='vehicle-display'>
+					<section className='vehicle-display grid grid-cols-2'>
 						{renderInventoryRecord()}
 					</section>
 				</div>
@@ -138,11 +187,8 @@ function EquipmentDashboard() {
 		)
 	} else {
 		return (
-			<div className='Contents'>
-				<Sidebar />
-				<div className='Dashboard inline-flex flex-col'>
-					Loading Equipment Data
-				</div>
+			<div className='Dashboard inline-flex flex-col'>
+				Loading Equipment Data
 			</div>
 		)
 	}
