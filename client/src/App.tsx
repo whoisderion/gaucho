@@ -16,16 +16,16 @@ import {
 import Account from "pages/Settings/Account"
 import FleetManagement from "pages/Settings/FleetManagement"
 import MaintenanceSettings from "pages/Settings/MaintenanceSettings"
-import QRCodes from "pages/QRCodes"
+// import QRCodes from "pages/QRCodes"
 import Upload from "pages/Upload"
 import { AuthProvider } from "hooks/Auth"
 import Navigation from "components/Navigation"
 
 function App() {
 	return (
-		<AuthProvider>
-			<Router>
-				<div className='App w-screen h-screen overflow-hidden'>
+		<Router>
+			<AuthProvider>
+				<div className='App w-screen h-screen overflow-auto hidden md:flex md:flex-row'>
 					<Navigation />
 					<Routes>
 						<Route path={ROUTES.LANDING} element={<Landing />} />
@@ -101,19 +101,11 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						<Route
-							path={ROUTES.LIST_QR_CODES}
-							element={
-								<ProtectedRoute>
-									<QRCodes />
-								</ProtectedRoute>
-							}
-						/>
 						<Route path='/trucks/upload/:id' element={<Upload />} />
 					</Routes>
 				</div>
-			</Router>
-		</AuthProvider>
+			</AuthProvider>
+		</Router>
 	)
 }
 
