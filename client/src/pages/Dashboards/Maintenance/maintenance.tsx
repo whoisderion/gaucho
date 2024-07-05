@@ -92,10 +92,13 @@ function Maintenance() {
 				<AccordionTrigger>{fleet.name}</AccordionTrigger>
 				<AccordionContent>
 					<ul className='fleet-group mb-4'>
-						<ul className=' flex'>
+						<ul className=' flex flex-col md:flex-row'>
 							{fleet.vehicles ? (
 								fleet.vehicles.map((vehicle, vehicleKey) => (
-									<li key={vehicleKey} className=' p-8 mb-8 ml-12 border w-1/2'>
+									<li
+										key={vehicleKey}
+										className=' p-8 mb-8 border w-full md:w-1/2'
+									>
 										<div className=' vehicle-info mb-2'>
 											<h4>{vehicle.name}</h4>
 											<Label>{vehicle.license}</Label>
@@ -168,7 +171,7 @@ function Maintenance() {
 
 	if (dashboardData) {
 		return (
-			<div className='Dashboard flex-col w-full md:max-w-6xl mx-auto my-8'>
+			<div className='Dashboard flex-col w-full px-8 md:max-w-6xl my-8'>
 				<h2 className=' mb-8'>Maintenance Dashboard</h2>
 				<div className='fleetList'>
 					<Accordion type='multiple' defaultValue={fleetNames}>

@@ -11,7 +11,7 @@ import { default as Wave } from "assets/wave-haikei.svg"
 import { default as Image } from "assets/feature_1.jpeg"
 import { Check, X } from "lucide-react"
 
-const Test =
+const Video =
 	"https://stafvkxufrwikaopaoom.supabase.co/storage/v1/object/sign/website-assets/test%20trimmed.mp4?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJ3ZWJzaXRlLWFzc2V0cy90ZXN0IHRyaW1tZWQubXA0IiwiaWF0IjoxNzE1MjA1NDc2LCJleHAiOjE3NDY3NDE0NzZ9.7Q-ZQdfxY50U3I7hGHGTLdhJo_zBbGJ9mEUEB0mw4Dc&t=2024-05-08T21%3A57%3A56.438Z"
 
 function Landing() {
@@ -21,10 +21,10 @@ function Landing() {
 				id='hero'
 				className=' flex flex-col relative w-full overflow-hidden'
 			>
-				<div className='hero-bg hidden md:block absolute inset-0 z-0'>
+				<div className='hero-bg md:block absolute inset-0 z-0'>
 					<div className='bg-black absolute inset-0 opacity-40 z-[1]'></div>
 					<video
-						src={Test}
+						src={Video}
 						autoPlay={true}
 						loop={true}
 						muted={true}
@@ -32,7 +32,7 @@ function Landing() {
 						className=' absolute inset-0 object-cover h-full w-full pb-2'
 					/>
 				</div>
-				<nav className='sign-buttons relative max-w-5xl flex items-center justify-between px-8 py-4 mx-auto md:text-white w-full'>
+				<nav className='sign-buttons relative max-w-5xl flex items-center justify-between px-8 py-4 mx-auto text-white w-full'>
 					<div className=' flex lg:flex-1 font-black text-lg'>
 						<a href='/'>Gaucho</a>
 					</div>
@@ -52,11 +52,11 @@ function Landing() {
 				</nav>
 				<div className='hero-container z-10 relative flex flex-col items-center justify-center mx-auto max-w-5xl gap-16 lg:gap-20 px-8 py-12 lg:py-32 md:text-white'>
 					<div className='text flex flex-col gap-10 items-center justify-center text-center '>
-						<h1 className=' font-extrabold text-4xl lg:text-6xl tracking-tight md: -mb-4'>
+						<h1 className=' font-extrabold text-4xl lg:text-6xl tracking-tight text-white -mb-4'>
 							Stop the stampede
 							<br /> and get your fleet organized
 						</h1>
-						<p className=' text-lg leading-relaxed max-w-md mx-auto font-semibold text-slate-700 md:text-white'>
+						<p className=' text-lg leading-relaxed max-w-md mx-auto font-semibold text-white'>
 							Optimize your operations, improve efficiency, and streamline your
 							operations with Gaucho Inventory.
 						</p>
@@ -69,7 +69,7 @@ function Landing() {
 						</Button>
 					</div>
 				</div>
-				<div className='wave relative w-full'>
+				<div className='wave relative w-full -mb-1'>
 					<img src={Wave} alt='' className='w-full' />
 				</div>
 			</section>
@@ -143,10 +143,10 @@ function Landing() {
 				className='py-24 md:py-32 space-y-24 md:space-y-32 max-w-5xl mx-auto bg-base-100 '
 			>
 				<div className=' px-8'>
-					<h2 className='border-b-0 font-extrabold text-4xl lg:text-5xl tracking-tight mb-12 md:mb-24 '>
+					<h2 className='border-b-0 font-extrabold text-4xl px-8 lg:text-5xl tracking-tight mb-12 md:mb-24 '>
 						Reliably track resource usage
 					</h2>
-					<div className=' grid grid-cols-1 items-stretch gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-24'>
+					<div className=' grid grid-cols-1 items-stretch gap-8 px-8 sm:gap-12 lg:grid-cols-2 lg:gap-24'>
 						<Accordion
 							type='single'
 							collapsible
@@ -191,7 +191,7 @@ function Landing() {
 					</div>
 				</div>
 			</section>
-			<section id='pricing' className=' bg-secondary'>
+			<section id='pricing' className=' bg-secondary -mb-1'>
 				<div className='py-24 px-8 max-w-5xl mx-auto '>
 					<div className=' flex flex-col text-center w-full mb-20'>
 						<h2 className=' border-b-0 font-bold text-3xl lg:text-5xl tracking-tight mb-8 mx-auto'>
@@ -206,7 +206,7 @@ function Landing() {
 						id='pricing-container'
 						className=' flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8'
 					>
-						<div id='card' className=' w-full max-w-lg'>
+						<div id='card' className=' w-full max-w-lg px-8'>
 							<div className=' flex flex-col h-full gap-5 lg:gap-8 bg-primary-foreground p-8 rounded-lg'>
 								<div className='inline-flex'>
 									<p className=' text-5xl tracking-tight font-extrabold'>$5</p>
@@ -238,8 +238,8 @@ function Landing() {
 				</div>
 			</section>
 			<section id='faq' className=' bg-secondary'>
-				<div className='py-24 px-8 max-w-7xl mx-auto '>
-					<div className=' flex flex-col md:flex-row gap-12'>
+				<div className='py-32 pb-64 px-8 max-w-7xl mx-auto'>
+					<div className=' flex flex-col md:flex-row gap-12 px-8'>
 						<div className=' flex flex-col text-left basis-1/2'>
 							<p className=' inline-block font-semibold text-primary mb-4'>
 								FAQ

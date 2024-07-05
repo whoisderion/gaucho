@@ -14,7 +14,7 @@ function Navigation() {
 	} else {
 		if (session !== null) {
 			return (
-				<nav className=' border-solid border-ternary border-b-2 max-w-xs w-full bg-secondary px-12 pt-8 mr-16'>
+				<nav className=' border-solid border-ternary border-b-2 w-full md:max-w-xs bg-secondary px-12 pt-8 md:mr-16'>
 					<div className=' border-b-[1px] flex w-full '>
 						<h2 className='[&&]: border-b-0'>Gaucho</h2>
 					</div>

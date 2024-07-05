@@ -25,7 +25,7 @@ function App() {
 	return (
 		<Router>
 			<AuthProvider>
-				<div className='App w-screen h-screen overflow-auto hidden md:flex md:flex-row'>
+				<div className='App w-screen h-screen overflow-auto flex-col md:flex md:flex-row'>
 					<Navigation />
 					<Routes>
 						<Route path={ROUTES.LANDING} element={<Landing />} />

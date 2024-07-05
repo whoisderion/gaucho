@@ -145,11 +145,11 @@ function EquipmentDashboard() {
 	if (equipmentData.length !== 0) {
 		return (
 			<div className='Contents'>
-				<div className='Dashboard flex-col w-3/4 mx-auto my-4'>
+				<div className='Dashboard mx-8 flex-col w-3/4 my-4'>
 					<nav className='Dashboard-Nav'>
 						<h2 className=' mb-8 flex'>Equipment Dashboard</h2>
-						<div className=' inline-flex'>
-							<div className='flex'>
+						<div className=' inline-flex flex-col'>
+							<div className='flex  mr-8'>
 								<label htmlFor='Filters' className='block mr-2'>
 									Filter
 								</label>
@@ -160,7 +160,7 @@ function EquipmentDashboard() {
 									{/* <option value="">Ungroup Vehicles</option> */}
 								</select>
 							</div>
-							<div className='flex ml-8'>
+							<div className='flex my-4 md:my-0'>
 								<label htmlFor='Timeframe' className='block mr-2'>
 									Timeframe
 								</label>
@@ -179,7 +179,7 @@ function EquipmentDashboard() {
 							</div>
 						</div>
 					</nav>
-					<section className='vehicle-display grid grid-cols-2'>
+					<section className='vehicle-display grid grid-cols-1 md:grid-cols-2'>
 						{renderInventoryRecord()}
 					</section>
 				</div>

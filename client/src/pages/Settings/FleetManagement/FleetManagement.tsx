@@ -128,7 +128,7 @@ function FleetManagement() {
 				}}
 				draggable
 			>
-				<GripHorizontal size={40} className=' my-auto mx-2' />
+				<GripHorizontal size={36} className=' my-auto mx-2' />
 				<Input
 					type='text'
 					value={currArea.name}
@@ -314,6 +314,8 @@ function FleetManagement() {
 		setIsEditingEquipment(false)
 	}
 
+	const isMobile = window.screen.width < 768
+
 	if (isEditingPhotoAreas) {
 		return (
 			<div className='Contents flex mx-auto w-3/4 my-8'>
@@ -371,10 +373,11 @@ function FleetManagement() {
 		)
 	} else if (fleetData) {
 		return (
-			<div className='Dashboard flex-col flex-1 w-3/4 mx-auto my-8 mr-16'>
+			<div className='Dashboard flex-col flex-1 mx-8 md:w-3/4 md:mx-auto my-8 md:mr-16'>
 				<h2 className=''>Fleet Management</h2>
-				<div className='Navigation space-x-4 my-4 '>
+				<div className='Navigation flex flex-wrap justify-between md:space-x-4 md:block md:justify-normal md:flex-nowrap my-4 '>
 					<Button
+						className=' w-36 mb-4'
 						onClick={() => {
 							setIsEditingPhotoAreas(true)
 						}}
@@ -382,14 +385,18 @@ function FleetManagement() {
 						Edit Photo Areas
 					</Button>
 					<Button
+						className=' w-36  mb-4'
 						onClick={() => {
 							setIsEditingFleets(true)
 						}}
 					>
 						Edit Fleets
 					</Button>
-					<Button onClick={handleAddNewVehicle}>Add A New Vehicle</Button>
+					<Button className=' w-36  mb-4' onClick={handleAddNewVehicle}>
+						Add New Vehicle
+					</Button>
 					<Button
+						className=' w-36 mb-4'
 						onClick={() => {
 							setIsEditingEquipment(true)
 						}}
@@ -397,6 +404,7 @@ function FleetManagement() {
 						Edit Equipment
 					</Button>
 					<Button
+						className=' w-36 mb-4'
 						onClick={() => {
 							setIsPrintingQR(true)
 						}}
@@ -406,7 +414,16 @@ function FleetManagement() {
 				</div>
 				<div className='Table mb-8'>
 					<DataTable
-						columns={columns}
+						columns={
+							isMobile
+								? columns.filter(
+										(header) =>
+											header.header != "VIN" &&
+											header.header != "Year" &&
+											header.header != "License"
+								  )
+								: columns
+						}
 						data={fleetData.vehicles}
 						startEditing={startEditing}
 						deleteVehicle={handleDeleteVehicle}
@@ -414,7 +431,7 @@ function FleetManagement() {
 				</div>
 				{isEditingVehicle && editingVehicle && (
 					<div className='overlay h-full w-full fixed z-20 top-0 left-0 right-0 bottom-0 bg-black/50'>
-						<div className='overlay-contents bg-white w-1/4 float-right h-full'>
+						<div className='overlay-contents bg-white w-full md:w-1/4 float-right h-full'>
 							<EditVehicleMenu
 								vehicle={editingVehicle}
 								setVehicle={setEditingVehicle}
