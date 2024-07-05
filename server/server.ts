@@ -38,6 +38,7 @@ const corsOptions = {
 		"http://172.16.102.233:5173",
 		"http://172.16.102.248:5173",
 		"https://gaucho-client-production.up.railway.app",
+		"https://gaucho-client.pages.dev",
 	],
 	methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE"],
 	allowedHeaders: ["Content-Type", "Authorization"],
