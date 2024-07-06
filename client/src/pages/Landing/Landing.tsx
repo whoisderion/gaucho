@@ -25,9 +25,9 @@ function Landing() {
 					<div className='bg-black absolute inset-0 opacity-40 z-[1]'></div>
 					<video
 						src={Video}
-						autoPlay={true}
+						autoPlay
+						muted
 						loop={true}
-						muted={true}
 						role='banner'
 						className=' absolute inset-0 object-cover h-full w-full pb-2'
 					/>
