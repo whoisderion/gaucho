@@ -29,7 +29,9 @@ const SignIn = () => {
 		<div className=' w-full h-full flex items-center justify-center mx-auto bg-secondary'>
 			<Card className=' max-w-xl md:w-1/3'>
 				<CardHeader>
-					<CardTitle>Sign in to your account</CardTitle>
+					<CardTitle className=' text-center'>
+						Sign in to your account
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<form
@@ -54,7 +56,7 @@ const SignIn = () => {
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 						</div>
-						<Button type='submit' className=' my-8 mx-auto bg-primary'>
+						<Button type='submit' className=' block my-8 mx-auto bg-primary'>
 							Sign In
 						</Button>
 					</form>

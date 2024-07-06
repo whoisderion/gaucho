@@ -153,14 +153,14 @@ function EquipmentDashboard() {
 								<label htmlFor='Filters' className='block mr-2'>
 									Filter
 								</label>
-								<select name='Filter' id=''>
-									<option value=''></option>
+								<select name='Filter' id='' className=' border'>
+									<option value=''>None</option>
 									<option value=''>Only show changes</option>
 									<option value=''>Only Inactive</option>
 									{/* <option value="">Ungroup Vehicles</option> */}
 								</select>
 							</div>
-							<div className='flex my-4 md:my-0'>
+							<div className='flex mt-4 '>
 								<label htmlFor='Timeframe' className='block mr-2'>
 									Timeframe
 								</label>
@@ -169,6 +169,7 @@ function EquipmentDashboard() {
 									id=''
 									defaultValue={selectedTimeframe}
 									onChange={handleTimeframeChange}
+									className=' border'
 								>
 									<option value='oneDayAgo'>1 Day</option>
 									<option value='threeDaysAgo'>3 Days</option>

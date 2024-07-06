@@ -65,10 +65,10 @@ function SignUp() {
 	}
 
 	return (
-		<div className=' flex justify-center items-center bg-secondary h-full'>
-			<Card className=' max-w-xl mx-auto  md:w-1/3'>
+		<div className=' flex justify-center items-center bg-secondary h-full w-full'>
+			<Card className=' max-w-xl mx-auto md:w-1/3'>
 				<CardHeader>
-					<CardTitle>Sign Up for Gaucho</CardTitle>
+					<CardTitle className=' text-center'>Sign Up for Gaucho</CardTitle>
 				</CardHeader>
 				<CardContent className=' px-10'>
 					<Form {...form}>
@@ -113,7 +113,7 @@ function SignUp() {
 									</FormItem>
 								)}
 							/>
-							<Button type='submit' className=' bg-primary'>
+							<Button type='submit' className=' bg-primary block mx-auto'>
 								Continue
 							</Button>
 						</form>
