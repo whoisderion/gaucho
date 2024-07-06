@@ -2,8 +2,8 @@
 import { UseAuth } from "../../hooks/Auth"
 // import { supabaseClient } from 'config/supabase-client'
 import * as ROUTES from "data/routes"
-import { FormEvent, useState } from "react"
-import { Link } from "react-router-dom"
+import { FormEvent, useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { Input } from "@/components/ui/input"
 import {
 	Card,
@@ -18,7 +18,14 @@ const SignIn = () => {
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
 
-	const { signIn } = UseAuth()
+	const { signIn, session } = UseAuth()
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (session != null) {
+			navigate(ROUTES.EQUIPMENT)
+		}
+	}, [])
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()

@@ -57,8 +57,8 @@ export const AuthProvider = ({ children }: any) => {
 				email: email,
 				password: password,
 			})
-			navigate(ROUTES.EQUIPMENT)
 			console.log("signed in")
+			return navigate(ROUTES.EQUIPMENT)
 		},
 		signOut: async () => {
 			await supabaseClient.auth.signOut() // <= this trigger onAuthStateChange
