@@ -25,8 +25,9 @@ function Landing() {
 					<div className='bg-black absolute inset-0 opacity-40 z-[1]'></div>
 					<video
 						src={Video}
-						autoPlay
 						muted
+						autoPlay
+						autoFocus={false}
 						loop={true}
 						role='banner'
 						className=' absolute inset-0 object-cover h-full w-full pb-2'
@@ -185,7 +186,7 @@ function Landing() {
 								src={Image}
 								alt=''
 								width={500}
-								className=' rounded-xl w-full sm:w-[26rem] sm:-m-2 sm:p-2 border object-contain object-center'
+								className=' rounded-xl w-full -m-2 sm:p-2 border object-contain object-center'
 							/>
 						</div>
 					</div>
